@@ -1,5 +1,5 @@
-import api from './api';
-import type { TimezoneInfo, CurrentTimeInfo } from '../types/timezone.types';
+import api from '@/services/api';
+import type { TimezoneInfo, CurrentTimeInfo } from '@/types/timezone.types';
 
 export const timezoneService = {
   async getAll(): Promise<TimezoneInfo[]> {

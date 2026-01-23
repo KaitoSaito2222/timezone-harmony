@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Layout } from './components/layout/Layout';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { HomePage } from './pages/HomePage';
-import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
-import { AuthCallbackPage } from './pages/AuthCallbackPage';
-import { useAuthStore } from './stores/authStore';
+import { Layout } from '@/components/layout/Layout';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { HomePage } from '@/pages/HomePage';
+import { LoginPage } from '@/pages/LoginPage';
+import { RegisterPage } from '@/pages/RegisterPage';
+import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
+import { useAuthStore } from '@/stores/authStore';
 
 function App() {
   const { loadUser } = useAuthStore();
@@ -29,7 +29,7 @@ function App() {
               <ProtectedRoute>
                 <div className="text-center py-8">
                   <h1 className="text-2xl font-bold">Presets Page</h1>
-                  <p className="text-gray-600">Coming soon...</p>
+                  <p className="text-muted-foreground">Coming soon...</p>
                 </div>
               </ProtectedRoute>
             }
@@ -40,7 +40,7 @@ function App() {
               <ProtectedRoute>
                 <div className="text-center py-8">
                   <h1 className="text-2xl font-bold">Business Hours Page</h1>
-                  <p className="text-gray-600">Coming soon...</p>
+                  <p className="text-muted-foreground">Coming soon...</p>
                 </div>
               </ProtectedRoute>
             }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import {
@@ -25,24 +25,18 @@ export function TimezoneSelector({
 }: TimezoneSelectorProps) {
   const { allTimezones, popularTimezones } = useTimezoneStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredTimezones, setFilteredTimezones] = useState(allTimezones);
 
-  useEffect(() => {
+  const filteredTimezones = useMemo(() => {
     if (searchQuery.length < 2) {
-      setFilteredTimezones(
-        allTimezones.filter((tz) => !excludeTimezones.includes(tz.identifier))
-      );
-    } else {
-      const query = searchQuery.toLowerCase();
-      setFilteredTimezones(
-        allTimezones.filter(
-          (tz) =>
-            !excludeTimezones.includes(tz.identifier) &&
-            (tz.identifier.toLowerCase().includes(query) ||
-              tz.displayName.toLowerCase().includes(query))
-        )
-      );
+      return allTimezones.filter((tz) => !excludeTimezones.includes(tz.identifier));
     }
+    const query = searchQuery.toLowerCase();
+    return allTimezones.filter(
+      (tz) =>
+        !excludeTimezones.includes(tz.identifier) &&
+        (tz.identifier.toLowerCase().includes(query) ||
+          tz.displayName.toLowerCase().includes(query))
+    );
   }, [searchQuery, allTimezones, excludeTimezones]);
 
   return (

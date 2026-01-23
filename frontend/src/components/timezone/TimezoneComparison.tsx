@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { DateTime } from 'luxon';
 import { Lightbulb, AlertTriangle, BookmarkPlus, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,11 +67,7 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
   const [optimalTimes, setOptimalTimes] = useState<OptimalTime[]>([]);
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    findOptimalMeetingTimes();
-  }, [timezones]);
-
-  const findOptimalMeetingTimes = () => {
+  const findOptimalMeetingTimes = useCallback(() => {
     if (timezones.length === 0) return;
 
     const now = DateTime.now();
@@ -101,7 +97,11 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
     }
 
     setOptimalTimes(optimal);
-  };
+  }, [timezones]);
+
+    useEffect(() => {
+    findOptimalMeetingTimes();
+  }, [findOptimalMeetingTimes]);
 
   const handleScroll = (index: number) => {
     const scrollTop = scrollRefs.current[index]?.scrollTop || 0;
@@ -157,7 +157,7 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
                 return (
                   <div
                     key={timezone}
-                    className="flex-shrink-0 w-64"
+                    className="shrink-0 w-64"
                   >
                     {/* Timezone Header */}
                     <div className="bg-primary text-primary-foreground rounded-t-lg p-4 text-center">
@@ -170,7 +170,7 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
                     <div
                       ref={(el) => { scrollRefs.current[colIndex] = el; }}
                       onScroll={() => handleScroll(colIndex)}
-                      className="bg-muted/30 rounded-b-lg p-2 max-h-[500px] overflow-y-auto space-y-1"
+                      className="bg-muted/30 rounded-b-lg p-2 max-h-125 overflow-y-auto space-y-1"
                     >
                       {slots.map((slot, rowIndex) => (
                         <div
