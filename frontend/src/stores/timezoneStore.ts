@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { TimezoneInfo, TimezonePreset, CurrentTimeInfo } from '../types';
+import type { TimezoneInfo, CurrentTimeInfo } from '../types/timezone.types';
+import type { TimezonePreset } from '../types/preset.types';
 import { timezoneService } from '../services/timezone.service';
 import { presetService } from '../services/preset.service';
 

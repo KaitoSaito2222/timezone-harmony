@@ -1,5 +1,5 @@
 import api from './api';
-import type { TimezonePreset } from '../types';
+import type { TimezonePreset } from '../types/preset.types';
 
 interface CreatePresetDto {
   name: string;

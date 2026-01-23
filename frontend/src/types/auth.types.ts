@@ -1,0 +1,12 @@
+export interface User {
+  id: string;
+  email: string;
+  displayName: string | null;
+  role: 'user' | 'admin';
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  user: User;
+}
