@@ -9,17 +9,29 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
+import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 
 class LoginDto {
+  @IsEmail()
   email: string;
+
+  @IsString()
+  @MinLength(6)
   password: string;
 }
 
 class RegisterDto {
+  @IsEmail()
   email: string;
+
+  @IsString()
+  @MinLength(6)
   password: string;
+
+  @IsString()
+  @IsOptional()
   displayName?: string;
 }
 
