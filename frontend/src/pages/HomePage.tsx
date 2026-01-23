@@ -40,18 +40,6 @@ export function HomePage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <Card className="bg-linear-to-r from-primary to-primary/80 text-primary-foreground border-0">
-        <CardContent className="py-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">
-            Timezone Harmony
-          </h1>
-          <p className="text-lg opacity-90">
-            Side-by-side Timeline Comparison - Synchronized Scrolling
-          </p>
-        </CardContent>
-      </Card>
-
       {/* Timezone Selector Panel */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
