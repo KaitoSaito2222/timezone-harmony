@@ -1,3 +1,4 @@
+// Root TypeScript configuration for the entire project, referencing separate configs for app and build tools
 {
   "files": [],
   "references": [
