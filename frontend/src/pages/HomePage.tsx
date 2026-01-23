@@ -41,7 +41,7 @@ export function HomePage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <Card className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-0">
+      <Card className="bg-linear-to-r from-primary to-primary/80 text-primary-foreground border-0">
         <CardContent className="py-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-3">
             Timezone Harmony

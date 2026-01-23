@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import {
@@ -81,7 +81,7 @@ export function TimezoneSelector({
           </>
         )}
 
-        <div className="flex-1 overflow-y-auto space-y-1 min-h-[200px]">
+        <div className="flex-1 overflow-y-auto space-y-1 min-h-50">
           <h3 className="text-sm font-medium text-muted-foreground mb-2 sticky top-0 bg-background py-1">
             {searchQuery.length >= 2 ? 'Search Results' : 'All Timezones'}
           </h3>
