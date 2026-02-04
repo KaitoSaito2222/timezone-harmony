@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { PrismaService } from '../../prisma';
+import { PrismaService } from '../../prisma/prisma.service';
 import { Timezone } from '@prisma/client';
 
 export interface TimezoneInfo {

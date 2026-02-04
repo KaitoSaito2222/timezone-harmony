@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma';
+import { PrismaService } from '../../prisma/prisma.service';
 import { TimezonePreset, PresetTimezone } from '@prisma/client';
 
 interface CreatePresetDto {
