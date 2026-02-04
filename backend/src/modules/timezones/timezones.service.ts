@@ -1,77 +1,74 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, ILike } from 'typeorm';
 import { DateTime } from 'luxon';
-import { getAllTimezones, Timezone } from 'countries-and-timezones';
+import { Timezone } from '../../entities/timezone.entity';
 
 export interface TimezoneInfo {
   identifier: string;
   displayName: string;
   offset: string;
   offsetMinutes: number;
-  countries: string[];
+  region?: string | null;
 }
 
 @Injectable()
 export class TimezonesService {
-  private popularTimezones = [
-    'Asia/Tokyo',
-    'America/New_York',
-    'America/Los_Angeles',
-    'Europe/London',
-    'Europe/Paris',
-    'Asia/Singapore',
-    'Australia/Sydney',
-    'Asia/Shanghai',
-    'Asia/Hong_Kong',
-    'America/Chicago',
-    'Europe/Berlin',
-    'Asia/Dubai',
-    'Asia/Kolkata',
-    'Pacific/Auckland',
-    'America/Toronto',
-  ];
+  constructor(
+    @InjectRepository(Timezone)
+    private readonly timezoneRepository: Repository<Timezone>,
+  ) {}
 
-  getAllTimezones(): TimezoneInfo[] {
-    const timezones = getAllTimezones();
-    return Object.values(timezones)
-      .map((tz: Timezone) => ({
-        identifier: tz.name,
-        displayName: tz.name.replace(/_/g, ' '),
-        offset: tz.utcOffsetStr,
-        offsetMinutes: tz.utcOffset,
-        countries: tz.countries || [],
-      }))
-      .sort((a, b) => a.offsetMinutes - b.offsetMinutes);
+  private formatOffset(minutes: number): string {
+    const sign = minutes >= 0 ? '+' : '-';
+    const absMinutes = Math.abs(minutes);
+    const hours = Math.floor(absMinutes / 60);
+    const mins = absMinutes % 60;
+    return `${sign}${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   }
 
-  getPopularTimezones(): TimezoneInfo[] {
-    const allTimezones = this.getAllTimezones();
-    return allTimezones.filter((tz) =>
-      this.popularTimezones.includes(tz.identifier),
-    );
-  }
-
-  searchTimezones(query: string): TimezoneInfo[] {
-    const allTimezones = this.getAllTimezones();
-    const lowercaseQuery = query.toLowerCase();
-    return allTimezones.filter(
-      (tz) =>
-        tz.identifier.toLowerCase().includes(lowercaseQuery) ||
-        tz.displayName.toLowerCase().includes(lowercaseQuery),
-    );
-  }
-
-  getTimezoneInfo(identifier: string): TimezoneInfo | null {
-    const timezones = getAllTimezones();
-    const tz = timezones[identifier];
-    if (!tz) return null;
-
+  private toTimezoneInfo(tz: Timezone): TimezoneInfo {
     return {
-      identifier: tz.name,
-      displayName: tz.name.replace(/_/g, ' '),
-      offset: tz.utcOffsetStr,
-      offsetMinutes: tz.utcOffset,
-      countries: tz.countries || [],
+      identifier: tz.identifier,
+      displayName: tz.displayName,
+      offset: this.formatOffset(tz.utcOffsetMinutes),
+      offsetMinutes: tz.utcOffsetMinutes,
+      region: tz.region,
     };
+  }
+
+  async getAllTimezones(): Promise<TimezoneInfo[]> {
+    const timezones = await this.timezoneRepository.find({
+      order: { sortOrder: 'ASC', utcOffsetMinutes: 'ASC' },
+    });
+    return timezones.map((tz) => this.toTimezoneInfo(tz));
+  }
+
+  async getPopularTimezones(): Promise<TimezoneInfo[]> {
+    const timezones = await this.timezoneRepository.find({
+      where: { isPopular: true },
+      order: { sortOrder: 'ASC' },
+    });
+    return timezones.map((tz) => this.toTimezoneInfo(tz));
+  }
+
+  async searchTimezones(query: string): Promise<TimezoneInfo[]> {
+    const timezones = await this.timezoneRepository.find({
+      where: [
+        { identifier: ILike(`%${query}%`) },
+        { displayName: ILike(`%${query}%`) },
+      ],
+      order: { sortOrder: 'ASC' },
+    });
+    return timezones.map((tz) => this.toTimezoneInfo(tz));
+  }
+
+  async getTimezoneInfo(identifier: string): Promise<TimezoneInfo | null> {
+    const tz = await this.timezoneRepository.findOne({
+      where: { identifier },
+    });
+    if (!tz) return null;
+    return this.toTimezoneInfo(tz);
   }
 
   convertTime(

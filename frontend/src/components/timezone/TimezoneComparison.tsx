@@ -4,6 +4,7 @@ import { Lightbulb, AlertTriangle, BookmarkPlus, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useTimezoneStore } from '@/stores/timezoneStore';
 
 interface TimeSlot {
   hour: number;
@@ -15,19 +16,6 @@ interface TimeSlot {
 interface TimezoneComparisonProps {
   timezones: string[];
 }
-
-const timezoneNames: Record<string, string> = {
-  'Asia/Tokyo': 'Tokyo',
-  'America/New_York': 'New York',
-  'Europe/London': 'London',
-  'America/Los_Angeles': 'Los Angeles',
-  'Europe/Paris': 'Paris',
-  'Asia/Singapore': 'Singapore',
-  'Australia/Sydney': 'Sydney',
-  'Asia/Dubai': 'Dubai',
-  'America/Chicago': 'Chicago',
-  'Asia/Hong_Kong': 'Hong Kong',
-};
 
 const isBusinessHours = (hour: number): boolean => {
   return hour >= 9 && hour < 17;
@@ -66,6 +54,14 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [optimalTimes, setOptimalTimes] = useState<OptimalTime[]>([]);
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { allTimezones } = useTimezoneStore();
+
+  const getDisplayName = useCallback((identifier: string): string => {
+    const tz = allTimezones.find((t) => t.identifier === identifier);
+    if (tz) return tz.displayName;
+    // フォールバック: "Asia/Tokyo" → "Tokyo"
+    return identifier.split('/')[1]?.replace(/_/g, ' ') || identifier;
+  }, [allTimezones]);
 
   const findOptimalMeetingTimes = useCallback(() => {
     if (timezones.length === 0) return;
@@ -81,7 +77,7 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
       timezones.forEach((timezone) => {
         const time = baseTime.setZone(timezone).plus({ hours: hour });
         timesByZone.push({
-          timezone: timezoneNames[timezone] || timezone.split('/')[1] || timezone,
+          timezone: getDisplayName(timezone),
           time: time.toFormat('HH:mm'),
           hour: time.hour,
         });
@@ -97,7 +93,7 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
     }
 
     setOptimalTimes(optimal);
-  }, [timezones]);
+  }, [timezones, getDisplayName]);
 
     useEffect(() => {
     findOptimalMeetingTimes();
@@ -149,7 +145,7 @@ export function TimezoneComparison({ timezones }: TimezoneComparisonProps) {
             <div className="flex gap-4 min-w-fit pb-4">
               {timezones.map((timezone, colIndex) => {
                 const localTime = baseTime.setZone(timezone);
-                const cityName = timezoneNames[timezone] || timezone.split('/')[1] || timezone;
+                const cityName = getDisplayName(timezone);
                 const offset = localTime.toFormat('ZZ');
                 const dateStr = localTime.toFormat('MMM dd, yyyy');
                 const slots = generateTimeSlots(timezone, baseTime);

@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TimezonePreset, PresetTimezone } from '../../entities';
+import { TimezonePreset } from '../../entities/timezone-preset.entity';
+import { PresetTimezone } from '../../entities/preset-timezone.entity';
 
 interface CreatePresetDto {
   name: string;

@@ -3,7 +3,7 @@ export interface TimezoneInfo {
   displayName: string;
   offset: string;
   offsetMinutes: number;
-  countries: string[];
+  region?: string | null;
 }
 
 export interface CurrentTimeInfo {

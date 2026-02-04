@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BusinessHours } from '../../entities';
+import { BusinessHours } from '../../entities/business-hours.entity';
 
 interface CreateBusinessHoursDto {
   timezoneIdentifier: string;

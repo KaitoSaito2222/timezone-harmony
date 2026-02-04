@@ -6,17 +6,17 @@ export class TimezonesController {
   constructor(private readonly timezonesService: TimezonesService) {}
 
   @Get()
-  getAllTimezones(): TimezoneInfo[] {
+  async getAllTimezones(): Promise<TimezoneInfo[]> {
     return this.timezonesService.getAllTimezones();
   }
 
   @Get('popular')
-  getPopularTimezones(): TimezoneInfo[] {
+  async getPopularTimezones(): Promise<TimezoneInfo[]> {
     return this.timezonesService.getPopularTimezones();
   }
 
   @Get('search')
-  searchTimezones(@Query('q') query: string): TimezoneInfo[] {
+  async searchTimezones(@Query('q') query: string): Promise<TimezoneInfo[]> {
     if (!query || query.length < 2) {
       return [];
     }
@@ -46,9 +46,9 @@ export class TimezonesController {
   }
 
   @Get(':identifier')
-  getTimezoneInfo(@Param('identifier') identifier: string): TimezoneInfo | { error: string } {
+  async getTimezoneInfo(@Param('identifier') identifier: string): Promise<TimezoneInfo | { error: string }> {
     const decodedIdentifier = decodeURIComponent(identifier);
-    const info = this.timezonesService.getTimezoneInfo(decodedIdentifier);
+    const info = await this.timezonesService.getTimezoneInfo(decodedIdentifier);
     if (!info) {
       return { error: 'Timezone not found' };
     }
