@@ -35,7 +35,8 @@ export function TimezoneSelector({
       (tz) =>
         !excludeTimezones.includes(tz.identifier) &&
         (tz.identifier.toLowerCase().includes(query) ||
-          tz.displayName.toLowerCase().includes(query))
+          tz.displayName.toLowerCase().includes(query) ||
+          tz.country?.toLowerCase().includes(query))
     );
   }, [searchQuery, allTimezones, excludeTimezones]);
 

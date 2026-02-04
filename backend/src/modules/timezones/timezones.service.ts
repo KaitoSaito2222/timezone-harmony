@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
+import ct from 'countries-and-timezones';
 
 const POPULAR_TIMEZONES = [
   'Asia/Tokyo',
@@ -19,6 +20,7 @@ export interface TimezoneInfo {
   displayName: string;
   offset: string;
   offsetMinutes: number;
+  country?: string;
 }
 
 @Injectable()
@@ -31,16 +33,30 @@ export class TimezonesService {
     return `${sign}${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   }
 
+  private formatDisplayName(identifier: string): string {
+    // "Asia/Tokyo" → "Tokyo"
+    // "America/New_York" → "New York"
+    const parts = identifier.split('/');
+    const city = parts[parts.length - 1];
+    return city.replace(/_/g, ' ');
+  }
+
   private toTimezoneInfo(identifier: string): TimezoneInfo | null {
     try {
       const now = DateTime.now().setZone(identifier);
       if (!now.isValid) return null;
 
+      const tzData = ct.getTimezone(identifier);
+      const country = tzData?.countries?.[0]
+        ? ct.getCountry(tzData.countries[0])?.name
+        : undefined;
+
       return {
         identifier,
-        displayName: now.offsetNameLong || identifier,
+        displayName: this.formatDisplayName(identifier),
         offset: this.formatOffset(now.offset),
         offsetMinutes: now.offset,
+        country,
       };
     } catch {
       return null;
@@ -67,7 +83,8 @@ export class TimezonesService {
     return this.getAllTimezones().filter(
       (tz) =>
         tz.identifier.toLowerCase().includes(lowerQuery) ||
-        tz.displayName.toLowerCase().includes(lowerQuery),
+        tz.displayName.toLowerCase().includes(lowerQuery) ||
+        tz.country?.toLowerCase().includes(lowerQuery),
     );
   }
 
