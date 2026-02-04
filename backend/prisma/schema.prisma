@@ -26,18 +26,6 @@ model User {
   @@map("users")
 }
 
-model Timezone {
-  identifier       String   @id @db.VarChar(50)
-  displayName      String   @map("display_name") @db.VarChar(100)
-  region           String?  @db.VarChar(50)
-  utcOffsetMinutes Int      @map("utc_offset_minutes")
-  isPopular        Boolean  @default(false) @map("is_popular")
-  sortOrder        Int      @default(0) @map("sort_order")
-  createdAt        DateTime @default(now()) @map("created_at")
-
-  @@map("timezones")
-}
-
 model TimezonePreset {
   id          String           @id @default(uuid())
   userId      String           @map("user_id")

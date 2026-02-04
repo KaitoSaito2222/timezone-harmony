@@ -1,20 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { PrismaService } from '../../prisma/prisma.service';
-import { Timezone } from '@prisma/client';
+
+const POPULAR_TIMEZONES = [
+  'Asia/Tokyo',
+  'America/New_York',
+  'America/Los_Angeles',
+  'Europe/London',
+  'Europe/Paris',
+  'Asia/Singapore',
+  'Asia/Shanghai',
+  'Australia/Sydney',
+  'Asia/Dubai',
+  'America/Chicago',
+];
 
 export interface TimezoneInfo {
   identifier: string;
   displayName: string;
   offset: string;
   offsetMinutes: number;
-  region?: string | null;
 }
 
 @Injectable()
 export class TimezonesService {
-  constructor(private prisma: PrismaService) {}
-
   private formatOffset(minutes: number): string {
     const sign = minutes >= 0 ? '+' : '-';
     const absMinutes = Math.abs(minutes);
@@ -23,50 +31,48 @@ export class TimezonesService {
     return `${sign}${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   }
 
-  private toTimezoneInfo(tz: Timezone): TimezoneInfo {
-    return {
-      identifier: tz.identifier,
-      displayName: tz.displayName,
-      offset: this.formatOffset(tz.utcOffsetMinutes),
-      offsetMinutes: tz.utcOffsetMinutes,
-      region: tz.region,
-    };
+  private toTimezoneInfo(identifier: string): TimezoneInfo | null {
+    try {
+      const now = DateTime.now().setZone(identifier);
+      if (!now.isValid) return null;
+
+      return {
+        identifier,
+        displayName: now.offsetNameLong || identifier,
+        offset: this.formatOffset(now.offset),
+        offsetMinutes: now.offset,
+      };
+    } catch {
+      return null;
+    }
   }
 
-  async getAllTimezones(): Promise<TimezoneInfo[]> {
-    const timezones = await this.prisma.timezone.findMany({
-      orderBy: [{ sortOrder: 'asc' }, { utcOffsetMinutes: 'asc' }],
-    });
-    return timezones.map((tz) => this.toTimezoneInfo(tz));
+  getAllTimezones(): TimezoneInfo[] {
+    // Intl APIから全タイムゾーンを取得
+    const allZones = Intl.supportedValuesOf('timeZone');
+    return allZones
+      .map((tz) => this.toTimezoneInfo(tz))
+      .filter((tz): tz is TimezoneInfo => tz !== null)
+      .sort((a, b) => a.offsetMinutes - b.offsetMinutes);
   }
 
-  async getPopularTimezones(): Promise<TimezoneInfo[]> {
-    const timezones = await this.prisma.timezone.findMany({
-      where: { isPopular: true },
-      orderBy: { sortOrder: 'asc' },
-    });
-    return timezones.map((tz) => this.toTimezoneInfo(tz));
+  getPopularTimezones(): TimezoneInfo[] {
+    return POPULAR_TIMEZONES.map((tz) => this.toTimezoneInfo(tz))
+      .filter((tz): tz is TimezoneInfo => tz !== null)
+      .sort((a, b) => a.offsetMinutes - b.offsetMinutes);
   }
 
-  async searchTimezones(query: string): Promise<TimezoneInfo[]> {
-    const timezones = await this.prisma.timezone.findMany({
-      where: {
-        OR: [
-          { identifier: { contains: query, mode: 'insensitive' } },
-          { displayName: { contains: query, mode: 'insensitive' } },
-        ],
-      },
-      orderBy: { sortOrder: 'asc' },
-    });
-    return timezones.map((tz) => this.toTimezoneInfo(tz));
+  searchTimezones(query: string): TimezoneInfo[] {
+    const lowerQuery = query.toLowerCase();
+    return this.getAllTimezones().filter(
+      (tz) =>
+        tz.identifier.toLowerCase().includes(lowerQuery) ||
+        tz.displayName.toLowerCase().includes(lowerQuery),
+    );
   }
 
-  async getTimezoneInfo(identifier: string): Promise<TimezoneInfo | null> {
-    const tz = await this.prisma.timezone.findUnique({
-      where: { identifier },
-    });
-    if (!tz) return null;
-    return this.toTimezoneInfo(tz);
+  getTimezoneInfo(identifier: string): TimezoneInfo | null {
+    return this.toTimezoneInfo(identifier);
   }
 
   convertTime(
