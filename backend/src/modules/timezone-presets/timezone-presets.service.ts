@@ -1,8 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { TimezonePreset } from '../../entities/timezone-preset.entity';
-import { PresetTimezone } from '../../entities/preset-timezone.entity';
+import { PrismaService } from '../../prisma';
+import { TimezonePreset, PresetTimezone } from '@prisma/client';
 
 interface CreatePresetDto {
   name: string;
@@ -26,25 +24,24 @@ interface UpdatePresetDto {
   }[];
 }
 
+type PresetWithTimezones = TimezonePreset & { timezones: PresetTimezone[] };
+
 @Injectable()
 export class TimezonePresetsService {
-  constructor(
-    @InjectRepository(TimezonePreset)
-    private presetRepository: Repository<TimezonePreset>,
-    @InjectRepository(PresetTimezone)
-    private presetTimezoneRepository: Repository<PresetTimezone>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async findAllByUser(userId: string): Promise<TimezonePreset[]> {
-    return this.presetRepository.find({
+  async findAllByUser(userId: string): Promise<PresetWithTimezones[]> {
+    return this.prisma.timezonePreset.findMany({
       where: { userId },
-      order: { createdAt: 'DESC' },
+      include: { timezones: true },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findById(id: string, userId: string): Promise<TimezonePreset> {
-    const preset = await this.presetRepository.findOne({
+  async findById(id: string, userId: string): Promise<PresetWithTimezones> {
+    const preset = await this.prisma.timezonePreset.findFirst({
       where: { id, userId },
+      include: { timezones: true },
     });
     if (!preset) {
       throw new NotFoundException('Preset not found');
@@ -52,69 +49,71 @@ export class TimezonePresetsService {
     return preset;
   }
 
-  async create(userId: string, dto: CreatePresetDto): Promise<TimezonePreset> {
-    const preset = this.presetRepository.create({
-      userId,
-      name: dto.name,
-      description: dto.description,
-      isFavorite: dto.isFavorite ?? false,
+  async create(userId: string, dto: CreatePresetDto): Promise<PresetWithTimezones> {
+    return this.prisma.timezonePreset.create({
+      data: {
+        userId,
+        name: dto.name,
+        description: dto.description,
+        isFavorite: dto.isFavorite ?? false,
+        timezones: {
+          create: dto.timezones.map((tz, index) => ({
+            timezoneIdentifier: tz.timezoneIdentifier,
+            displayLabel: tz.displayLabel,
+            position: tz.position ?? index,
+          })),
+        },
+      },
+      include: { timezones: true },
     });
-
-    const savedPreset = await this.presetRepository.save(preset);
-
-    if (dto.timezones && dto.timezones.length > 0) {
-      const presetTimezones = dto.timezones.map((tz, index) =>
-        this.presetTimezoneRepository.create({
-          presetId: savedPreset.id,
-          timezoneIdentifier: tz.timezoneIdentifier,
-          displayLabel: tz.displayLabel,
-          position: tz.position ?? index,
-        }),
-      );
-      await this.presetTimezoneRepository.save(presetTimezones);
-    }
-
-    return this.findById(savedPreset.id, userId);
   }
 
   async update(
     id: string,
     userId: string,
     dto: UpdatePresetDto,
-  ): Promise<TimezonePreset> {
-    const preset = await this.findById(id, userId);
-
-    if (dto.name !== undefined) preset.name = dto.name;
-    if (dto.description !== undefined) preset.description = dto.description;
-    if (dto.isFavorite !== undefined) preset.isFavorite = dto.isFavorite;
-
-    await this.presetRepository.save(preset);
+  ): Promise<PresetWithTimezones> {
+    await this.findById(id, userId);
 
     if (dto.timezones) {
-      await this.presetTimezoneRepository.delete({ presetId: id });
-
-      const presetTimezones = dto.timezones.map((tz, index) =>
-        this.presetTimezoneRepository.create({
-          presetId: id,
-          timezoneIdentifier: tz.timezoneIdentifier,
-          displayLabel: tz.displayLabel,
-          position: tz.position ?? index,
-        }),
-      );
-      await this.presetTimezoneRepository.save(presetTimezones);
+      await this.prisma.presetTimezone.deleteMany({
+        where: { presetId: id },
+      });
     }
 
-    return this.findById(id, userId);
+    return this.prisma.timezonePreset.update({
+      where: { id },
+      data: {
+        ...(dto.name !== undefined && { name: dto.name }),
+        ...(dto.description !== undefined && { description: dto.description }),
+        ...(dto.isFavorite !== undefined && { isFavorite: dto.isFavorite }),
+        ...(dto.timezones && {
+          timezones: {
+            create: dto.timezones.map((tz, index) => ({
+              timezoneIdentifier: tz.timezoneIdentifier,
+              displayLabel: tz.displayLabel,
+              position: tz.position ?? index,
+            })),
+          },
+        }),
+      },
+      include: { timezones: true },
+    });
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const preset = await this.findById(id, userId);
-    await this.presetRepository.remove(preset);
+    await this.findById(id, userId);
+    await this.prisma.timezonePreset.delete({
+      where: { id },
+    });
   }
 
-  async toggleFavorite(id: string, userId: string): Promise<TimezonePreset> {
+  async toggleFavorite(id: string, userId: string): Promise<PresetWithTimezones> {
     const preset = await this.findById(id, userId);
-    preset.isFavorite = !preset.isFavorite;
-    return this.presetRepository.save(preset);
+    return this.prisma.timezonePreset.update({
+      where: { id },
+      data: { isFavorite: !preset.isFavorite },
+      include: { timezones: true },
+    });
   }
 }

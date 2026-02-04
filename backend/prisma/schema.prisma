@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+model User {
+  id              String            @id @default(uuid())
+  email           String            @unique
+  passwordHash    String?           @map("password_hash")
+  displayName     String?           @map("display_name")
+  googleId        String?           @unique @map("google_id")
+  role            UserRole          @default(user)
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  timezonePresets TimezonePreset[]
+  businessHours   BusinessHours[]
+
+  @@map("users")
+}
+
+model Timezone {
+  identifier       String   @id @db.VarChar(50)
+  displayName      String   @map("display_name") @db.VarChar(100)
+  region           String?  @db.VarChar(50)
+  utcOffsetMinutes Int      @map("utc_offset_minutes")
+  isPopular        Boolean  @default(false) @map("is_popular")
+  sortOrder        Int      @default(0) @map("sort_order")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("timezones")
+}
+
+model TimezonePreset {
+  id          String           @id @default(uuid())
+  userId      String           @map("user_id")
+  name        String
+  description String?          @db.Text
+  isFavorite  Boolean          @default(false) @map("is_favorite")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timezones   PresetTimezone[]
+
+  @@map("timezone_presets")
+}
+
+model PresetTimezone {
+  id                 String         @id @default(uuid())
+  presetId           String         @map("preset_id")
+  timezoneIdentifier String         @map("timezone_identifier")
+  displayLabel       String?        @map("display_label")
+  position           Int            @default(0)
+  createdAt          DateTime       @default(now()) @map("created_at")
+  preset             TimezonePreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+
+  @@map("preset_timezones")
+}
+
+model BusinessHours {
+  id                 String   @id @default(uuid())
+  userId             String   @map("user_id")
+  timezoneIdentifier String   @map("timezone_identifier")
+  dayOfWeek          Int      @map("day_of_week")
+  startTime          DateTime @map("start_time") @db.Time()
+  endTime            DateTime @map("end_time") @db.Time()
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, timezoneIdentifier, dayOfWeek])
+  @@map("business_hours")
+}

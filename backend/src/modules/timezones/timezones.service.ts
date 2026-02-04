@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
 import { DateTime } from 'luxon';
-import { Timezone } from '../../entities/timezone.entity';
+import { PrismaService } from '../../prisma';
+import { Timezone } from '@prisma/client';
 
 export interface TimezoneInfo {
   identifier: string;
@@ -14,10 +13,7 @@ export interface TimezoneInfo {
 
 @Injectable()
 export class TimezonesService {
-  constructor(
-    @InjectRepository(Timezone)
-    private readonly timezoneRepository: Repository<Timezone>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   private formatOffset(minutes: number): string {
     const sign = minutes >= 0 ? '+' : '-';
@@ -38,33 +34,35 @@ export class TimezonesService {
   }
 
   async getAllTimezones(): Promise<TimezoneInfo[]> {
-    const timezones = await this.timezoneRepository.find({
-      order: { sortOrder: 'ASC', utcOffsetMinutes: 'ASC' },
+    const timezones = await this.prisma.timezone.findMany({
+      orderBy: [{ sortOrder: 'asc' }, { utcOffsetMinutes: 'asc' }],
     });
     return timezones.map((tz) => this.toTimezoneInfo(tz));
   }
 
   async getPopularTimezones(): Promise<TimezoneInfo[]> {
-    const timezones = await this.timezoneRepository.find({
+    const timezones = await this.prisma.timezone.findMany({
       where: { isPopular: true },
-      order: { sortOrder: 'ASC' },
+      orderBy: { sortOrder: 'asc' },
     });
     return timezones.map((tz) => this.toTimezoneInfo(tz));
   }
 
   async searchTimezones(query: string): Promise<TimezoneInfo[]> {
-    const timezones = await this.timezoneRepository.find({
-      where: [
-        { identifier: ILike(`%${query}%`) },
-        { displayName: ILike(`%${query}%`) },
-      ],
-      order: { sortOrder: 'ASC' },
+    const timezones = await this.prisma.timezone.findMany({
+      where: {
+        OR: [
+          { identifier: { contains: query, mode: 'insensitive' } },
+          { displayName: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      orderBy: { sortOrder: 'asc' },
     });
     return timezones.map((tz) => this.toTimezoneInfo(tz));
   }
 
   async getTimezoneInfo(identifier: string): Promise<TimezoneInfo | null> {
-    const tz = await this.timezoneRepository.findOne({
+    const tz = await this.prisma.timezone.findUnique({
       where: { identifier },
     });
     if (!tz) return null;

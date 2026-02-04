@@ -1,26 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User, UserRole } from '../../entities/user.entity';
+import { PrismaService } from '../../prisma';
+import { User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async findById(id: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id } });
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { email } });
+    return this.prisma.user.findUnique({ where: { email } });
   }
 
   async findByGoogleId(googleId: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { googleId } });
+    return this.prisma.user.findUnique({ where: { googleId } });
   }
 
   async create(data: {
@@ -29,21 +25,22 @@ export class UsersService {
     displayName?: string;
     googleId?: string;
   }): Promise<User> {
-    const user = this.usersRepository.create({
-      email: data.email,
-      passwordHash: data.password
-        ? await bcrypt.hash(data.password, 10)
-        : null,
-      displayName: data.displayName,
-      googleId: data.googleId,
-      role: UserRole.USER,
+    return this.prisma.user.create({
+      data: {
+        email: data.email,
+        passwordHash: data.password ? await bcrypt.hash(data.password, 10) : null,
+        displayName: data.displayName,
+        googleId: data.googleId,
+        role: UserRole.user,
+      },
     });
-    return this.usersRepository.save(user);
   }
 
   async update(id: string, data: Partial<User>): Promise<User | null> {
-    await this.usersRepository.update(id, data);
-    return this.usersRepository.findOne({ where: { id } });
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
   }
 
   async validatePassword(user: User, password: string): Promise<boolean> {

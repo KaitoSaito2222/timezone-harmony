@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { BusinessHours } from '../../entities/business-hours.entity';
+import { PrismaService } from '../../prisma';
+import { BusinessHours } from '@prisma/client';
 
 interface CreateBusinessHoursDto {
   timezoneIdentifier: string;
@@ -29,15 +28,19 @@ interface BulkCreateBusinessHoursDto {
 
 @Injectable()
 export class BusinessHoursService {
-  constructor(
-    @InjectRepository(BusinessHours)
-    private businessHoursRepository: Repository<BusinessHours>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
+
+  private parseTimeString(timeStr: string): Date {
+    const [hours, minutes, seconds = '00'] = timeStr.split(':');
+    const date = new Date(1970, 0, 1);
+    date.setHours(parseInt(hours, 10), parseInt(minutes, 10), parseInt(seconds, 10));
+    return date;
+  }
 
   async findAllByUser(userId: string): Promise<BusinessHours[]> {
-    return this.businessHoursRepository.find({
+    return this.prisma.businessHours.findMany({
       where: { userId },
-      order: { timezoneIdentifier: 'ASC', dayOfWeek: 'ASC' },
+      orderBy: [{ timezoneIdentifier: 'asc' }, { dayOfWeek: 'asc' }],
     });
   }
 
@@ -45,14 +48,14 @@ export class BusinessHoursService {
     userId: string,
     timezoneIdentifier: string,
   ): Promise<BusinessHours[]> {
-    return this.businessHoursRepository.find({
+    return this.prisma.businessHours.findMany({
       where: { userId, timezoneIdentifier },
-      order: { dayOfWeek: 'ASC' },
+      orderBy: { dayOfWeek: 'asc' },
     });
   }
 
   async findById(id: string, userId: string): Promise<BusinessHours> {
-    const businessHours = await this.businessHoursRepository.findOne({
+    const businessHours = await this.prisma.businessHours.findFirst({
       where: { id, userId },
     });
     if (!businessHours) {
@@ -65,7 +68,7 @@ export class BusinessHoursService {
     userId: string,
     dto: CreateBusinessHoursDto,
   ): Promise<BusinessHours> {
-    const existing = await this.businessHoursRepository.findOne({
+    const existing = await this.prisma.businessHours.findFirst({
       where: {
         userId,
         timezoneIdentifier: dto.timezoneIdentifier,
@@ -79,36 +82,45 @@ export class BusinessHoursService {
       );
     }
 
-    const businessHours = this.businessHoursRepository.create({
-      userId,
-      ...dto,
-      isActive: dto.isActive ?? true,
+    return this.prisma.businessHours.create({
+      data: {
+        userId,
+        timezoneIdentifier: dto.timezoneIdentifier,
+        dayOfWeek: dto.dayOfWeek,
+        startTime: this.parseTimeString(dto.startTime),
+        endTime: this.parseTimeString(dto.endTime),
+        isActive: dto.isActive ?? true,
+      },
     });
-
-    return this.businessHoursRepository.save(businessHours);
   }
 
   async bulkCreate(
     userId: string,
     dto: BulkCreateBusinessHoursDto,
   ): Promise<BusinessHours[]> {
-    await this.businessHoursRepository.delete({
-      userId,
-      timezoneIdentifier: dto.timezoneIdentifier,
-    });
-
-    const businessHoursEntities = dto.hours.map((hour) =>
-      this.businessHoursRepository.create({
+    await this.prisma.businessHours.deleteMany({
+      where: {
         userId,
         timezoneIdentifier: dto.timezoneIdentifier,
-        dayOfWeek: hour.dayOfWeek,
-        startTime: hour.startTime,
-        endTime: hour.endTime,
-        isActive: hour.isActive ?? true,
-      }),
+      },
+    });
+
+    const created = await Promise.all(
+      dto.hours.map((hour) =>
+        this.prisma.businessHours.create({
+          data: {
+            userId,
+            timezoneIdentifier: dto.timezoneIdentifier,
+            dayOfWeek: hour.dayOfWeek,
+            startTime: this.parseTimeString(hour.startTime),
+            endTime: this.parseTimeString(hour.endTime),
+            isActive: hour.isActive ?? true,
+          },
+        }),
+      ),
     );
 
-    return this.businessHoursRepository.save(businessHoursEntities);
+    return created;
   }
 
   async update(
@@ -116,27 +128,34 @@ export class BusinessHoursService {
     userId: string,
     dto: UpdateBusinessHoursDto,
   ): Promise<BusinessHours> {
-    const businessHours = await this.findById(id, userId);
+    await this.findById(id, userId);
 
-    if (dto.startTime !== undefined) businessHours.startTime = dto.startTime;
-    if (dto.endTime !== undefined) businessHours.endTime = dto.endTime;
-    if (dto.isActive !== undefined) businessHours.isActive = dto.isActive;
-
-    return this.businessHoursRepository.save(businessHours);
+    return this.prisma.businessHours.update({
+      where: { id },
+      data: {
+        ...(dto.startTime !== undefined && { startTime: this.parseTimeString(dto.startTime) }),
+        ...(dto.endTime !== undefined && { endTime: this.parseTimeString(dto.endTime) }),
+        ...(dto.isActive !== undefined && { isActive: dto.isActive }),
+      },
+    });
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    const businessHours = await this.findById(id, userId);
-    await this.businessHoursRepository.remove(businessHours);
+    await this.findById(id, userId);
+    await this.prisma.businessHours.delete({
+      where: { id },
+    });
   }
 
   async deleteByTimezone(
     userId: string,
     timezoneIdentifier: string,
   ): Promise<void> {
-    await this.businessHoursRepository.delete({
-      userId,
-      timezoneIdentifier,
+    await this.prisma.businessHours.deleteMany({
+      where: {
+        userId,
+        timezoneIdentifier,
+      },
     });
   }
 }
