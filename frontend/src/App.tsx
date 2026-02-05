@@ -6,6 +6,7 @@ import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
+import { PresetsPage } from '@/pages/PresetsPage';
 import { useAuthStore } from '@/stores/authStore';
 
 function App() {
@@ -27,10 +28,7 @@ function App() {
             path="presets"
             element={
               <ProtectedRoute>
-                <div className="text-center py-8">
-                  <h1 className="text-2xl font-bold">Presets Page</h1>
-                  <p className="text-muted-foreground">Coming soon...</p>
-                </div>
+                <PresetsPage />
               </ProtectedRoute>
             }
           />
