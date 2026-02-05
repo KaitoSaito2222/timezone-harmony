@@ -4,6 +4,7 @@ import { useTimezoneStore } from '@/stores/timezoneStore';
 import { useAuthStore } from '@/stores/authStore';
 import { TimezoneSelector } from '@/components/timezone/TimezoneSelector';
 import { TimezoneComparison } from '@/components/timezone/TimezoneComparison';
+import { LocalTimeCard } from '@/components/timezone/LocalTimeCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -39,6 +40,9 @@ export function HomePage() {
 
   return (
     <div className="space-y-8">
+      {/* Local Time Card */}
+      <LocalTimeCard />
+
       {/* Timeline Comparison (includes timezone selection) */}
       <TimezoneComparison
         timezones={selectedTimezones}

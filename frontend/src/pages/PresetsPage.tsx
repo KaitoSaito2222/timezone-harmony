@@ -427,7 +427,7 @@ export function PresetsPage() {
                         </Button>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="text-muted-foreground whitespace-nowrap">Hours:</span>
+                        <span className="text-muted-foreground whitespace-nowrap">Business Hours:</span>
                         <Input
                           type="time"
                           value={tz.startTime || ''}

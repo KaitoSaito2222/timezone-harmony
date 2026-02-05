@@ -138,7 +138,9 @@ export function Header() {
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-primary" />
-                  Timezone Harmony
+                  <span className="bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                    Timezone Harmony
+                  </span>
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-4 mt-6">
