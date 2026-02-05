@@ -377,13 +377,6 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-              {/* Export to Calendar */}
-              {timezones.length > 0 && (
-                <Button variant="outline" size="sm" className="h-9">
-                  <Calendar className="h-4 w-4 mr-1.5" />
-                  <span className="hidden sm:inline">Export</span>
-                </Button>
-              )}
               <Button onClick={onAddTimezone} size="sm" className="h-9">
                 <Plus className="h-4 w-4 mr-1.5" />
                 Add Timezone
@@ -474,6 +467,13 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
             </div>
           ) : (
           <>
+          {/* Instruction for calendar export */}
+          <div className="mb-3 p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-800/50 rounded-lg">
+            <p className="text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span>Click any time slot to export as a calendar event</span>
+            </p>
+          </div>
           {/* Work Hours Toggle & Legend */}
           <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
             {showBusinessHours ? (
