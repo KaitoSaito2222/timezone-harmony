@@ -78,34 +78,6 @@ export class TimezonesService {
       .sort((a, b) => a.offsetMinutes - b.offsetMinutes);
   }
 
-  searchTimezones(query: string): TimezoneInfo[] {
-    const lowerQuery = query.toLowerCase();
-    return this.getAllTimezones().filter(
-      (tz) =>
-        tz.identifier.toLowerCase().includes(lowerQuery) ||
-        tz.displayName.toLowerCase().includes(lowerQuery) ||
-        tz.country?.toLowerCase().includes(lowerQuery),
-    );
-  }
-
-  getTimezoneInfo(identifier: string): TimezoneInfo | null {
-    return this.toTimezoneInfo(identifier);
-  }
-
-  convertTime(
-    isoTime: string,
-    fromZone: string,
-    toZone: string,
-  ): string | null {
-    try {
-      return DateTime.fromISO(isoTime, { zone: fromZone })
-        .setZone(toZone)
-        .toISO();
-    } catch {
-      return null;
-    }
-  }
-
   getCurrentTime(timezone: string): {
     iso: string;
     formatted: string;

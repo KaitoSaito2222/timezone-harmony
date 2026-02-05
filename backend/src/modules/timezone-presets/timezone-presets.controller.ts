@@ -21,6 +21,13 @@ import { Type } from 'class-transformer';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TimezonePresetsService } from './timezone-presets.service';
 
+interface RequestWithUser extends Request {
+  user: {
+    userId: string;
+    email: string;
+  };
+}
+
 class TimezoneItemDto {
   @IsString()
   timezoneIdentifier: string;
@@ -86,32 +93,36 @@ export class TimezonePresetsController {
   constructor(private readonly presetsService: TimezonePresetsService) {}
 
   @Get()
-  findAll(@Request() req) {
+  findAll(@Request() req: RequestWithUser) {
     return this.presetsService.findAllByUser(req.user.userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
+  findOne(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.presetsService.findById(id, req.user.userId);
   }
 
   @Post()
-  create(@Body() dto: CreatePresetDto, @Request() req) {
+  create(@Body() dto: CreatePresetDto, @Request() req: RequestWithUser) {
     return this.presetsService.create(req.user.userId, dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdatePresetDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePresetDto,
+    @Request() req: RequestWithUser,
+  ) {
     return this.presetsService.update(id, req.user.userId, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Request() req) {
+  remove(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.presetsService.delete(id, req.user.userId);
   }
 
   @Post(':id/favorite')
-  toggleFavorite(@Param('id') id: string, @Request() req) {
+  toggleFavorite(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.presetsService.toggleFavorite(id, req.user.userId);
   }
 }
