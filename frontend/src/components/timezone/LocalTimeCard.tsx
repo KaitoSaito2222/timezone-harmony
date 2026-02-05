@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DateTime } from 'luxon';
 import { MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 const STORAGE_KEY = 'localTimeCard_visible';
@@ -47,22 +47,24 @@ export function LocalTimeCard() {
   }
 
   return (
-    <Card className="mb-6">
-      <CardContent className="py-4">
+    <Card className="p-4">
+      <div className="space-y-2">
+        {/* Title */}
+        <h3 className="flex items-center gap-2 text-base font-semibold">
+          <MapPin className="h-5 w-5 text-primary" />
+          Local Timezone
+        </h3>
+
+        {/* Content */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-primary/10">
-              <MapPin className="h-5 w-5 text-primary" />
+          <div className='ml-2'>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-sm sm:text-base">{cityName}</span>
+              <span className="text-xs text-muted-foreground">{offset}</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-sm sm:text-base">{cityName}</span>
-                <span className="text-xs text-muted-foreground">{offset}</span>
-              </div>
-              {isExpanded && (
-                <p className="text-xs text-muted-foreground">{timezone}</p>
-              )}
-            </div>
+            {isExpanded && (
+              <p className="text-xs text-muted-foreground">{timezone}</p>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -101,7 +103,7 @@ export function LocalTimeCard() {
             </div>
           </div>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }
