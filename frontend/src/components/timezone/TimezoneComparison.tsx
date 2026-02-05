@@ -122,10 +122,11 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   });
   const { isAuthenticated } = useAuthStore();
 
-  // Date picker state
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    return DateTime.now().toFormat('yyyy-MM-dd');
+  // DateTime picker state
+  const [selectedDateTime, setSelectedDateTime] = useState<string>(() => {
+    return DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
   });
+  const [baseTimezone, setBaseTimezone] = useState<string>('local'); // 'local' or timezone identifier
 
   // Preset state
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
@@ -198,7 +199,10 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   const findOptimalMeetingTimes = useCallback(() => {
     if (timezones.length === 0) return;
 
-    const baseTime = DateTime.fromISO(selectedDate).startOf('day');
+    const parsedDT = baseTimezone === 'local'
+      ? DateTime.fromISO(selectedDateTime)
+      : DateTime.fromISO(selectedDateTime, { zone: baseTimezone });
+    const baseTime = parsedDT.startOf('day');
     const optimal: OptimalTime[] = [];
 
     for (let hour = 0; hour < 24; hour++) {
@@ -224,7 +228,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     }
 
     setOptimalTimes(optimal);
-  }, [timezones, getDisplayName, selectedDate]);
+  }, [timezones, getDisplayName, selectedDateTime, baseTimezone]);
 
     useEffect(() => {
     findOptimalMeetingTimes();
@@ -244,8 +248,12 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   };
 
   const now = DateTime.now();
-  const baseTime = DateTime.fromISO(selectedDate).startOf('day');
-  const isToday = selectedDate === now.toFormat('yyyy-MM-dd');
+  // Parse the selected datetime in the context of the base timezone
+  const selectedDT = baseTimezone === 'local'
+    ? DateTime.fromISO(selectedDateTime)
+    : DateTime.fromISO(selectedDateTime, { zone: baseTimezone });
+  const baseTime = selectedDT.startOf('day');
+  const isNow = selectedDateTime === now.toFormat("yyyy-MM-dd'T'HH:mm") && baseTimezone === 'local';
 
   return (
     <div className="space-y-6">
@@ -326,37 +334,45 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
             </div>
           </div>
 
-          {/* Date Picker */}
+          {/* DateTime Picker */}
           {timezones.length > 0 && (
-            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+            <div className="flex flex-wrap items-center gap-3 p-3 bg-muted/50 rounded-lg">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <div className="flex items-center gap-2">
-                <Label htmlFor="date-picker" className="text-sm font-medium whitespace-nowrap">
-                  Check date:
-                </Label>
+              <div className="flex flex-wrap items-center gap-2">
                 <Input
-                  id="date-picker"
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  id="datetime-picker"
+                  type="datetime-local"
+                  value={selectedDateTime}
+                  onChange={(e) => setSelectedDateTime(e.target.value)}
                   className="w-auto h-8"
                 />
-                {!isToday && (
+                <span className="text-sm text-muted-foreground">in</span>
+                <select
+                  value={baseTimezone}
+                  onChange={(e) => setBaseTimezone(e.target.value)}
+                  className="h-8 px-2 rounded-md border border-input bg-background text-sm"
+                >
+                  <option value="local">Local ({DateTime.local().zoneName})</option>
+                  {timezones.map((tz) => (
+                    <option key={tz} value={tz}>
+                      {tz.split('/')[1]?.replace(/_/g, ' ') || tz}
+                    </option>
+                  ))}
+                </select>
+                {!isNow && (
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-8 text-xs"
-                    onClick={() => setSelectedDate(DateTime.now().toFormat('yyyy-MM-dd'))}
+                    onClick={() => {
+                      setSelectedDateTime(DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"));
+                      setBaseTimezone('local');
+                    }}
                   >
-                    Today
+                    Reset
                   </Button>
                 )}
               </div>
-              {!isToday && (
-                <span className="text-xs text-muted-foreground">
-                  Showing times for {DateTime.fromISO(selectedDate).toFormat('MMMM d, yyyy')}
-                </span>
-              )}
             </div>
           )}
 
@@ -428,18 +444,16 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
               onClick={() => setShowBusinessHours(!showBusinessHours)}
             >
               <Clock className="h-3.5 w-3.5 mr-1.5" />
-              {showBusinessHours ? 'Hide' : 'Show Work Hours'}
+              {showBusinessHours ? 'Hide Work Hours' : 'Show Work Hours'}
             </Button>
           </div>
           <div className="overflow-x-auto">
             <div className="flex gap-4 min-w-fit pb-4">
               {timezones.map((timezone, colIndex) => {
-                const currentLocalTime = isToday ? now.setZone(timezone) : baseTime.setZone(timezone);
+                const currentLocalTime = isNow ? now.setZone(timezone) : selectedDT.setZone(timezone);
                 const cityName = getDisplayName(timezone);
                 const offset = currentLocalTime.toFormat('ZZ');
-                const dateStr = isToday
-                  ? currentLocalTime.toFormat('MMM dd, yyyy HH:mm')
-                  : currentLocalTime.toFormat('MMM dd, yyyy');
+                const dateStr = currentLocalTime.toFormat('MMM dd, yyyy HH:mm');
                 const tzBusinessHours = businessHours[timezone];
                 const slots = generateTimeSlots(
                   timezone,
