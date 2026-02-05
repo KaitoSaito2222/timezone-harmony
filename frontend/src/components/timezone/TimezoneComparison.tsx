@@ -216,23 +216,34 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
       {/* Combined Timezone Selection + Timeline Comparison */}
       <Card>
         <CardHeader className="space-y-4">
-          <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5 text-primary" />
               Timeline Comparison
             </CardTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Preset Dropdown */}
               {isAuthenticated && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      <BookmarkPlus className="h-4 w-4 mr-2" />
+                    <Button variant="outline" size="sm" className="h-9">
+                      <BookmarkPlus className="h-4 w-4 mr-1.5" />
                       Presets
-                      <ChevronDown className="h-4 w-4 ml-2" />
+                      <ChevronDown className="h-4 w-4 ml-1" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
+                    {/* Save Current - always at top when timezones exist */}
+                    {timezones.length > 0 && (
+                      <>
+                        <DropdownMenuItem onClick={() => setIsSaveDialogOpen(true)}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Save Current as Preset
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    {/* Existing presets */}
                     {presets.length > 0 ? (
                       <>
                         {presets.map((preset) => (
@@ -251,17 +262,13 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                         <DropdownMenuSeparator />
                       </>
                     ) : (
-                      <DropdownMenuItem disabled>
-                        No presets yet
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem disabled>
+                          No presets yet
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
                     )}
-                    {timezones.length > 0 && (
-                      <DropdownMenuItem onClick={() => setIsSaveDialogOpen(true)}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Save Current as Preset
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate('/presets')}>
                       <Settings className="h-4 w-4 mr-2" />
                       Manage Presets
@@ -269,8 +276,15 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-              <Button onClick={onAddTimezone}>
-                <Plus className="h-4 w-4 mr-2" />
+              {/* Export to Calendar */}
+              {timezones.length > 0 && (
+                <Button variant="outline" size="sm" className="h-9">
+                  <Calendar className="h-4 w-4 mr-1.5" />
+                  Export
+                </Button>
+              )}
+              <Button onClick={onAddTimezone} size="sm" className="h-9">
+                <Plus className="h-4 w-4 mr-1.5" />
                 Add Timezone
               </Button>
             </div>
@@ -346,7 +360,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                 return (
                   <div
                     key={timezone}
-                    className="shrink-0 w-64"
+                    className="shrink-0 w-48 sm:w-56 md:w-64"
                   >
                     {/* Timezone Header */}
                     <div className="bg-primary text-primary-foreground rounded-t-lg p-4 text-center">
@@ -384,19 +398,6 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
             </div>
           </div>
 
-          {/* Action Buttons - inside the card */}
-          <div className="flex justify-center gap-3 pt-4 border-t">
-            {isAuthenticated && (
-              <Button size="sm" onClick={() => setIsSaveDialogOpen(true)}>
-                <BookmarkPlus className="h-4 w-4 mr-2" />
-                Save as Preset
-              </Button>
-            )}
-            <Button size="sm" variant="secondary">
-              <Calendar className="h-4 w-4 mr-2" />
-              Export to Calendar
-            </Button>
-          </div>
           </>
           )}
         </CardContent>
