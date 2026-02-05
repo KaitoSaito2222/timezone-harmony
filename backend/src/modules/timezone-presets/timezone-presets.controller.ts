@@ -9,29 +9,75 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TimezonePresetsService } from './timezone-presets.service';
 
+class TimezoneItemDto {
+  @IsString()
+  timezoneIdentifier: string;
+
+  @IsOptional()
+  @IsString()
+  displayLabel?: string;
+
+  @IsOptional()
+  @IsNumber()
+  position?: number;
+
+  @IsOptional()
+  @IsString()
+  startTime?: string;
+
+  @IsOptional()
+  @IsString()
+  endTime?: string;
+}
+
 class CreatePresetDto {
+  @IsString()
   name: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsBoolean()
   isFavorite?: boolean;
-  timezones: {
-    timezoneIdentifier: string;
-    displayLabel?: string;
-    position?: number;
-  }[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TimezoneItemDto)
+  timezones: TimezoneItemDto[];
 }
 
 class UpdatePresetDto {
+  @IsOptional()
+  @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsBoolean()
   isFavorite?: boolean;
-  timezones?: {
-    timezoneIdentifier: string;
-    displayLabel?: string;
-    position?: number;
-  }[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TimezoneItemDto)
+  timezones?: TimezoneItemDto[];
 }
 
 @Controller('presets')

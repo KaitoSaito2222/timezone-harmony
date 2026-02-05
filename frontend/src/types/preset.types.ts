@@ -3,6 +3,8 @@ export interface PresetTimezone {
   timezoneIdentifier: string;
   displayLabel: string | null;
   position: number;
+  startTime: string | null;
+  endTime: string | null;
 }
 
 export interface TimezonePreset {

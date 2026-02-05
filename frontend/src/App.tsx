@@ -32,17 +32,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="business-hours"
-            element={
-              <ProtectedRoute>
-                <div className="text-center py-8">
-                  <h1 className="text-2xl font-bold">Business Hours Page</h1>
-                  <p className="text-muted-foreground">Coming soon...</p>
-                </div>
-              </ProtectedRoute>
-            }
-          />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -30,10 +30,17 @@ import { useTimezoneStore } from '@/stores/timezoneStore';
 import type { TimezonePreset } from '@/types/preset.types';
 import { toast } from 'sonner';
 
+interface TimezoneFormItem {
+  timezoneIdentifier: string;
+  displayLabel?: string;
+  startTime?: string;
+  endTime?: string;
+}
+
 interface PresetFormData {
   name: string;
   description: string;
-  timezones: { timezoneIdentifier: string; displayLabel?: string }[];
+  timezones: TimezoneFormItem[];
 }
 
 export function PresetsPage() {
@@ -82,8 +89,11 @@ export function PresetsPage() {
         name: formData.name,
         description: formData.description || undefined,
         timezones: formData.timezones.map((tz, index) => ({
-          ...tz,
+          timezoneIdentifier: tz.timezoneIdentifier,
+          displayLabel: tz.displayLabel,
           position: index,
+          startTime: tz.startTime || undefined,
+          endTime: tz.endTime || undefined,
         })),
       });
       toast.success('Preset created');
@@ -107,8 +117,11 @@ export function PresetsPage() {
         name: formData.name,
         description: formData.description || undefined,
         timezones: formData.timezones.map((tz, index) => ({
-          ...tz,
+          timezoneIdentifier: tz.timezoneIdentifier,
+          displayLabel: tz.displayLabel,
           position: index,
+          startTime: tz.startTime || undefined,
+          endTime: tz.endTime || undefined,
         })),
       });
       toast.success('Preset updated');
@@ -160,6 +173,8 @@ export function PresetsPage() {
       timezones: preset.timezones.map((tz) => ({
         timezoneIdentifier: tz.timezoneIdentifier,
         displayLabel: tz.displayLabel || undefined,
+        startTime: tz.startTime || undefined,
+        endTime: tz.endTime || undefined,
       })),
     });
     setIsEditDialogOpen(true);
@@ -190,6 +205,15 @@ export function PresetsPage() {
     }));
   };
 
+  const updateTimezoneHours = (index: number, field: 'startTime' | 'endTime', value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      timezones: prev.timezones.map((tz, i) =>
+        i === index ? { ...tz, [field]: value || undefined } : tz
+      ),
+    }));
+  };
+
   const getTimezoneName = (identifier: string) => {
     const tz = allTimezones.find((t) => t.identifier === identifier);
     return tz?.displayName || identifier.split('/').pop()?.replace(/_/g, ' ') || identifier;
@@ -198,6 +222,13 @@ export function PresetsPage() {
   const getTimezoneOffset = (identifier: string) => {
     const tz = allTimezones.find((t) => t.identifier === identifier);
     return tz?.offset || '';
+  };
+
+  const formatHoursDisplay = (startTime: string | null, endTime: string | null) => {
+    if (startTime && endTime) {
+      return `${startTime}-${endTime}`;
+    }
+    return null;
   };
 
   if (loading) {
@@ -268,11 +299,15 @@ export function PresetsPage() {
                   {preset.timezones
                     .sort((a, b) => a.position - b.position)
                     .slice(0, 5)
-                    .map((tz) => (
-                      <Badge key={tz.id} variant="secondary" className="text-xs">
-                        {getTimezoneName(tz.timezoneIdentifier)}
-                      </Badge>
-                    ))}
+                    .map((tz) => {
+                      const hours = formatHoursDisplay(tz.startTime, tz.endTime);
+                      return (
+                        <Badge key={tz.id} variant="secondary" className="text-xs">
+                          {getTimezoneName(tz.timezoneIdentifier)}
+                          {hours && <span className="ml-1 opacity-70">({hours})</span>}
+                        </Badge>
+                      );
+                    })}
                   {preset.timezones.length > 5 && (
                     <Badge variant="outline" className="text-xs">
                       +{preset.timezones.length - 5} more
@@ -321,7 +356,7 @@ export function PresetsPage() {
           }
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {isEditDialogOpen ? 'Edit Preset' : 'Create New Preset'}
@@ -368,27 +403,47 @@ export function PresetsPage() {
                   No timezones added yet
                 </p>
               ) : (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="space-y-3 max-h-64 overflow-y-auto">
                   {formData.timezones.map((tz, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-2 bg-muted rounded-md"
+                      className="p-3 bg-muted rounded-lg space-y-2"
                     >
-                      <div>
-                        <span className="font-medium">
-                          {getTimezoneName(tz.timezoneIdentifier)}
-                        </span>
-                        <span className="text-sm text-muted-foreground ml-2">
-                          {getTimezoneOffset(tz.timezoneIdentifier)}
-                        </span>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="font-medium">
+                            {getTimezoneName(tz.timezoneIdentifier)}
+                          </span>
+                          <span className="text-sm text-muted-foreground ml-2">
+                            {getTimezoneOffset(tz.timezoneIdentifier)}
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeTimezone(index)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeTimezone(index)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground whitespace-nowrap">Hours:</span>
+                        <Input
+                          type="time"
+                          value={tz.startTime || ''}
+                          onChange={(e) => updateTimezoneHours(index, 'startTime', e.target.value)}
+                          className="h-8 w-24"
+                          placeholder="Start"
+                        />
+                        <span className="text-muted-foreground">-</span>
+                        <Input
+                          type="time"
+                          value={tz.endTime || ''}
+                          onChange={(e) => updateTimezoneHours(index, 'endTime', e.target.value)}
+                          className="h-8 w-24"
+                          placeholder="End"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>

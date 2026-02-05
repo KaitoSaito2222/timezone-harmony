@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, LogOut, Settings, BookMarked, Menu, Home } from 'lucide-react';
+import { Clock, LogOut, BookMarked, Menu, Home } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -74,12 +74,6 @@ export function Header() {
                     Presets
                   </Link>
                 </Button>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/business-hours" className="flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
-                    Business Hours
-                  </Link>
-                </Button>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -107,12 +101,6 @@ export function Header() {
                       <Link to="/presets" className="cursor-pointer">
                         <BookMarked className="mr-2 h-4 w-4" />
                         My Presets
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/business-hours" className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Business Hours
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -185,12 +173,6 @@ export function Header() {
                         <Link to="/presets">
                           <BookMarked className="mr-3 h-4 w-4" />
                           My Presets
-                        </Link>
-                      </Button>
-                      <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
-                        <Link to="/business-hours">
-                          <Settings className="mr-3 h-4 w-4" />
-                          Business Hours
                         </Link>
                       </Button>
                     </div>

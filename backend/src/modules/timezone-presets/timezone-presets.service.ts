@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TimezonePreset, PresetTimezone } from '@prisma/client';
 
@@ -10,6 +10,8 @@ interface CreatePresetDto {
     timezoneIdentifier: string;
     displayLabel?: string;
     position?: number;
+    startTime?: string;
+    endTime?: string;
   }[];
 }
 
@@ -21,6 +23,8 @@ interface UpdatePresetDto {
     timezoneIdentifier: string;
     displayLabel?: string;
     position?: number;
+    startTime?: string;
+    endTime?: string;
   }[];
 }
 
@@ -50,6 +54,10 @@ export class TimezonePresetsService {
   }
 
   async create(userId: string, dto: CreatePresetDto): Promise<PresetWithTimezones> {
+    if (!dto.timezones || !Array.isArray(dto.timezones)) {
+      throw new BadRequestException('Timezones array is required');
+    }
+
     return this.prisma.timezonePreset.create({
       data: {
         userId,
@@ -61,6 +69,8 @@ export class TimezonePresetsService {
             timezoneIdentifier: tz.timezoneIdentifier,
             displayLabel: tz.displayLabel,
             position: tz.position ?? index,
+            startTime: tz.startTime,
+            endTime: tz.endTime,
           })),
         },
       },
@@ -93,6 +103,8 @@ export class TimezonePresetsService {
               timezoneIdentifier: tz.timezoneIdentifier,
               displayLabel: tz.displayLabel,
               position: tz.position ?? index,
+              startTime: tz.startTime,
+              endTime: tz.endTime,
             })),
           },
         }),

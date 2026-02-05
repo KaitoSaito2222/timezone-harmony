@@ -9,6 +9,8 @@ interface CreatePresetDto {
     timezoneIdentifier: string;
     displayLabel?: string;
     position?: number;
+    startTime?: string;
+    endTime?: string;
   }[];
 }
 
@@ -20,6 +22,8 @@ interface UpdatePresetDto {
     timezoneIdentifier: string;
     displayLabel?: string;
     position?: number;
+    startTime?: string;
+    endTime?: string;
   }[];
 }
 
