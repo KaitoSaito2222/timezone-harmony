@@ -128,6 +128,18 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     return DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
   });
   const [baseTimezone, setBaseTimezone] = useState<string>('local'); // 'local' or timezone identifier
+  const isLiveMode = useRef(true); // true = auto-update to current time
+
+  // Auto-update selectedDateTime when minute changes (only in live mode)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isLiveMode.current && baseTimezone === 'local') {
+        const nowStr = DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
+        setSelectedDateTime(prev => prev !== nowStr ? nowStr : prev);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [baseTimezone]);
 
   // Preset state
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
@@ -393,13 +405,21 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                   id="datetime-picker"
                   type="datetime-local"
                   value={selectedDateTime}
-                  onChange={(e) => setSelectedDateTime(e.target.value)}
+                  onChange={(e) => {
+                    isLiveMode.current = false;
+                    setSelectedDateTime(e.target.value);
+                  }}
                   className="w-auto h-8"
                 />
                 <span className="text-sm text-muted-foreground">in</span>
                 <select
                   value={baseTimezone}
-                  onChange={(e) => setBaseTimezone(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value !== 'local') {
+                      isLiveMode.current = false;
+                    }
+                    setBaseTimezone(e.target.value);
+                  }}
                   className="h-8 px-2 rounded-md border border-input bg-background text-sm"
                 >
                   <option value="local">Local ({DateTime.local().zoneName})</option>
@@ -415,6 +435,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                     size="sm"
                     className="h-8 text-xs"
                     onClick={() => {
+                      isLiveMode.current = true;
                       setSelectedDateTime(DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"));
                       setBaseTimezone('local');
                     }}

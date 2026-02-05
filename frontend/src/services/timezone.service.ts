@@ -1,5 +1,5 @@
 import api from '@/services/api';
-import type { TimezoneInfo, CurrentTimeInfo } from '@/types/timezone.types';
+import type { TimezoneInfo } from '@/types/timezone.types';
 
 export const timezoneService = {
   async getAll(): Promise<TimezoneInfo[]> {
@@ -9,13 +9,6 @@ export const timezoneService = {
 
   async getPopular(): Promise<TimezoneInfo[]> {
     const response = await api.get<TimezoneInfo[]>('/timezones/popular');
-    return response.data;
-  },
-
-  async getCurrentTimes(timezones: string[]): Promise<CurrentTimeInfo[]> {
-    const response = await api.get<CurrentTimeInfo[]>('/timezones/current', {
-      params: { zones: timezones.join(',') },
-    });
     return response.data;
   },
 };

@@ -77,39 +77,4 @@ export class TimezonesService {
       .filter((tz): tz is TimezoneInfo => tz !== null)
       .sort((a, b) => a.offsetMinutes - b.offsetMinutes);
   }
-
-  getCurrentTime(timezone: string): {
-    iso: string;
-    formatted: string;
-    offset: string;
-  } | null {
-    try {
-      const now = DateTime.now().setZone(timezone);
-      return {
-        iso: now.toISO() || '',
-        formatted: now.toFormat('yyyy-MM-dd HH:mm:ss'),
-        offset: now.offsetNameShort || '',
-      };
-    } catch {
-      return null;
-    }
-  }
-
-  getMultipleTimezonesTimes(timezones: string[]): {
-    timezone: string;
-    currentTime: string;
-    offset: string;
-  }[] {
-    return timezones
-      .map((tz) => {
-        const time = this.getCurrentTime(tz);
-        if (!time) return null;
-        return {
-          timezone: tz,
-          currentTime: time.formatted,
-          offset: time.offset,
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
-  }
 }

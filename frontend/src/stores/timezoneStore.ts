@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { TimezoneInfo, CurrentTimeInfo } from '@/types/timezone.types';
+import type { TimezoneInfo } from '@/types/timezone.types';
 import type { TimezonePreset } from '@/types/preset.types';
 import { timezoneService } from '@/services/timezone.service';
 import { presetService } from '@/services/preset.service';
@@ -17,7 +17,6 @@ interface TimezoneState {
   presets: TimezonePreset[];
   selectedTimezones: string[];
   businessHours: BusinessHoursMap;
-  currentTimes: CurrentTimeInfo[];
   isLoading: boolean;
   loadTimezones: () => Promise<void>;
   loadPresets: () => Promise<void>;
@@ -25,7 +24,6 @@ interface TimezoneState {
   removeTimezone: (identifier: string) => void;
   setSelectedTimezones: (timezones: string[], businessHours?: BusinessHoursMap) => void;
   loadPreset: (preset: TimezonePreset) => void;
-  refreshCurrentTimes: () => Promise<void>;
 }
 
 export const useTimezoneStore = create<TimezoneState>((set, get) => ({
@@ -34,7 +32,6 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
   presets: [],
   selectedTimezones: [],
   businessHours: {},
-  currentTimes: [],
   isLoading: false,
 
   loadTimezones: async () => {
@@ -64,7 +61,6 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
     const { selectedTimezones } = get();
     if (!selectedTimezones.includes(identifier)) {
       set({ selectedTimezones: [...selectedTimezones, identifier] });
-      get().refreshCurrentTimes();
     }
   },
 
@@ -73,12 +69,10 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
     set({
       selectedTimezones: selectedTimezones.filter((tz) => tz !== identifier),
     });
-    get().refreshCurrentTimes();
   },
 
   setSelectedTimezones: (timezones: string[], businessHours?: BusinessHoursMap) => {
     set({ selectedTimezones: timezones, businessHours: businessHours || {} });
-    get().refreshCurrentTimes();
   },
 
   loadPreset: (preset: TimezonePreset) => {
@@ -97,20 +91,5 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
     });
 
     set({ selectedTimezones: timezones, businessHours });
-    get().refreshCurrentTimes();
-  },
-
-  refreshCurrentTimes: async () => {
-    const { selectedTimezones } = get();
-    if (selectedTimezones.length === 0) {
-      set({ currentTimes: [] });
-      return;
-    }
-    try {
-      const currentTimes = await timezoneService.getCurrentTimes(selectedTimezones);
-      set({ currentTimes });
-    } catch (error) {
-      console.error('Failed to refresh current times:', error);
-    }
   },
 }));

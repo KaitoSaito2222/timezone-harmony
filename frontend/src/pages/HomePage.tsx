@@ -15,7 +15,6 @@ export function HomePage() {
     loadTimezones,
     addTimezone,
     removeTimezone,
-    refreshCurrentTimes,
   } = useTimezoneStore();
   const { isAuthenticated } = useAuthStore();
   const [showSelector, setShowSelector] = useState(false);
@@ -23,15 +22,6 @@ export function HomePage() {
   useEffect(() => {
     loadTimezones();
   }, [loadTimezones]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (selectedTimezones.length > 0) {
-        refreshCurrentTimes();
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [selectedTimezones, refreshCurrentTimes]);
 
   const handleAddTimezone = (identifier: string) => {
     addTimezone(identifier);
