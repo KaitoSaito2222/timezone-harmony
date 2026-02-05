@@ -45,7 +45,7 @@ interface PresetFormData {
 
 export function PresetsPage() {
   const navigate = useNavigate();
-  const { setSelectedTimezones, allTimezones } = useTimezoneStore();
+  const { loadPreset, allTimezones } = useTimezoneStore();
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -157,10 +157,7 @@ export function PresetsPage() {
   };
 
   const handleLoadPreset = (preset: TimezonePreset) => {
-    const identifiers = preset.timezones
-      .sort((a, b) => a.position - b.position)
-      .map((tz) => tz.timezoneIdentifier);
-    setSelectedTimezones(identifiers);
+    loadPreset(preset);
     toast.success(`Loaded "${preset.name}"`);
     navigate('/');
   };

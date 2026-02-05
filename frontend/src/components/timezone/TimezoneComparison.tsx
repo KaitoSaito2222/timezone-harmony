@@ -12,6 +12,7 @@ import {
   ChevronDown,
   Star,
   Settings,
+  Clock,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,20 +53,44 @@ interface TimezoneComparisonProps {
   onRemoveTimezone: (identifier: string) => void;
 }
 
-const isBusinessHours = (hour: number): boolean => {
-  return hour >= 9 && hour < 17;
+const isInBusinessHours = (
+  hour: number,
+  startTime: string | null,
+  endTime: string | null
+): boolean => {
+  const start = startTime ? parseInt(startTime.split(':')[0], 10) : 9;
+  const end = endTime ? parseInt(endTime.split(':')[0], 10) : 17;
+  return hour >= start && hour < end;
 };
 
-const getTimeSlotClass = (hour: number): string => {
-  if (isBusinessHours(hour)) {
+const getTimeSlotClass = (
+  hour: number,
+  startTime: string | null,
+  endTime: string | null,
+  showHighlight: boolean
+): string => {
+  if (!showHighlight) {
+    return 'bg-muted/50';
+  }
+
+  const start = startTime ? parseInt(startTime.split(':')[0], 10) : 9;
+  const end = endTime ? parseInt(endTime.split(':')[0], 10) : 17;
+
+  if (isInBusinessHours(hour, startTime, endTime)) {
     return 'bg-green-100 dark:bg-green-900/30 border-green-500';
-  } else if (hour === 8 || hour === 17 || hour === 18) {
+  } else if (hour === start - 1 || hour === end || hour === end + 1) {
     return 'bg-amber-100 dark:bg-amber-900/30 border-amber-500';
   }
   return 'bg-red-100 dark:bg-red-900/30 border-red-500';
 };
 
-const generateTimeSlots = (timezone: string, baseTime: DateTime): TimeSlot[] => {
+const generateTimeSlots = (
+  timezone: string,
+  baseTime: DateTime,
+  startTime: string | null,
+  endTime: string | null,
+  showHighlight: boolean
+): TimeSlot[] => {
   const slots: TimeSlot[] = [];
   const localBase = baseTime.setZone(timezone);
   for (let i = 0; i < 24; i++) {
@@ -73,7 +98,7 @@ const generateTimeSlots = (timezone: string, baseTime: DateTime): TimeSlot[] => 
     slots.push({
       hour: time.hour,
       formatted: time.toFormat('HH:mm'),
-      className: getTimeSlotClass(time.hour),
+      className: getTimeSlotClass(time.hour, startTime, endTime, showHighlight),
       fullTime: time,
     });
   }
@@ -90,8 +115,17 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [optimalTimes, setOptimalTimes] = useState<OptimalTime[]>([]);
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const { allTimezones, setSelectedTimezones } = useTimezoneStore();
+  const { allTimezones, businessHours, loadPreset: loadPresetToStore } = useTimezoneStore();
+  const [showBusinessHours, setShowBusinessHours] = useState(() => {
+    const saved = localStorage.getItem('showBusinessHours');
+    return saved !== 'false';
+  });
   const { isAuthenticated } = useAuthStore();
+
+  // Date picker state
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    return DateTime.now().toFormat('yyyy-MM-dd');
+  });
 
   // Preset state
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
@@ -106,6 +140,11 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     }
   }, [isAuthenticated]);
 
+  // Save business hours toggle preference
+  useEffect(() => {
+    localStorage.setItem('showBusinessHours', String(showBusinessHours));
+  }, [showBusinessHours]);
+
   const loadPresets = async () => {
     try {
       const data = await presetService.getAll();
@@ -116,10 +155,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   };
 
   const handleLoadPreset = (preset: TimezonePreset) => {
-    const identifiers = preset.timezones
-      .sort((a, b) => a.position - b.position)
-      .map((tz) => tz.timezoneIdentifier);
-    setSelectedTimezones(identifiers);
+    loadPresetToStore(preset);
     toast.success(`Loaded "${preset.name}"`);
   };
 
@@ -162,8 +198,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   const findOptimalMeetingTimes = useCallback(() => {
     if (timezones.length === 0) return;
 
-    const now = DateTime.now();
-    const baseTime = now.startOf('day');
+    const baseTime = DateTime.fromISO(selectedDate).startOf('day');
     const optimal: OptimalTime[] = [];
 
     for (let hour = 0; hour < 24; hour++) {
@@ -178,7 +213,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
           hour: time.hour,
         });
 
-        if (!isBusinessHours(time.hour)) {
+        if (!isInBusinessHours(time.hour, null, null)) {
           allBusinessHours = false;
         }
       });
@@ -189,7 +224,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     }
 
     setOptimalTimes(optimal);
-  }, [timezones, getDisplayName]);
+  }, [timezones, getDisplayName, selectedDate]);
 
     useEffect(() => {
     findOptimalMeetingTimes();
@@ -209,7 +244,8 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   };
 
   const now = DateTime.now();
-  const baseTime = now.startOf('day');
+  const baseTime = DateTime.fromISO(selectedDate).startOf('day');
+  const isToday = selectedDate === now.toFormat('yyyy-MM-dd');
 
   return (
     <div className="space-y-6">
@@ -280,7 +316,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
               {timezones.length > 0 && (
                 <Button variant="outline" size="sm" className="h-9">
                   <Calendar className="h-4 w-4 mr-1.5" />
-                  Export
+                  <span className="hidden sm:inline">Export</span>
                 </Button>
               )}
               <Button onClick={onAddTimezone} size="sm" className="h-9">
@@ -289,6 +325,40 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
               </Button>
             </div>
           </div>
+
+          {/* Date Picker */}
+          {timezones.length > 0 && (
+            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-2">
+                <Label htmlFor="date-picker" className="text-sm font-medium whitespace-nowrap">
+                  Check date:
+                </Label>
+                <Input
+                  id="date-picker"
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-auto h-8"
+                />
+                {!isToday && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => setSelectedDate(DateTime.now().toFormat('yyyy-MM-dd'))}
+                  >
+                    Today
+                  </Button>
+                )}
+              </div>
+              {!isToday && (
+                <span className="text-xs text-muted-foreground">
+                  Showing times for {DateTime.fromISO(selectedDate).toFormat('MMMM d, yyyy')}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Selected Timezones */}
           {timezones.length > 0 ? (
@@ -315,23 +385,6 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
             </p>
           )}
 
-          {/* Legend */}
-          {timezones.length > 0 && (
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground pt-2 border-t">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-green-100 dark:bg-green-900/30 border-2 border-green-500" />
-                <span>Business Hours (9-17)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-amber-100 dark:bg-amber-900/30 border-2 border-amber-500" />
-                <span>Partial Hours</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-red-100 dark:bg-red-900/30 border-2 border-red-500" />
-                <span>Off Hours</span>
-              </div>
-            </div>
-          )}
         </CardHeader>
         <CardContent>
           {timezones.length === 0 ? (
@@ -348,14 +401,53 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
             </div>
           ) : (
           <>
+          {/* Work Hours Toggle & Legend */}
+          <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+            {showBusinessHours ? (
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded bg-green-100 dark:bg-green-900/30 border border-green-500" />
+                  <span>Work</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded bg-amber-100 dark:bg-amber-900/30 border border-amber-500" />
+                  <span>Partial</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900/30 border border-red-500" />
+                  <span>Off</span>
+                </div>
+              </div>
+            ) : (
+              <div />
+            )}
+            <Button
+              variant={showBusinessHours ? 'default' : 'outline'}
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => setShowBusinessHours(!showBusinessHours)}
+            >
+              <Clock className="h-3.5 w-3.5 mr-1.5" />
+              {showBusinessHours ? 'Hide' : 'Show Work Hours'}
+            </Button>
+          </div>
           <div className="overflow-x-auto">
             <div className="flex gap-4 min-w-fit pb-4">
               {timezones.map((timezone, colIndex) => {
-                const localTime = baseTime.setZone(timezone);
+                const currentLocalTime = isToday ? now.setZone(timezone) : baseTime.setZone(timezone);
                 const cityName = getDisplayName(timezone);
-                const offset = localTime.toFormat('ZZ');
-                const dateStr = localTime.toFormat('MMM dd, yyyy');
-                const slots = generateTimeSlots(timezone, baseTime);
+                const offset = currentLocalTime.toFormat('ZZ');
+                const dateStr = isToday
+                  ? currentLocalTime.toFormat('MMM dd, yyyy HH:mm')
+                  : currentLocalTime.toFormat('MMM dd, yyyy');
+                const tzBusinessHours = businessHours[timezone];
+                const slots = generateTimeSlots(
+                  timezone,
+                  baseTime,
+                  tzBusinessHours?.startTime || null,
+                  tzBusinessHours?.endTime || null,
+                  showBusinessHours
+                );
 
                 return (
                   <div

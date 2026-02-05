@@ -4,18 +4,27 @@ import type { TimezonePreset } from '@/types/preset.types';
 import { timezoneService } from '@/services/timezone.service';
 import { presetService } from '@/services/preset.service';
 
+interface BusinessHoursMap {
+  [timezoneIdentifier: string]: {
+    startTime: string | null;
+    endTime: string | null;
+  };
+}
+
 interface TimezoneState {
   allTimezones: TimezoneInfo[];
   popularTimezones: TimezoneInfo[];
   presets: TimezonePreset[];
   selectedTimezones: string[];
+  businessHours: BusinessHoursMap;
   currentTimes: CurrentTimeInfo[];
   isLoading: boolean;
   loadTimezones: () => Promise<void>;
   loadPresets: () => Promise<void>;
   addTimezone: (identifier: string) => void;
   removeTimezone: (identifier: string) => void;
-  setSelectedTimezones: (timezones: string[]) => void;
+  setSelectedTimezones: (timezones: string[], businessHours?: BusinessHoursMap) => void;
+  loadPreset: (preset: TimezonePreset) => void;
   refreshCurrentTimes: () => Promise<void>;
 }
 
@@ -24,6 +33,7 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
   popularTimezones: [],
   presets: [],
   selectedTimezones: [],
+  businessHours: {},
   currentTimes: [],
   isLoading: false,
 
@@ -66,8 +76,27 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
     get().refreshCurrentTimes();
   },
 
-  setSelectedTimezones: (timezones: string[]) => {
-    set({ selectedTimezones: timezones });
+  setSelectedTimezones: (timezones: string[], businessHours?: BusinessHoursMap) => {
+    set({ selectedTimezones: timezones, businessHours: businessHours || {} });
+    get().refreshCurrentTimes();
+  },
+
+  loadPreset: (preset: TimezonePreset) => {
+    const timezones = preset.timezones
+      .sort((a, b) => a.position - b.position)
+      .map((tz) => tz.timezoneIdentifier);
+
+    const businessHours: BusinessHoursMap = {};
+    preset.timezones.forEach((tz) => {
+      if (tz.startTime || tz.endTime) {
+        businessHours[tz.timezoneIdentifier] = {
+          startTime: tz.startTime,
+          endTime: tz.endTime,
+        };
+      }
+    });
+
+    set({ selectedTimezones: timezones, businessHours });
     get().refreshCurrentTimes();
   },
 
