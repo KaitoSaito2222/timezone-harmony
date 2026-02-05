@@ -37,6 +37,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import { useAuthStore } from '@/stores/authStore';
 import { presetService } from '@/services/preset.service';
+import { calendarService } from '@/services/calendar.service';
 import type { TimezonePreset } from '@/types/preset.types';
 import { toast } from 'sonner';
 
@@ -134,6 +135,15 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   const [presetName, setPresetName] = useState('');
   const [presetDescription, setPresetDescription] = useState('');
 
+  // Export dialog state
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+  const [exportSlotData, setExportSlotData] = useState<{
+    rowIndex: number;
+    slots: { timezone: string; time: DateTime }[];
+  } | null>(null);
+  const [exportEventTitle, setExportEventTitle] = useState('Meeting');
+  const [exportDuration, setExportDuration] = useState(60); // minutes
+
   // Load presets on mount
   useEffect(() => {
     if (isAuthenticated) {
@@ -192,7 +202,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   const getDisplayName = useCallback((identifier: string): string => {
     const tz = allTimezones.find((t) => t.identifier === identifier);
     if (tz) return tz.displayName;
-    // フォールバック: "Asia/Tokyo" → "Tokyo"
+    // fallBack: "Asia/Tokyo" → "Tokyo"
     return identifier.split('/')[1]?.replace(/_/g, ' ') || identifier;
   }, [allTimezones]);
 
@@ -243,10 +253,6 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     });
   };
 
-  const handleTimeSlotClick = (row: number) => {
-    setSelectedRow(row === selectedRow ? null : row);
-  };
-
   const now = DateTime.now();
   // Parse the selected datetime in the context of the base timezone
   const selectedDT = baseTimezone === 'local'
@@ -254,6 +260,57 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     : DateTime.fromISO(selectedDateTime, { zone: baseTimezone });
   const baseTime = selectedDT.startOf('day');
   const isNow = selectedDateTime === now.toFormat("yyyy-MM-dd'T'HH:mm") && baseTimezone === 'local';
+
+  const handleTimeSlotClick = (rowIndex: number) => {
+    // Collect the time from each timezone for this row
+    const slotData = timezones.map((tz) => {
+      const tzBusinessHours = businessHours[tz];
+      const slots = generateTimeSlots(
+        tz,
+        baseTime,
+        tzBusinessHours?.startTime || null,
+        tzBusinessHours?.endTime || null,
+        showBusinessHours
+      );
+      return {
+        timezone: tz,
+        time: slots[rowIndex].fullTime,
+      };
+    });
+
+    setExportSlotData({ rowIndex, slots: slotData });
+    setSelectedRow(rowIndex);
+    setIsExportDialogOpen(true);
+  };
+
+  const handleExportCalendar = async () => {
+    if (!exportSlotData) return;
+
+    try {
+      // Use the first timezone's time as the base (they all represent the same moment)
+      const startTime = exportSlotData.slots[0].time;
+
+      const blob = await calendarService.exportToICS({
+        title: exportEventTitle,
+        startTime: startTime.toISO() || '',
+        duration: exportDuration,
+        timezones: exportSlotData.slots.map((slot) => ({
+          timezone: slot.timezone.split('/')[1]?.replace(/_/g, ' ') || slot.timezone,
+          localTime: slot.time.toFormat('MMM dd, HH:mm'),
+        })),
+      });
+
+      const filename = `${exportEventTitle.replace(/[^a-zA-Z0-9]/g, '_')}.ics`;
+      calendarService.downloadICS(blob, filename);
+
+      toast.success('Calendar event exported!');
+      setIsExportDialogOpen(false);
+      setExportEventTitle('Meeting');
+      setSelectedRow(null);
+    } catch {
+      toast.error('Failed to export calendar event');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -598,6 +655,84 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
               Cancel
             </Button>
             <Button onClick={handleSavePreset}>Save Preset</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Export to Calendar Dialog */}
+      <Dialog open={isExportDialogOpen} onOpenChange={(open) => {
+        setIsExportDialogOpen(open);
+        if (!open) setSelectedRow(null);
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              Export to Calendar
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Export this time slot as a calendar event (.ics file).
+              You can import it into Google Calendar, Outlook, Apple Calendar, etc.
+            </p>
+
+            {exportSlotData && (
+              <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                <p className="text-sm font-medium">Selected Time:</p>
+                <div className="space-y-1">
+                  {exportSlotData.slots.map((slot) => (
+                    <div key={slot.timezone} className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {slot.timezone.split('/')[1]?.replace(/_/g, ' ') || slot.timezone}
+                      </span>
+                      <span className="font-mono font-medium">
+                        {slot.time.toFormat('MMM dd, HH:mm')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="event-title">Event Title</Label>
+              <Input
+                id="event-title"
+                value={exportEventTitle}
+                onChange={(e) => setExportEventTitle(e.target.value)}
+                placeholder="e.g., Team Meeting"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="event-duration">Duration (minutes)</Label>
+              <select
+                id="event-duration"
+                value={exportDuration}
+                onChange={(e) => setExportDuration(Number(e.target.value))}
+                className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+              >
+                <option value={15}>15 minutes</option>
+                <option value={30}>30 minutes</option>
+                <option value={45}>45 minutes</option>
+                <option value={60}>1 hour</option>
+                <option value={90}>1.5 hours</option>
+                <option value={120}>2 hours</option>
+              </select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsExportDialogOpen(false);
+              setSelectedRow(null);
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handleExportCalendar}>
+              <Calendar className="h-4 w-4 mr-2" />
+              Export
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
