@@ -13,6 +13,8 @@ import {
   Star,
   Settings,
   Clock,
+  Columns3,
+  Rows3,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -121,6 +123,10 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     const saved = localStorage.getItem('showBusinessHours');
     return saved !== 'false';
   });
+  const [layoutMode, setLayoutMode] = useState<'vertical' | 'horizontal'>(() => {
+    const saved = localStorage.getItem('timelineLayout');
+    return saved === 'horizontal' ? 'horizontal' : 'vertical';
+  });
   const { isAuthenticated } = useAuthStore();
 
   // DateTime picker state
@@ -167,6 +173,11 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   useEffect(() => {
     localStorage.setItem('showBusinessHours', String(showBusinessHours));
   }, [showBusinessHours]);
+
+  // Save layout mode preference
+  useEffect(() => {
+    localStorage.setItem('timelineLayout', layoutMode);
+  }, [layoutMode]);
 
   const loadPresets = async () => {
     try {
@@ -515,18 +526,39 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
             ) : (
               <div />
             )}
-            <Button
-              variant={showBusinessHours ? 'default' : 'outline'}
-              size="sm"
-              className="h-8 text-xs"
-              onClick={() => setShowBusinessHours(!showBusinessHours)}
-            >
-              <Clock className="h-3.5 w-3.5 mr-1.5" />
-              {showBusinessHours ? 'Hide Work Hours' : 'Show Work Hours'}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={showBusinessHours ? 'default' : 'outline'}
+                size="sm"
+                className="h-8 text-xs"
+                onClick={() => setShowBusinessHours(!showBusinessHours)}
+              >
+                <Clock className="h-3.5 w-3.5 mr-1.5" />
+                {showBusinessHours ? 'Hide Work Hours' : 'Show Work Hours'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs"
+                onClick={() => setLayoutMode(prev => prev === 'vertical' ? 'horizontal' : 'vertical')}
+              >
+                {layoutMode === 'vertical' ? (
+                  <>
+                    <Rows3 className="h-3.5 w-3.5 mr-1.5" />
+                    Horizontal
+                  </>
+                ) : (
+                  <>
+                    <Columns3 className="h-3.5 w-3.5 mr-1.5" />
+                    Vertical
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
+          {layoutMode === 'vertical' ? (
           <div className="overflow-x-auto">
-            <div className="flex gap-4 min-w-fit pb-4">
+            <div className="flex gap-2 sm:gap-3 min-w-fit pb-4">
               {timezones.map((timezone, colIndex) => {
                 const currentLocalTime = isNow ? now.setZone(timezone) : selectedDT.setZone(timezone);
                 const cityName = getDisplayName(timezone);
@@ -544,20 +576,20 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                 return (
                   <div
                     key={timezone}
-                    className="shrink-0 w-48 sm:w-56 md:w-64"
+                    className="shrink-0 w-32 sm:w-40 md:w-48"
                   >
                     {/* Timezone Header */}
-                    <div className="bg-primary text-primary-foreground rounded-t-lg p-4 text-center">
-                      <div className="text-lg font-bold mb-1">{cityName}</div>
-                      <div className="text-sm opacity-90">UTC{offset}</div>
-                      <div className="text-xs opacity-80 mt-1">{dateStr}</div>
+                    <div className="bg-primary text-primary-foreground rounded-t-lg p-2 sm:p-3 text-center">
+                      <div className="text-sm sm:text-base font-bold">{cityName}</div>
+                      <div className="text-xs opacity-90">UTC{offset}</div>
+                      <div className="text-[10px] sm:text-xs opacity-80 mt-0.5">{dateStr}</div>
                     </div>
 
                     {/* Time Slots */}
                     <div
                       ref={(el) => { scrollRefs.current[colIndex] = el; }}
                       onScroll={() => handleScroll(colIndex)}
-                      className="bg-muted/30 rounded-b-lg p-2 max-h-125 overflow-y-auto space-y-1"
+                      className="bg-muted/30 rounded-b-lg p-1 sm:p-1.5 max-h-125 overflow-y-auto space-y-0.5"
                     >
                       {slots.map((slot, rowIndex) => (
                         <div
@@ -565,12 +597,12 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                           onClick={() => handleTimeSlotClick(rowIndex)}
                           className={`
                             ${slot.className}
-                            ${selectedRow === rowIndex ? 'ring-2 ring-primary scale-105' : ''}
-                            p-3 text-center rounded-lg cursor-pointer transition-all duration-200
-                            hover:scale-105 hover:shadow-md border-2
+                            ${selectedRow === rowIndex ? 'ring-2 ring-primary' : ''}
+                            py-2.5 px-1 text-center rounded cursor-pointer transition-colors
+                            hover:brightness-90 border-2
                           `}
                         >
-                          <div className="text-sm font-bold">
+                          <div className="text-xs font-bold">
                             {slot.formatted}
                           </div>
                         </div>
@@ -581,6 +613,56 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
               })}
             </div>
           </div>
+          ) : (
+          <div className="overflow-x-auto">
+            <div className="min-w-fit space-y-2 pb-4">
+              {timezones.map((timezone) => {
+                const currentLocalTime = isNow ? now.setZone(timezone) : selectedDT.setZone(timezone);
+                const cityName = getDisplayName(timezone);
+                const offset = currentLocalTime.toFormat('ZZ');
+                const dateStr = currentLocalTime.toFormat('MMM dd, HH:mm');
+                const tzBusinessHours = businessHours[timezone];
+                const slots = generateTimeSlots(
+                  timezone,
+                  baseTime,
+                  tzBusinessHours?.startTime || null,
+                  tzBusinessHours?.endTime || null,
+                  showBusinessHours
+                );
+
+                return (
+                  <div key={timezone} className="flex">
+                    {/* Sticky Timezone Header */}
+                    <div className="sticky left-0 z-10 bg-primary text-primary-foreground rounded-l-lg p-3 min-w-36 sm:min-w-44 flex flex-col justify-center shrink-0">
+                      <div className="font-bold text-sm">{cityName}</div>
+                      <div className="text-xs opacity-80">UTC{offset}</div>
+                      <div className="text-xs opacity-70">{dateStr}</div>
+                    </div>
+                    {/* Time Slots */}
+                    <div className="flex gap-1 items-center p-1.5 bg-muted/30 rounded-r-lg">
+                      {slots.map((slot, slotIndex) => (
+                        <div
+                          key={slotIndex}
+                          onClick={() => handleTimeSlotClick(slotIndex)}
+                          className={`
+                            ${slot.className}
+                            ${selectedRow === slotIndex ? 'ring-2 ring-primary scale-105' : ''}
+                            p-2 text-center rounded-lg cursor-pointer transition-all duration-200
+                            hover:scale-105 hover:shadow-md border-2 min-w-14
+                          `}
+                        >
+                          <div className="text-xs font-bold">
+                            {slot.formatted}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          )}
 
           </>
           )}
