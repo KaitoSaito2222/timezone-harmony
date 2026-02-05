@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, LogOut, Settings, BookMarked, Menu } from 'lucide-react';
+import { Clock, LogOut, Settings, BookMarked, Menu, Home } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -62,6 +62,12 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-2">
             {isAuthenticated ? (
               <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/" className="flex items-center gap-2">
+                    <Home className="h-4 w-4" />
+                    Home
+                  </Link>
+                </Button>
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/presets" className="flex items-center gap-2">
                     <BookMarked className="h-4 w-4" />
@@ -169,6 +175,12 @@ export function Header() {
 
                     {/* Menu Items */}
                     <div className="flex flex-col gap-1">
+                      <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
+                        <Link to="/">
+                          <Home className="mr-3 h-4 w-4" />
+                          Home
+                        </Link>
+                      </Button>
                       <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
                         <Link to="/presets">
                           <BookMarked className="mr-3 h-4 w-4" />
