@@ -673,15 +673,15 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
       {timezones.length > 0 && (
         <>
           {optimalTimes.length > 0 ? (
-            <Card className="border-green-500/50 bg-green-50/50 dark:bg-green-950/20">
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                  <Lightbulb className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5 text-green-600" />
                   Recommended Meeting Times
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-green-700 dark:text-green-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Found {optimalTimes.length} time slots where all participants are within business hours!
                 </p>
                 <div className="flex flex-wrap gap-3">
@@ -689,7 +689,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                     <Badge
                       key={index}
                       variant="outline"
-                      className="px-3 py-2 text-sm border-green-500 bg-white dark:bg-green-950"
+                      className="px-3 py-2 text-sm"
                     >
                       {opt.times.map((t) => `${t.timezone}: ${t.time}`).join(' | ')}
                     </Badge>
@@ -698,15 +698,15 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20">
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-                  <AlertTriangle className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-600" />
                   No Perfect Match Found
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-amber-700 dark:text-amber-400">
+                <p className="text-muted-foreground">
                   No time slots found where all participants are within business hours.
                   Some participants may need to meet outside their normal hours.
                 </p>
