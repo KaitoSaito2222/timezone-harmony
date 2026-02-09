@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { User, UserRole } from '@prisma/client';
 
@@ -15,25 +14,27 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findByGoogleId(googleId: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { googleId } });
+  async findBySupabaseId(supabaseId: string): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { supabaseId } });
   }
 
-  async create(data: {
-    email: string;
-    password?: string;
-    displayName?: string;
-    googleId?: string;
-  }): Promise<User> {
-    return this.prisma.user.create({
-      data: {
-        email: data.email,
-        passwordHash: data.password ? await bcrypt.hash(data.password, 10) : null,
-        displayName: data.displayName,
-        googleId: data.googleId,
-        role: UserRole.user,
-      },
-    });
+  async findOrCreateFromSupabase(
+    supabaseId: string,
+    email: string,
+    displayName?: string,
+  ): Promise<User> {
+    let user = await this.findBySupabaseId(supabaseId);
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          supabaseId,
+          email,
+          displayName,
+          role: UserRole.user,
+        },
+      });
+    }
+    return user;
   }
 
   async update(id: string, data: Partial<User>): Promise<User | null> {
@@ -41,10 +42,5 @@ export class UsersService {
       where: { id },
       data,
     });
-  }
-
-  async validatePassword(user: User, password: string): Promise<boolean> {
-    if (!user.passwordHash) return false;
-    return bcrypt.compare(password, user.passwordHash);
   }
 }

@@ -42,12 +42,13 @@ export function RegisterPage() {
     setIsLoading(true);
     try {
       await registerUser(data.email, data.password, data.displayName);
-      toast.success('Account created successfully!');
-      navigate('/');
+      toast.success('Account created! Please check your email to confirm your account.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 100);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || 'Registration failed');
-    } finally {
+      const err = error as { message?: string };
+      toast.error(err.message || 'Registration failed');
       setIsLoading(false);
     }
   };

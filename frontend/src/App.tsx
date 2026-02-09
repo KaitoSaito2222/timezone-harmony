@@ -10,11 +10,12 @@ import { PresetsPage } from '@/pages/PresetsPage';
 import { useAuthStore } from '@/stores/authStore';
 
 function App() {
-  const { loadUser } = useAuthStore();
+  const { initialize } = useAuthStore();
 
   useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+    const unsubscribe = initialize();
+    return unsubscribe;
+  }, [initialize]);
 
   return (
     <BrowserRouter>

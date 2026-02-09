@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
-import { authService } from '@/services/auth.service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +23,7 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuthStore();
+  const { login, loginWithGoogle, isAuthenticated } = useAuthStore();
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
@@ -36,22 +35,35 @@ export function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
+
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
     try {
       await login(data.email, data.password);
       toast.success('Welcome back!');
-      navigate(from, { replace: true });
+      // 認証状態がonAuthStateChangeで更新されるので、少し待ってから遷移
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || 'Login failed');
-    } finally {
+      const err = error as { message?: string };
+      toast.error(err.message || 'Login failed');
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = authService.getGoogleAuthUrl();
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      toast.error(err.message || 'Google login failed');
+    }
   };
 
   return (

@@ -1,30 +1,43 @@
-import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuthStore } from '@/stores/authStore';
-import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function AuthCallbackPage() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setToken } = useAuthStore();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      setToken(token)
-        .then(() => {
-          toast.success('Welcome!');
-          navigate('/', { replace: true });
-        })
-        .catch(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
           toast.error('Authentication failed');
           navigate('/login', { replace: true });
-        });
-    } else {
-      navigate('/login', { replace: true });
-    }
-  }, [searchParams, setToken, navigate]);
+          return;
+        }
+
+        if (session) {
+          toast.success('Successfully signed in!');
+          navigate('/', { replace: true });
+        } else {
+          navigate('/login', { replace: true });
+        }
+      } catch (error) {
+        navigate('/login', { replace: true });
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  if (!isChecking) {
+    return null;
+  }
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">

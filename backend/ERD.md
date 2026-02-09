@@ -8,10 +8,9 @@ admin admin
     
   "users" {
     String id "🗝️"
+    String supabase_id 
     String email 
-    String password_hash "❓"
     String display_name "❓"
-    String google_id "❓"
     UserRole role 
     DateTime created_at 
     DateTime updated_at 

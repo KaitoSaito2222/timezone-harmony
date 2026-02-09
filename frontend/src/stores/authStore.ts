@@ -1,99 +1,98 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { supabase } from '@/lib/supabase';
 import type { User } from '@/types/auth.types';
-import { authService } from '@/services/auth.service';
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName?: string) => Promise<void>;
-  setToken: (token: string) => Promise<void>;
-  logout: () => void;
-  loadUser: () => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
+  initialize: () => () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      token: null,
-      isLoading: false,
-      isAuthenticated: false,
+export const useAuthStore = create<AuthState>()((set) => ({
+  user: null,
+  isLoading: true,
+  isAuthenticated: false,
 
-      login: async (email: string, password: string) => {
-        set({ isLoading: true });
-        try {
-          const response = await authService.login(email, password);
-          localStorage.setItem('token', response.accessToken);
+  login: async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+  },
+
+  register: async (email: string, password: string, displayName?: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: displayName },
+      },
+    });
+    if (error) throw error;
+  },
+
+  loginWithGoogle: async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        skipBrowserRedirect: false,
+      },
+    });
+    
+    if (error) throw error;
+  },
+
+  logout: async () => {
+    await supabase.auth.signOut();
+    set({ user: null, isAuthenticated: false });
+  },
+
+  initialize: () => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const u = session.user;
+        set({
+          user: {
+            id: u.id,
+            email: u.email ?? '',
+            displayName: u.user_metadata?.display_name ?? u.user_metadata?.full_name ?? null,
+            role: 'user',
+          },
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      } else {
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          const u = session.user;
           set({
-            token: response.accessToken,
-            user: response.user,
+            user: {
+              id: u.id,
+              email: u.email ?? '',
+              displayName: u.user_metadata?.display_name ?? u.user_metadata?.full_name ?? null,
+              role: 'user',
+            },
             isAuthenticated: true,
             isLoading: false,
           });
-        } catch (error) {
-          set({ isLoading: false });
-          throw error;
+        } else {
+          set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
+    );
 
-      register: async (email: string, password: string, displayName?: string) => {
-        set({ isLoading: true });
-        try {
-          const response = await authService.register(email, password, displayName);
-          localStorage.setItem('token', response.accessToken);
-          set({
-            token: response.accessToken,
-            user: response.user,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (error) {
-          set({ isLoading: false });
-          throw error;
-        }
-      },
-
-      setToken: async (token: string) => {
-        localStorage.setItem('token', token);
-        set({ token, isLoading: true });
-        try {
-          const user = await authService.getProfile();
-          set({ user, isAuthenticated: true, isLoading: false });
-        } catch {
-          localStorage.removeItem('token');
-          set({ token: null, user: null, isAuthenticated: false, isLoading: false });
-        }
-      },
-
-      logout: () => {
-        localStorage.removeItem('token');
-        set({ token: null, user: null, isAuthenticated: false });
-      },
-
-      loadUser: async () => {
-        const token = get().token || localStorage.getItem('token');
-        if (!token) {
-          set({ isAuthenticated: false });
-          return;
-        }
-
-        set({ isLoading: true });
-        try {
-          const user = await authService.getProfile();
-          set({ user, token, isAuthenticated: true, isLoading: false });
-        } catch {
-          localStorage.removeItem('token');
-          set({ token: null, user: null, isAuthenticated: false, isLoading: false });
-        }
-      },
-    }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({ token: state.token }),
-    }
-  )
-);
+    return () => subscription.unsubscribe();
+  },
+}));
