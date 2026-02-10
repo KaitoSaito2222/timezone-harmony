@@ -21,9 +21,11 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [showResendButton, setShowResendButton] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, loginWithGoogle, isAuthenticated } = useAuthStore();
+  const { login, loginWithGoogle, isAuthenticated, resendConfirmationEmail } = useAuthStore();
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
@@ -43,6 +45,7 @@ export function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
+    setShowResendButton(false);
     try {
       await login(data.email, data.password);
       toast.success('Welcome back!');
@@ -52,8 +55,36 @@ export function LoginPage() {
       }, 100);
     } catch (error: unknown) {
       const err = error as { message?: string };
-      toast.error(err.message || 'Login failed');
+      const errorMessage = err.message || 'Login failed';
+
+      // Check if it's an email confirmation error
+      if (errorMessage.includes('Email not confirmed') || errorMessage.includes('email_not_confirmed')) {
+        toast.error('Please confirm your email address before logging in');
+        setShowResendButton(true);
+      } else {
+        toast.error(errorMessage);
+      }
       setIsLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    const email = (document.getElementById('email') as HTMLInputElement)?.value;
+    if (!email) {
+      toast.error('Please enter your email address');
+      return;
+    }
+
+    setIsResendingEmail(true);
+    try {
+      await resendConfirmationEmail(email);
+      toast.success('Confirmation email sent! Please check your inbox.');
+      setShowResendButton(false);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      toast.error(err.message || 'Failed to resend confirmation email');
+    } finally {
+      setIsResendingEmail(false);
     }
   };
 
@@ -107,7 +138,26 @@ export function LoginPage() {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
+
+            {showResendButton && (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleResendConfirmation}
+                disabled={isResendingEmail}
+              >
+                {isResendingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isResendingEmail ? 'Sending...' : 'Resend Confirmation Email'}
+              </Button>
+            )}
           </form>
+
+          <div className="mt-4 text-center">
+            <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+              Forgot password?
+            </Link>
+          </div>
 
           <div className="relative my-6">
             <Separator />
