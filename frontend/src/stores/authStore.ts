@@ -42,10 +42,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        skipBrowserRedirect: false,
       },
     });
-    
+
     if (error) throw error;
   },
 
