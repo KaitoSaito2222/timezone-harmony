@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageContainer } from '@/components/layout/PageContainer';
 
 export function AuthCallbackPage() {
   const navigate = useNavigate();
@@ -44,11 +45,11 @@ export function AuthCallbackPage() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
+    <PageContainer centered>
       <div className="text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
         <p className="mt-4 text-muted-foreground">Completing authentication...</p>
       </div>
-    </div>
+    </PageContainer>
   );
 }

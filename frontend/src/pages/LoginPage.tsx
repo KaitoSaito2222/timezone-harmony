@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { PageContainer } from '@/components/layout/PageContainer';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -66,7 +67,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <PageContainer centered>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
@@ -133,6 +134,6 @@ export function LoginPage() {
           </p>
         </CardFooter>
       </Card>
-    </div>
+    </PageContainer>
   );
 }
