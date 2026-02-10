@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const [isChecking, setIsChecking] = useState(true);
+  const hasShownToast = useRef(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -14,18 +15,21 @@ export function AuthCallbackPage() {
         const { data: { session }, error } = await supabase.auth.getSession();
 
         if (error) {
-          toast.error('Authentication failed');
           navigate('/login', { replace: true });
           return;
         }
 
         if (session) {
-          toast.success('Successfully signed in!');
+          // Show success toast only once
+          if (!hasShownToast.current) {
+            hasShownToast.current = true;
+            toast.success('Welcome back!');
+          }
           navigate('/', { replace: true });
         } else {
           navigate('/login', { replace: true });
         }
-      } catch (error) {
+      } catch  {
         navigate('/login', { replace: true });
       } finally {
         setIsChecking(false);
