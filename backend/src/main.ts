@@ -9,7 +9,8 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.enableCors({
-    origin: configService.get<string>('FRONTEND_URL') || 'http://localhost:5173',
+    origin:
+      configService.get<string>('FRONTEND_URL') || 'http://localhost:5173',
     credentials: true,
   });
 
@@ -27,4 +28,7 @@ async function bootstrap() {
 
   console.log(`Application is running on: http://localhost:${port}/api`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
+});

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TimezonePreset, PresetTimezone } from '@prisma/client';
 
@@ -53,7 +57,10 @@ export class TimezonePresetsService {
     return preset;
   }
 
-  async create(userId: string, dto: CreatePresetDto): Promise<PresetWithTimezones> {
+  async create(
+    userId: string,
+    dto: CreatePresetDto,
+  ): Promise<PresetWithTimezones> {
     if (!dto.timezones || !Array.isArray(dto.timezones)) {
       throw new BadRequestException('Timezones array is required');
     }
@@ -120,7 +127,10 @@ export class TimezonePresetsService {
     });
   }
 
-  async toggleFavorite(id: string, userId: string): Promise<PresetWithTimezones> {
+  async toggleFavorite(
+    id: string,
+    userId: string,
+  ): Promise<PresetWithTimezones> {
     const preset = await this.findById(id, userId);
     return this.prisma.timezonePreset.update({
       where: { id },
