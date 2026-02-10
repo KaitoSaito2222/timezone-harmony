@@ -115,94 +115,82 @@ export function Header() {
                 </DropdownMenu>
               </>
             ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/register">Sign Up</Link>
-                </Button>
-              </>
+              <Button asChild>
+                <Link to="/login">Login</Link>
+              </Button>
             )}
           </nav>
 
           {/* Mobile Navigation */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-70 sm:w-80">
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-primary" />
-                  <span className="bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                    Timezone Harmony
-                  </span>
-                </SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-4 mt-6">
-                {isAuthenticated ? (
-                  <>
-                    {/* User Info */}
-                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-primary text-primary-foreground">
-                          {getInitials(user?.displayName ?? undefined, user?.email ?? undefined)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {user?.displayName || 'User'}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {user?.email}
-                        </p>
-                      </div>
+          {isAuthenticated ? (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-70 sm:w-80">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <span className="bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                      Timezone Harmony
+                    </span>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-4 mt-6">
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {getInitials(user?.displayName ?? undefined, user?.email ?? undefined)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user?.displayName || 'User'}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user?.email}
+                      </p>
                     </div>
+                  </div>
 
-                    {/* Menu Items */}
-                    <div className="flex flex-col gap-1">
-                      <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
-                        <Link to="/">
-                          <Home className="mr-3 h-4 w-4" />
-                          Home
-                        </Link>
-                      </Button>
-                      <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
-                        <Link to="/presets">
-                          <BookMarked className="mr-3 h-4 w-4" />
-                          My Presets
-                        </Link>
-                      </Button>
-                    </div>
-
-                    <div className="border-t pt-4 mt-2">
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={handleLogout}
-                      >
-                        <LogOut className="mr-3 h-4 w-4" />
-                        Logout
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <Button variant="outline" className="w-full" asChild onClick={handleNavClick}>
-                      <Link to="/login">Login</Link>
+                  {/* Menu Items */}
+                  <div className="flex flex-col gap-1">
+                    <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
+                      <Link to="/">
+                        <Home className="mr-3 h-4 w-4" />
+                        Home
+                      </Link>
                     </Button>
-                    <Button className="w-full" asChild onClick={handleNavClick}>
-                      <Link to="/register">Sign Up</Link>
+                    <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
+                      <Link to="/presets">
+                        <BookMarked className="mr-3 h-4 w-4" />
+                        My Presets
+                      </Link>
                     </Button>
                   </div>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
+
+                  <div className="border-t pt-4 mt-2">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="mr-3 h-4 w-4" />
+                      Logout
+                    </Button>
+                  </div>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <Button asChild className="md:hidden">
+              <Link to="/login">Login</Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>

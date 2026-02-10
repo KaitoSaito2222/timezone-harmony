@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Clock, Lock } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -69,11 +70,18 @@ export function HomePage() {
       {!isAuthenticated && (
         <Card className="bg-muted/50 border-primary/20">
           <CardContent className="py-6 text-center">
-            <div className="flex items-center justify-center gap-2 text-primary">
-              <Lock className="h-5 w-5" />
-              <p className="font-medium">
-                Sign in to save your timezone presets and business hours
-              </p>
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center gap-2 text-primary">
+                <Lock className="h-5 w-5" />
+                <p className="font-medium">
+                  Login to save your timezone presets and business hours
+                </p>
+              </div>
+              <Link to="/login">
+                <Button>
+                  Login
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
