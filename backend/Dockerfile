@@ -27,4 +27,4 @@ COPY prisma ./prisma
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "set -x && npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "set -x && npx prisma migrate deploy 2>&1 || (echo 'Migration failed with exit code:' $? && exit 1) && node dist/main.js"]
