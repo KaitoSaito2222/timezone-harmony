@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Clock, LogOut, BookMarked, Menu, Home } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -63,6 +64,7 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             {isAuthenticated ? (
               <>
                 <Button variant="ghost" size="sm" asChild>
@@ -176,7 +178,11 @@ export function Header() {
                     </Button>
                   </div>
 
-                  <div className="border-t pt-4 mt-2">
+                  <div className="border-t pt-4 mt-2 flex flex-col gap-1">
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-sm text-muted-foreground">Theme</span>
+                      <ThemeToggle />
+                    </div>
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -190,9 +196,12 @@ export function Header() {
               </SheetContent>
             </Sheet>
           ) : (
-            <Button asChild className="md:hidden">
-              <Link href="/login">Login</Link>
-            </Button>
+            <div className="flex items-center gap-2 md:hidden">
+              <ThemeToggle />
+              <Button asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>
