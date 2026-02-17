@@ -582,9 +582,9 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                   >
                     {/* Timezone Header */}
                     <div className="bg-primary text-primary-foreground rounded-t-lg p-2 sm:p-3 text-center">
-                      <div className="text-sm sm:text-base font-bold">{cityName}</div>
-                      <div className="text-xs opacity-90">UTC{offset}</div>
-                      <div className="text-[10px] sm:text-xs opacity-80 mt-0.5">{dateStr}</div>
+                      <div className="text-base sm:text-lg font-bold">{cityName}</div>
+                      <div className="text-xs sm:text-sm opacity-80 mt-0.5">{dateStr}</div>
+                      <div className="text-xs opacity-75">UTC{offset}</div>
                     </div>
 
                     {/* Time Slots */}
@@ -604,7 +604,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                             hover:brightness-90 border-2
                           `}
                         >
-                          <div className="text-xs font-bold">
+                          <div className="text-sm font-bold">
                             {slot.formatted}
                           </div>
                         </div>
