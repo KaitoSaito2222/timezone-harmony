@@ -128,6 +128,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
   const [selectedDateTime, setSelectedDateTime] = useState<string>('');
   const [baseTimezone, setBaseTimezone] = useState<string>('local'); // 'local' or timezone identifier
   const isLiveMode = useRef(true); // true = auto-update to current time
+  const hasInitializedBaseTimezone = useRef(false);
 
   // Auto-update selectedDateTime when minute changes (only in live mode)
   useEffect(() => {
@@ -141,13 +142,23 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     setSelectedDateTime(DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"));
 
     const interval = setInterval(() => {
-      if (isLiveMode.current && baseTimezone === 'local') {
-        const nowStr = DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
+      if (isLiveMode.current) {
+        const nowStr = baseTimezone === 'local'
+          ? DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")
+          : DateTime.now().setZone(baseTimezone).toFormat("yyyy-MM-dd'T'HH:mm");
         setSelectedDateTime(prev => prev !== nowStr ? nowStr : prev);
       }
     }, 1000);
     return () => clearInterval(interval);
   }, [baseTimezone]);
+
+  // Default baseTimezone to the first (leftmost) timezone on initial load
+  useEffect(() => {
+    if (!hasInitializedBaseTimezone.current && timezones.length > 0) {
+      hasInitializedBaseTimezone.current = true;
+      setBaseTimezone(timezones[0]);
+    }
+  }, [timezones]);
 
   // Preset state
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
@@ -284,7 +295,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
     ? DateTime.fromISO(selectedDateTime)
     : DateTime.fromISO(selectedDateTime, { zone: baseTimezone });
   const baseTime = selectedDT.startOf('day');
-  const isNow = selectedDateTime === now.toFormat("yyyy-MM-dd'T'HH:mm") && baseTimezone === 'local';
+  const isNow = isLiveMode.current;
 
   const handleTimeSlotClick = (rowIndex: number) => {
     // Collect the time from each timezone for this row
@@ -428,9 +439,6 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                 <select
                   value={baseTimezone}
                   onChange={(e) => {
-                    if (e.target.value !== 'local') {
-                      isLiveMode.current = false;
-                    }
                     setBaseTimezone(e.target.value);
                   }}
                   className="h-8 px-2 rounded-md border border-input bg-background text-sm"
@@ -449,8 +457,14 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                     className="h-8 text-xs"
                     onClick={() => {
                       isLiveMode.current = true;
-                      setSelectedDateTime(DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"));
-                      setBaseTimezone('local');
+                      hasInitializedBaseTimezone.current = true;
+                      const resetTz = timezones[0] || 'local';
+                      setSelectedDateTime(
+                        resetTz === 'local'
+                          ? DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")
+                          : DateTime.now().setZone(resetTz).toFormat("yyyy-MM-dd'T'HH:mm")
+                      );
+                      setBaseTimezone(resetTz);
                     }}
                   >
                     Reset
