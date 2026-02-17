@@ -8,13 +8,13 @@ A web application to help teams manage schedules and collaboration across differ
 - **Database**: Docker PostgreSQL (local development)
 - **Authentication**: Supabase Auth (production)
 - **Backend**: NestJS + Prisma
-- **Frontend**: React + TypeScript + Vite
+- **Frontend**: Next.js + TypeScript + Tailwind CSS
 
 ### Production Environment
 - **Database**: Supabase PostgreSQL
 - **Authentication**: Supabase Auth
 - **Backend**: NestJS
-- **Frontend**: React
+- **Frontend**: Next.js (Netlify)
 
 ## Prerequisites
 
@@ -65,25 +65,28 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # App
 APP_PORT=3000
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:3001
 ```
 
 #### Frontend
 
 ```bash
 # Copy the example file
-cp frontend/.env.example frontend/.env
+cp frontend/.env.example frontend/.env.local
 ```
 
-Edit `frontend/.env` with your Supabase credentials:
+Edit `frontend/.env.local` with your Supabase credentials:
 
 ```env
 # Backend API URL (local NestJS server)
-VITE_API_URL=http://localhost:3000/api
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 # Supabase Configuration (Production)
-VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+# Site URL
+NEXT_PUBLIC_SITE_URL=http://localhost:3001
 ```
 
 ### 4. Start Docker Database
@@ -126,7 +129,7 @@ npm install
 npm run dev
 ```
 
-Frontend will run at `http://localhost:5173`
+Frontend will run at `http://localhost:3001`
 
 ## Development Commands
 
@@ -158,8 +161,8 @@ npm run dev
 # Build
 npm run build
 
-# Preview production build
-npm run preview
+# Start production server
+npm run start
 
 # Lint
 npm run lint

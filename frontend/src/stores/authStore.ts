@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 import type { User } from '@/types/auth.types';
 
 interface AuthState {
@@ -22,6 +22,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
   isAuthenticated: false,
 
   login: async (email: string, password: string) => {
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -30,6 +31,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   register: async (email: string, password: string, displayName?: string) => {
+    const supabase = createClient();
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -41,29 +43,36 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   loginWithGoogle: async () => {
+    const supabase = createClient();
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${siteUrl}/auth/callback`,
       },
     });
-
     if (error) throw error;
   },
 
   logout: async () => {
+    const supabase = createClient();
     await supabase.auth.signOut();
     set({ user: null, isAuthenticated: false });
   },
 
   resetPassword: async (email: string) => {
+    const supabase = createClient();
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${siteUrl}/auth/reset-password`,
     });
     if (error) throw error;
   },
 
   updatePassword: async (newPassword: string) => {
+    const supabase = createClient();
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
     });
@@ -71,6 +80,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   resendConfirmationEmail: async (email: string) => {
+    const supabase = createClient();
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,
@@ -79,6 +89,8 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   initialize: () => {
+    const supabase = createClient();
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         const u = session.user;
@@ -86,7 +98,10 @@ export const useAuthStore = create<AuthState>()((set) => ({
           user: {
             id: u.id,
             email: u.email ?? '',
-            displayName: u.user_metadata?.display_name ?? u.user_metadata?.full_name ?? null,
+            displayName:
+              u.user_metadata?.display_name ??
+              u.user_metadata?.full_name ??
+              null,
             role: 'user',
           },
           isAuthenticated: true,
@@ -97,25 +112,28 @@ export const useAuthStore = create<AuthState>()((set) => ({
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user) {
-          const u = session.user;
-          set({
-            user: {
-              id: u.id,
-              email: u.email ?? '',
-              displayName: u.user_metadata?.display_name ?? u.user_metadata?.full_name ?? null,
-              role: 'user',
-            },
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } else {
-          set({ user: null, isAuthenticated: false, isLoading: false });
-        }
-      },
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const u = session.user;
+        set({
+          user: {
+            id: u.id,
+            email: u.email ?? '',
+            displayName:
+              u.user_metadata?.display_name ??
+              u.user_metadata?.full_name ??
+              null,
+            role: 'user',
+          },
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      } else {
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      }
+    });
 
     return () => subscription.unsubscribe();
   },

@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Clock, LogOut, BookMarked, Menu, Home } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
@@ -22,12 +25,12 @@ import {
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuthStore();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    router.push('/login');
     setIsOpen(false);
   };
 
@@ -51,7 +54,7 @@ export function Header() {
     <header className="bg-background/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
-          <Link to="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="flex items-center space-x-2 group">
             <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-primary transition-transform group-hover:rotate-12" />
             <span className="text-base sm:text-xl font-bold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Timezone Harmony
@@ -63,13 +66,13 @@ export function Header() {
             {isAuthenticated ? (
               <>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/" className="flex items-center gap-2">
+                  <Link href="/" className="flex items-center gap-2">
                     <Home className="h-4 w-4" />
                     Home
                   </Link>
                 </Button>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/presets" className="flex items-center gap-2">
+                  <Link href="/presets" className="flex items-center gap-2">
                     <BookMarked className="h-4 w-4" />
                     Presets
                   </Link>
@@ -98,7 +101,7 @@ export function Header() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link to="/presets" className="cursor-pointer">
+                      <Link href="/presets" className="cursor-pointer">
                         <BookMarked className="mr-2 h-4 w-4" />
                         My Presets
                       </Link>
@@ -116,7 +119,7 @@ export function Header() {
               </>
             ) : (
               <Button asChild>
-                <Link to="/login">Login</Link>
+                <Link href="/login">Login</Link>
               </Button>
             )}
           </nav>
@@ -160,13 +163,13 @@ export function Header() {
                   {/* Menu Items */}
                   <div className="flex flex-col gap-1">
                     <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
-                      <Link to="/">
+                      <Link href="/">
                         <Home className="mr-3 h-4 w-4" />
                         Home
                       </Link>
                     </Button>
                     <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
-                      <Link to="/presets">
+                      <Link href="/presets">
                         <BookMarked className="mr-3 h-4 w-4" />
                         My Presets
                       </Link>
@@ -188,7 +191,7 @@ export function Header() {
             </Sheet>
           ) : (
             <Button asChild className="md:hidden">
-              <Link to="/login">Login</Link>
+              <Link href="/login">Login</Link>
             </Button>
           )}
         </div>

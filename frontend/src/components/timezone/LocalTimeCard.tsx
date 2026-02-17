@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { DateTime } from 'luxon';
 import { MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
@@ -7,14 +8,15 @@ import { Button } from '@/components/ui/button';
 const STORAGE_KEY = 'localTimeCard_visible';
 
 export function LocalTimeCard() {
-  const [currentTime, setCurrentTime] = useState(DateTime.local());
-  const [isVisible, setIsVisible] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved !== 'false';
-  });
+  const [currentTime, setCurrentTime] = useState<DateTime | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === 'false') setIsVisible(false);
+
+    setCurrentTime(DateTime.local());
     const interval = setInterval(() => {
       setCurrentTime(DateTime.local());
     }, 1000);
@@ -26,9 +28,9 @@ export function LocalTimeCard() {
     localStorage.setItem(STORAGE_KEY, String(isVisible));
   }, [isVisible]);
 
-  const timezone = currentTime.zoneName;
+  const timezone = currentTime?.zoneName ?? DateTime.local().zoneName;
   const cityName = timezone?.split('/').pop()?.replace(/_/g, ' ') || 'Local';
-  const offset = currentTime.toFormat('ZZZZ');
+  const offset = currentTime?.toFormat('ZZZZ') ?? DateTime.local().toFormat('ZZZZ');
 
   if (!isVisible) {
     return (
@@ -70,11 +72,11 @@ export function LocalTimeCard() {
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className="text-2xl sm:text-3xl font-mono font-bold tabular-nums">
-                {currentTime.toFormat('HH:mm:ss')}
+                {currentTime ? currentTime.toFormat('HH:mm:ss') : '--:--:--'}
               </div>
               {isExpanded && (
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  {currentTime.toFormat('cccc, MMMM d, yyyy')}
+                  {currentTime ? currentTime.toFormat('cccc, MMMM d, yyyy') : ''}
                 </p>
               )}
             </div>

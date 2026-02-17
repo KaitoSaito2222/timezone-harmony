@@ -1,3 +1,4 @@
+'use client';
 import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';

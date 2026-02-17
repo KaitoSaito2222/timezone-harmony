@@ -1,5 +1,6 @@
+'use client';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { DateTime } from 'luxon';
 import {
   Lightbulb,
@@ -114,30 +115,31 @@ interface OptimalTime {
 }
 
 export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone }: TimezoneComparisonProps) {
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [optimalTimes, setOptimalTimes] = useState<OptimalTime[]>([]);
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { allTimezones, businessHours, loadPreset: loadPresetToStore } = useTimezoneStore();
-  const [showBusinessHours, setShowBusinessHours] = useState(() => {
-    const saved = localStorage.getItem('showBusinessHours');
-    return saved !== 'false';
-  });
-  const [layoutMode, setLayoutMode] = useState<'vertical' | 'horizontal'>(() => {
-    const saved = localStorage.getItem('timelineLayout');
-    return saved === 'horizontal' ? 'horizontal' : 'vertical';
-  });
+  const [showBusinessHours, setShowBusinessHours] = useState(true);
+  const [layoutMode, setLayoutMode] = useState<'vertical' | 'horizontal'>('vertical');
   const { isAuthenticated } = useAuthStore();
 
   // DateTime picker state
-  const [selectedDateTime, setSelectedDateTime] = useState<string>(() => {
-    return DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
-  });
+  const [selectedDateTime, setSelectedDateTime] = useState<string>('');
   const [baseTimezone, setBaseTimezone] = useState<string>('local'); // 'local' or timezone identifier
   const isLiveMode = useRef(true); // true = auto-update to current time
 
   // Auto-update selectedDateTime when minute changes (only in live mode)
   useEffect(() => {
+    // Restore localStorage values on client mount
+    const savedBH = localStorage.getItem('showBusinessHours');
+    if (savedBH === 'false') setShowBusinessHours(false);
+    const savedLayout = localStorage.getItem('timelineLayout');
+    if (savedLayout === 'horizontal') setLayoutMode('horizontal');
+
+    // Initialize selectedDateTime
+    setSelectedDateTime(DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"));
+
     const interval = setInterval(() => {
       if (isLiveMode.current && baseTimezone === 'local') {
         const nowStr = DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
@@ -393,7 +395,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                         <DropdownMenuSeparator />
                       </>
                     )}
-                    <DropdownMenuItem onClick={() => navigate('/presets')}>
+                    <DropdownMenuItem onClick={() => navigate.push('/presets')}>
                       <Settings className="h-4 w-4 mr-2" />
                       Manage Presets
                     </DropdownMenuItem>

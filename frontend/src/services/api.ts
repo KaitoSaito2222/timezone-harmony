@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -11,7 +12,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  const { data: { session } } = await supabase.auth.getSession();
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (session?.access_token) {
     config.headers.Authorization = `Bearer ${session.access_token}`;
   }
@@ -22,6 +26,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      const supabase = createClient();
       supabase.auth.signOut();
       window.location.href = '/login';
     }
