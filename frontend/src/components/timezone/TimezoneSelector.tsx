@@ -27,6 +27,11 @@ export function TimezoneSelector({
   const { allTimezones, popularTimezones } = useTimezoneStore();
   const [searchQuery, setSearchQuery] = useState('');
 
+  const localTimezone = useMemo(() => {
+    const identifier = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return allTimezones.find((tz) => tz.identifier === identifier) ?? null;
+  }, [allTimezones]);
+
   const filteredTimezones = useMemo(() => {
     if (searchQuery.length < 2) {
       return allTimezones.filter((tz) => !excludeTimezones.includes(tz.identifier));
@@ -43,7 +48,10 @@ export function TimezoneSelector({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
+      <DialogContent
+        className="max-w-lg max-h-[80vh] flex flex-col"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Select Timezone</DialogTitle>
         </DialogHeader>
@@ -56,12 +64,26 @@ export function TimezoneSelector({
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search timezones..."
             className="pl-10"
-            autoFocus
           />
         </div>
 
         {searchQuery.length < 2 && (
           <>
+            {localTimezone && !excludeTimezones.includes(localTimezone.identifier) && (
+              <>
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-muted-foreground">Your timezone</h3>
+                  <Badge
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                    onClick={() => onSelect(localTimezone.identifier)}
+                  >
+                    {localTimezone.displayName}
+                  </Badge>
+                </div>
+                <Separator />
+              </>
+            )}
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-muted-foreground">Popular</h3>
               <div className="flex flex-wrap gap-2">
