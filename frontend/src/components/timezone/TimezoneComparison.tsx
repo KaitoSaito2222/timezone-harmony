@@ -433,7 +433,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                     isLiveMode.current = false;
                     setSelectedDateTime(e.target.value);
                   }}
-                  className="w-auto h-8"
+                  className="w-auto h-8 text-sm"
                 />
                 <span className="text-sm text-muted-foreground">in</span>
                 <select
@@ -441,7 +441,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                   onChange={(e) => {
                     setBaseTimezone(e.target.value);
                   }}
-                  className="h-8 px-2 rounded-md border border-input bg-background text-sm"
+                  className="h-8 px-3 py-1.5 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <option value="local">Local ({DateTime.local().zoneName})</option>
                   {timezones.map((tz) => (
@@ -519,7 +519,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
           <div className="mb-3 p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-800/50 rounded-lg">
             <p className="text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span>Click any time slot to export as a calendar event</span>
+              <span>Click slot to export to calendar</span>
             </p>
           </div>
           {/* Work Hours Toggle & Legend */}
