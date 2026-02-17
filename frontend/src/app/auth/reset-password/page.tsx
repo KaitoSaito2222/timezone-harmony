@@ -3,6 +3,7 @@ import { ResetPasswordContent } from './ResetPasswordContent';
 
 export const metadata: Metadata = {
   title: 'Reset Password',
+  description: 'Set a new password for your Timezone Harmony account.',
   robots: { index: false },
 };
 
