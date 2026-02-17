@@ -18,9 +18,9 @@ enum UserRole {
 
 model User {
   id              String            @id @default(uuid())
-  supabaseId      String            @unique @map("supabase_id")
-  email           String            @unique
-  displayName     String?           @map("display_name")
+  supabaseId      String            @unique @map("supabase_id") @db.VarChar(255)
+  email           String            @unique @db.VarChar(255)
+  displayName     String?           @map("display_name") @db.VarChar(100)
   role            UserRole          @default(user)
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
@@ -32,7 +32,7 @@ model User {
 model TimezonePreset {
   id          String                @id @default(uuid())
   userId      String                @map("user_id")
-  name        String
+  name        String                @db.VarChar(100)
   description String?               @db.Text
   isFavorite  Boolean               @default(false) @map("is_favorite")
   createdAt   DateTime              @default(now()) @map("created_at")
@@ -40,20 +40,22 @@ model TimezonePreset {
   user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       TimezonePresetItem[]
 
+  @@index([userId])
   @@map("timezone_presets")
 }
 
 model TimezonePresetItem {
   id                 String         @id @default(uuid())
   presetId           String         @map("preset_id")
-  timezoneIdentifier String         @map("timezone_identifier")
-  displayLabel       String?        @map("display_label")
+  timezoneIdentifier String         @map("timezone_identifier") @db.VarChar(100)
+  displayLabel       String?        @map("display_label") @db.VarChar(200)
   position           Int            @default(0)
-  startTime          String?        @map("start_time")
-  endTime            String?        @map("end_time")
+  startTime          String?        @map("start_time") @db.VarChar(5)
+  endTime            String?        @map("end_time") @db.VarChar(5)
   createdAt          DateTime       @default(now()) @map("created_at")
   preset             TimezonePreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
 
+  @@index([presetId])
   @@map("timezone_preset_items")
 }
 
