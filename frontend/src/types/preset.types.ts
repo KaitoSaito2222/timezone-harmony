@@ -1,4 +1,4 @@
-export interface PresetTimezone {
+export interface TimezonePresetItem {
   id: string;
   timezoneIdentifier: string;
   displayLabel: string | null;
@@ -12,7 +12,7 @@ export interface TimezonePreset {
   name: string;
   description: string | null;
   isFavorite: boolean;
-  timezones: PresetTimezone[];
+  items: TimezonePresetItem[];
   createdAt: string;
   updatedAt: string;
 }

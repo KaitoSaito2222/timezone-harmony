@@ -30,20 +30,20 @@ model User {
 }
 
 model TimezonePreset {
-  id          String           @id @default(uuid())
-  userId      String           @map("user_id")
+  id          String                @id @default(uuid())
+  userId      String                @map("user_id")
   name        String
-  description String?          @db.Text
-  isFavorite  Boolean          @default(false) @map("is_favorite")
-  createdAt   DateTime         @default(now()) @map("created_at")
-  updatedAt   DateTime         @updatedAt @map("updated_at")
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  timezones   PresetTimezone[]
+  description String?               @db.Text
+  isFavorite  Boolean               @default(false) @map("is_favorite")
+  createdAt   DateTime              @default(now()) @map("created_at")
+  updatedAt   DateTime              @updatedAt @map("updated_at")
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       TimezonePresetItem[]
 
   @@map("timezone_presets")
 }
 
-model PresetTimezone {
+model TimezonePresetItem {
   id                 String         @id @default(uuid())
   presetId           String         @map("preset_id")
   timezoneIdentifier String         @map("timezone_identifier")
@@ -54,6 +54,6 @@ model PresetTimezone {
   createdAt          DateTime       @default(now()) @map("created_at")
   preset             TimezonePreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
 
-  @@map("preset_timezones")
+  @@map("timezone_preset_items")
 }
 

@@ -167,7 +167,7 @@ export function PresetsPage() {
     setFormData({
       name: preset.name,
       description: preset.description || '',
-      timezones: preset.timezones.map((tz) => ({
+      timezones: preset.items.map((tz) => ({
         timezoneIdentifier: tz.timezoneIdentifier,
         displayLabel: tz.displayLabel || undefined,
         startTime: tz.startTime || undefined,
@@ -293,7 +293,7 @@ export function PresetsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-1">
-                  {preset.timezones
+                  {preset.items
                     .sort((a, b) => a.position - b.position)
                     .slice(0, 5)
                     .map((tz) => {
@@ -305,9 +305,9 @@ export function PresetsPage() {
                         </Badge>
                       );
                     })}
-                  {preset.timezones.length > 5 && (
+                  {preset.items.length > 5 && (
                     <Badge variant="outline" className="text-xs">
-                      +{preset.timezones.length - 5} more
+                      +{preset.items.length - 5} more
                     </Badge>
                   )}
                 </div>

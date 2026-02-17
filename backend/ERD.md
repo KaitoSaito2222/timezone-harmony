@@ -28,7 +28,7 @@ admin admin
     }
   
 
-  "preset_timezones" {
+  "timezone_preset_items" {
     String id "🗝️"
     String preset_id 
     String timezone_identifier 
@@ -41,5 +41,5 @@ admin admin
   
     "users" |o--|| "UserRole" : "enum:role"
     "timezone_presets" }o--|| users : "user"
-    "preset_timezones" }o--|| timezone_presets : "preset"
+    "timezone_preset_items" }o--|| timezone_presets : "preset"
 ```

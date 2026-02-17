@@ -76,12 +76,12 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
   },
 
   loadPreset: (preset: TimezonePreset) => {
-    const timezones = preset.timezones
+    const timezones = preset.items
       .sort((a, b) => a.position - b.position)
       .map((tz) => tz.timezoneIdentifier);
 
     const businessHours: BusinessHoursMap = {};
-    preset.timezones.forEach((tz) => {
+    preset.items.forEach((tz) => {
       if (tz.startTime || tz.endTime) {
         businessHours[tz.timezoneIdentifier] = {
           startTime: tz.startTime,

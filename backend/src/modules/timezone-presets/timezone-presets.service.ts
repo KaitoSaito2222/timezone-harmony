@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { TimezonePreset, PresetTimezone } from '@prisma/client';
+import { TimezonePreset, TimezonePresetItem } from '@prisma/client';
 
 interface CreatePresetDto {
   name: string;
@@ -32,7 +32,7 @@ interface UpdatePresetDto {
   }[];
 }
 
-type PresetWithTimezones = TimezonePreset & { timezones: PresetTimezone[] };
+type PresetWithTimezones = TimezonePreset & { items: TimezonePresetItem[] };
 
 @Injectable()
 export class TimezonePresetsService {
@@ -41,7 +41,7 @@ export class TimezonePresetsService {
   async findAllByUser(userId: string): Promise<PresetWithTimezones[]> {
     return this.prisma.timezonePreset.findMany({
       where: { userId },
-      include: { timezones: true },
+      include: { items: true },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -49,7 +49,7 @@ export class TimezonePresetsService {
   async findById(id: string, userId: string): Promise<PresetWithTimezones> {
     const preset = await this.prisma.timezonePreset.findFirst({
       where: { id, userId },
-      include: { timezones: true },
+      include: { items: true },
     });
     if (!preset) {
       throw new NotFoundException('Preset not found');
@@ -71,7 +71,7 @@ export class TimezonePresetsService {
         name: dto.name,
         description: dto.description,
         isFavorite: dto.isFavorite ?? false,
-        timezones: {
+        items: {
           create: dto.timezones.map((tz, index) => ({
             timezoneIdentifier: tz.timezoneIdentifier,
             displayLabel: tz.displayLabel,
@@ -81,7 +81,7 @@ export class TimezonePresetsService {
           })),
         },
       },
-      include: { timezones: true },
+      include: { items: true },
     });
   }
 
@@ -93,7 +93,7 @@ export class TimezonePresetsService {
     await this.findById(id, userId);
 
     if (dto.timezones) {
-      await this.prisma.presetTimezone.deleteMany({
+      await this.prisma.timezonePresetItem.deleteMany({
         where: { presetId: id },
       });
     }
@@ -116,7 +116,7 @@ export class TimezonePresetsService {
           },
         }),
       },
-      include: { timezones: true },
+      include: { items: true },
     });
   }
 
@@ -135,7 +135,7 @@ export class TimezonePresetsService {
     return this.prisma.timezonePreset.update({
       where: { id },
       data: { isFavorite: !preset.isFavorite },
-      include: { timezones: true },
+      include: { items: true },
     });
   }
 }
