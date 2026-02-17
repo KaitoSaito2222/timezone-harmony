@@ -433,7 +433,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                     isLiveMode.current = false;
                     setSelectedDateTime(e.target.value);
                   }}
-                  className="w-auto h-8 text-sm"
+                  className="w-auto"
                 />
                 <span className="text-sm text-muted-foreground">in</span>
                 <select
@@ -441,7 +441,7 @@ export function TimezoneComparison({ timezones, onAddTimezone, onRemoveTimezone 
                   onChange={(e) => {
                     setBaseTimezone(e.target.value);
                   }}
-                  className="h-8 px-3 py-1.5 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="h-9 px-3 py-1 rounded-md border border-input bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] md:text-sm"
                 >
                   <option value="local">Local ({DateTime.local().zoneName})</option>
                   {timezones.map((tz) => (
