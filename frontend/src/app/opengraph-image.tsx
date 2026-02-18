@@ -77,8 +77,7 @@ export default function Image() {
             lineHeight: 1.5,
           }}
         >
-          Compare time zones across the world.{' '}
-          Find optimal meeting times for your global team.
+          Compare time zones across the world. Find optimal meeting times for your global team.
         </div>
       </div>
     ),
