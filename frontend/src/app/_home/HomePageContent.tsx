@@ -10,7 +10,6 @@ import { TimezoneComparison } from '@/components/timezone/TimezoneComparison';
 import { LocalTimeCard } from '@/components/timezone/LocalTimeCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
 export function HomePageContent() {
   const {
     popularTimezones,
@@ -18,13 +17,24 @@ export function HomePageContent() {
     loadTimezones,
     addTimezone,
     removeTimezone,
+    setSelectedTimezones,
   } = useTimezoneStore();
   const { isAuthenticated } = useAuthStore();
   const [showSelector, setShowSelector] = useState(false);
 
   useEffect(() => {
     loadTimezones();
-  }, [loadTimezones]);
+
+    // Pre-load timezones from ?tz= query param (e.g. from city pair pages)
+    const params = new URLSearchParams(window.location.search);
+    const tzParam = params.get('tz');
+    if (tzParam) {
+      const identifiers = tzParam.split(',').map(decodeURIComponent).filter(Boolean);
+      if (identifiers.length > 0) {
+        setSelectedTimezones(identifiers);
+      }
+    }
+  }, [loadTimezones, setSelectedTimezones]);
 
   const handleAddTimezone = (identifier: string) => {
     addTimezone(identifier);
