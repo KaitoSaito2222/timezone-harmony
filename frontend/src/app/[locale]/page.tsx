@@ -24,19 +24,20 @@ export async function generateMetadata({
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}/`,
+      url: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}/en`,
       locale: locale === 'ja' ? 'ja_JP' : 'en_US',
     },
     twitter: {
+      card: 'summary_large_image',
       title: t('title'),
       description: t('description'),
     },
     alternates: {
-      canonical: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}/`,
+      canonical: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}/en`,
       languages: {
-        en: `${baseUrl}/`,
+        en: `${baseUrl}/en`,
         ja: `${baseUrl}/ja`,
-        'x-default': `${baseUrl}/`,
+        'x-default': `${baseUrl}/en`,
       },
     },
   };

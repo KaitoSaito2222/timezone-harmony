@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // English city pair pages
   const enPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/cities/${pair}`,
+    url: `${baseUrl}/en/cities/${pair}`,
     lastModified: new Date(),
     changeFrequency: 'daily',
     priority: 0.8,
@@ -26,7 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // English triplet pages
   const enTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/cities/${pair}`,
+    url: `${baseUrl}/en/cities/${pair}`,
     lastModified: new Date(),
     changeFrequency: 'daily',
     priority: 0.6,
@@ -42,7 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: baseUrl,
+      url: `${baseUrl}/en`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
@@ -52,6 +52,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/en/cities`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/ja/cities`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     ...enPairUrls,
     ...jaPairUrls,

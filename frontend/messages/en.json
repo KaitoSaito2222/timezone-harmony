@@ -129,6 +129,15 @@
     "emptyDesc": "Create your first preset to quickly load your favorite timezone combinations",
     "createPreset": "Create Preset"
   },
+  "citiesPage": {
+    "title": "World City Time Zone Comparisons",
+    "description": "Browse time zone comparisons for major world cities. Find time differences and optimal meeting times.",
+    "heading": "City Time Zone Comparisons",
+    "subtitle": "Select any two cities to see their current time difference and 24-hour comparison.",
+    "popularPairs": "Popular Comparisons",
+    "allCities": "All Cities",
+    "viewComparison": "View comparison"
+  },
   "timezone": {
     "noTimezonesTitle": "No Timezones Selected",
     "noTimezonesDesc": "Click \"Add Timezone\" to start comparing times across different regions",
