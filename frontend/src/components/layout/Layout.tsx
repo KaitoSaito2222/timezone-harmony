@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Header } from './Header';
 import { POPULAR_PAIRS } from '@/lib/cities';
 
@@ -9,6 +10,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  const t = useTranslations('common');
   return (
     <div className="min-h-screen bg-transparent flex flex-col">
       <Header />
@@ -20,7 +22,7 @@ export function Layout({ children }: LayoutProps) {
       <footer className="border-t mt-auto">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8">
           <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
-            Popular Comparisons
+            {t('popularComparisons')}
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-1.5">
             {POPULAR_PAIRS.map(({ slug, label }) => (
@@ -34,7 +36,7 @@ export function Layout({ children }: LayoutProps) {
             ))}
           </div>
           <p className="text-xs text-muted-foreground mt-6">
-            © {new Date().getFullYear()} Timezone Harmony
+            {t('copyright', { year: new Date().getFullYear() })}
           </p>
         </div>
       </footer>

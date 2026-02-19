@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,21 +22,23 @@ import {
 } from '@/components/ui/card';
 import { PageContainer } from '@/components/layout/PageContainer';
 
-const registerSchema = z
-  .object({
-    displayName: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-
-type RegisterForm = z.infer<typeof registerSchema>;
-
 export function RegisterPageContent() {
+  const t = useTranslations('auth');
+  const tv = useTranslations('validation');
+
+  const registerSchema = z
+    .object({
+      displayName: z.string().min(2, tv('nameMinLength')),
+      email: z.string().email(tv('invalidEmail')),
+      password: z.string().min(6, tv('passwordMinLength')),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: tv('passwordsMustMatch'),
+      path: ['confirmPassword'],
+    });
+  type RegisterForm = z.infer<typeof registerSchema>;
+
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { register: registerUser } = useAuthStore();
@@ -53,15 +55,13 @@ export function RegisterPageContent() {
     setIsLoading(true);
     try {
       await registerUser(data.email, data.password, data.displayName);
-      toast.success(
-        'Account created! Please check your email to confirm your account.'
-      );
+      toast.success(t('toastAccountCreated'));
       setTimeout(() => {
         router.push('/login');
       }, 100);
     } catch (error: unknown) {
       const err = error as { message?: string };
-      toast.error(err.message || 'Registration failed');
+      toast.error(err.message || t('toastRegistrationFailed'));
       setIsLoading(false);
     }
   };
@@ -71,21 +71,21 @@ export function RegisterPageContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Create Account
+            {t('registerTitle')}
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your information to create an account
+            {t('registerDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="displayName">Name</Label>
+              <Label htmlFor="displayName">{t('displayName')}</Label>
               <Input
                 {...register('displayName')}
                 type="text"
                 id="displayName"
-                placeholder="John Doe"
+                placeholder={t('displayNamePlaceholder')}
               />
               {errors.displayName && (
                 <p className="text-sm text-destructive">
@@ -95,12 +95,12 @@ export function RegisterPageContent() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 {...register('email')}
                 type="email"
                 id="email"
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
               />
               {errors.email && (
                 <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -108,12 +108,12 @@ export function RegisterPageContent() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input
                 {...register('password')}
                 type="password"
                 id="password"
-                placeholder="••••••••"
+                placeholder={t('passwordPlaceholder')}
               />
               {errors.password && (
                 <p className="text-sm text-destructive">
@@ -123,12 +123,12 @@ export function RegisterPageContent() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
               <Input
                 {...register('confirmPassword')}
                 type="password"
                 id="confirmPassword"
-                placeholder="••••••••"
+                placeholder={t('passwordPlaceholder')}
               />
               {errors.confirmPassword && (
                 <p className="text-sm text-destructive">
@@ -139,15 +139,15 @@ export function RegisterPageContent() {
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? 'Creating account...' : 'Create Account'}
+              {isLoading ? t('creatingAccount') : t('register')}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account?{' '}
+            {t('alreadyHaveAccount')}{' '}
             <Link href="/login" className="text-primary hover:underline font-medium">
-              Sign in
+              {t('signIn')}
             </Link>
           </p>
         </CardFooter>

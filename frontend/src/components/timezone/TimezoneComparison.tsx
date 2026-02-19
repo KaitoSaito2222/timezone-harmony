@@ -1,5 +1,6 @@
 'use client';
 import { useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
 import { Globe, Plus, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -30,12 +31,13 @@ export function TimezoneComparison({
   onAddTimezone,
   onRemoveTimezone,
 }: TimezoneComparisonProps) {
+  const t = useTranslations('timezone');
   const { allTimezones, businessHours } = useTimezoneStore();
   const { isAuthenticated } = useAuthStore();
 
   const getDisplayName = useCallback(
     (identifier: string): string => {
-      const tz = allTimezones.find((t) => t.identifier === identifier);
+      const tz = allTimezones.find((item) => item.identifier === identifier);
       return tz?.displayName ?? identifier.split('/')[1]?.replace(/_/g, ' ') ?? identifier;
     },
     [allTimezones]
@@ -96,13 +98,13 @@ export function TimezoneComparison({
           {timezones.length === 0 ? (
             <div className="py-12 text-center">
               <Globe className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-              <h3 className="text-xl font-semibold mb-2">No Timezones Selected</h3>
+              <h3 className="text-xl font-semibold mb-2">{t('noTimezonesTitle')}</h3>
               <p className="text-muted-foreground mb-6">
-                Click &quot;Add Timezone&quot; to start comparing times across different regions
+                {t('noTimezonesDesc')}
               </p>
               <Button onClick={onAddTimezone}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Your First Timezone
+                {t('addFirstTimezone')}
               </Button>
             </div>
           ) : (
@@ -110,7 +112,7 @@ export function TimezoneComparison({
               <div className="mb-3 p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-800/50 rounded-lg">
                 <p className="text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  <span>Click slot to export to calendar</span>
+                  <span>{t('clickSlotToExport')}</span>
                 </p>
               </div>
               <TimelineControls

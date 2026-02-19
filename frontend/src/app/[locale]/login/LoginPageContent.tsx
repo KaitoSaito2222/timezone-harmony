@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,14 +24,16 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { PageContainer } from '@/components/layout/PageContainer';
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
-
 export function LoginPageContent() {
+  const t = useTranslations('auth');
+  const tv = useTranslations('validation');
+
+  const loginSchema = z.object({
+    email: z.string().email(tv('invalidEmail')),
+    password: z.string().min(6, tv('passwordMinLength')),
+  });
+  type LoginForm = z.infer<typeof loginSchema>;
+
   const [isLoading, setIsLoading] = useState(false);
   const [isResendingEmail, setIsResendingEmail] = useState(false);
   const [showResendButton, setShowResendButton] = useState(false);
@@ -59,18 +61,18 @@ export function LoginPageContent() {
     setShowResendButton(false);
     try {
       await login(data.email, data.password);
-      toast.success('Welcome back!');
+      toast.success(t('toastWelcomeBack'));
       setTimeout(() => {
         router.push('/');
       }, 100);
     } catch (error: unknown) {
       const err = error as { message?: string };
-      const errorMessage = err.message || 'Login failed';
+      const errorMessage = err.message || t('loginFailed');
       if (
         errorMessage.includes('Email not confirmed') ||
         errorMessage.includes('email_not_confirmed')
       ) {
-        toast.error('Please confirm your email address before logging in');
+        toast.error(t('toastConfirmEmailFirst'));
         setShowResendButton(true);
       } else {
         toast.error(errorMessage);
@@ -82,17 +84,17 @@ export function LoginPageContent() {
   const handleResendConfirmation = async () => {
     const email = getValues('email');
     if (!email) {
-      toast.error('Please enter your email address');
+      toast.error(t('toastEnterEmail'));
       return;
     }
     setIsResendingEmail(true);
     try {
       await resendConfirmationEmail(email);
-      toast.success('Confirmation email sent! Please check your inbox.');
+      toast.success(t('toastConfirmationSent'));
       setShowResendButton(false);
     } catch (error: unknown) {
       const err = error as { message?: string };
-      toast.error(err.message || 'Failed to resend confirmation email');
+      toast.error(err.message || t('toastConfirmationFailed'));
     } finally {
       setIsResendingEmail(false);
     }
@@ -103,7 +105,7 @@ export function LoginPageContent() {
       await loginWithGoogle();
     } catch (error: unknown) {
       const err = error as { message?: string };
-      toast.error(err.message || 'Google login failed');
+      toast.error(err.message || t('toastGoogleFailed'));
     }
   };
 
@@ -111,20 +113,20 @@ export function LoginPageContent() {
     <PageContainer centered>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">{t('loginTitle')}</CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access your account
+            {t('loginDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 {...register('email')}
                 type="email"
                 id="email"
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
               />
               {errors.email && (
                 <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -132,12 +134,12 @@ export function LoginPageContent() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input
                 {...register('password')}
                 type="password"
                 id="password"
-                placeholder="••••••••"
+                placeholder={t('passwordPlaceholder')}
               />
               {errors.password && (
                 <p className="text-sm text-destructive">{errors.password.message}</p>
@@ -146,7 +148,7 @@ export function LoginPageContent() {
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? t('loggingIn') : t('login')}
             </Button>
 
             {showResendButton && (
@@ -160,7 +162,7 @@ export function LoginPageContent() {
                 {isResendingEmail && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isResendingEmail ? 'Sending...' : 'Resend Confirmation Email'}
+                {isResendingEmail ? t('sending') : t('resendConfirmation')}
               </Button>
             )}
           </form>
@@ -170,30 +172,30 @@ export function LoginPageContent() {
               href="/forgot-password"
               className="text-sm text-primary hover:underline"
             >
-              Forgot password?
+              {t('forgotPassword')}
             </Link>
           </div>
 
           <div className="relative my-6">
             <Separator />
             <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-              Or continue with
+              {t('orContinueWith')}
             </span>
           </div>
 
           <Button variant="outline" className="w-full" onClick={handleGoogleLogin}>
             <FcGoogle className="mr-2 h-5 w-5" />
-            Login with Google
+            {t('loginWithGoogle')}
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
+            {t('noAccount')}{' '}
             <Link
               href="/register"
               className="text-primary hover:underline font-medium"
             >
-              Sign up with email
+              {t('signUpWithEmail')}
             </Link>
           </p>
         </CardFooter>
