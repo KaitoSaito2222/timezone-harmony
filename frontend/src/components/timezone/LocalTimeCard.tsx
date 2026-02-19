@@ -30,9 +30,9 @@ export function LocalTimeCard() {
     localStorage.setItem(STORAGE_KEY, String(isVisible));
   }, [isVisible]);
 
-  const timezone = currentTime?.zoneName ?? DateTime.local().zoneName;
+  const timezone = currentTime?.zoneName ?? null;
   const cityName = timezone?.split('/').pop()?.replace(/_/g, ' ') || t('local');
-  const offset = currentTime?.toFormat('ZZZZ') ?? DateTime.local().toFormat('ZZZZ');
+  const offset = currentTime?.toFormat('ZZZZ') ?? null;
 
   if (!isVisible) {
     return (
