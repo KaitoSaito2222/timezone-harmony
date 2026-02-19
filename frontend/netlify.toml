@@ -10,6 +10,13 @@
 
 [[redirects]]
   from = "/"
+  to = "/ja"
+  status = 302
+  force = true
+  conditions = {Language = ["ja"]}
+
+[[redirects]]
+  from = "/"
   to = "/en"
   status = 301
   force = true
