@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
 import { Clock, LogOut, BookMarked, Menu, Home } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useAuthStore } from '@/stores/authStore';
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function Header() {
+  const t = useTranslations('common');
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +59,7 @@ export function Header() {
           <Link href="/" className="flex items-center space-x-2 group">
             <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-primary transition-transform group-hover:rotate-12" />
             <span className="text-base sm:text-xl font-bold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Timezone Harmony
+              {t('appName')}
             </span>
           </Link>
 
@@ -70,13 +71,13 @@ export function Header() {
                 <Button variant="ghost" size="sm" asChild>
                   <Link href="/" className="flex items-center gap-2">
                     <Home className="h-4 w-4" />
-                    Home
+                    {t('home')}
                   </Link>
                 </Button>
                 <Button variant="ghost" size="sm" asChild>
                   <Link href="/presets" className="flex items-center gap-2">
                     <BookMarked className="h-4 w-4" />
-                    Presets
+                    {t('presets')}
                   </Link>
                 </Button>
 
@@ -94,7 +95,7 @@ export function Header() {
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                          {user?.displayName || 'User'}
+                          {user?.displayName || t('user')}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
                           {user?.email}
@@ -105,7 +106,7 @@ export function Header() {
                     <DropdownMenuItem asChild>
                       <Link href="/presets" className="cursor-pointer">
                         <BookMarked className="mr-2 h-4 w-4" />
-                        My Presets
+                        {t('myPresets')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -114,14 +115,14 @@ export function Header() {
                       className="text-destructive focus:text-destructive cursor-pointer"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      Logout
+                      {t('logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             ) : (
               <Button asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login">{t('login')}</Link>
               </Button>
             )}
           </nav>
@@ -132,7 +133,7 @@ export function Header() {
               <SheetTrigger asChild className="md:hidden">
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <Menu className="h-5 w-5" />
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">{t('openMenu')}</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-70 sm:w-80">
@@ -140,7 +141,7 @@ export function Header() {
                   <SheetTitle className="flex items-center gap-2">
                     <Clock className="h-5 w-5 text-primary" />
                     <span className="bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                      Timezone Harmony
+                      {t('appName')}
                     </span>
                   </SheetTitle>
                 </SheetHeader>
@@ -154,7 +155,7 @@ export function Header() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {user?.displayName || 'User'}
+                        {user?.displayName || t('user')}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {user?.email}
@@ -167,20 +168,20 @@ export function Header() {
                     <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
                       <Link href="/">
                         <Home className="mr-3 h-4 w-4" />
-                        Home
+                        {t('home')}
                       </Link>
                     </Button>
                     <Button variant="ghost" className="w-full justify-start" asChild onClick={handleNavClick}>
                       <Link href="/presets">
                         <BookMarked className="mr-3 h-4 w-4" />
-                        My Presets
+                        {t('myPresets')}
                       </Link>
                     </Button>
                   </div>
 
                   <div className="border-t pt-4 mt-2 flex flex-col gap-1">
                     <div className="flex items-center justify-between px-1">
-                      <span className="text-sm text-muted-foreground">Theme</span>
+                      <span className="text-sm text-muted-foreground">{t('theme')}</span>
                       <ThemeToggle />
                     </div>
                     <Button
@@ -189,7 +190,7 @@ export function Header() {
                       onClick={handleLogout}
                     >
                       <LogOut className="mr-3 h-4 w-4" />
-                      Logout
+                      {t('logout')}
                     </Button>
                   </div>
                 </nav>
@@ -199,7 +200,7 @@ export function Header() {
             <div className="flex items-center gap-2 md:hidden">
               <ThemeToggle />
               <Button asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login">{t('login')}</Link>
               </Button>
             </div>
           )}
