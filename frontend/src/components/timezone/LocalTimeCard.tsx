@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
 import { MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 const STORAGE_KEY = 'localTimeCard_visible';
 
 export function LocalTimeCard() {
+  const t = useTranslations('timezone');
   const [currentTime, setCurrentTime] = useState<DateTime | null>(null);
   const [isVisible, setIsVisible] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -29,7 +31,7 @@ export function LocalTimeCard() {
   }, [isVisible]);
 
   const timezone = currentTime?.zoneName ?? DateTime.local().zoneName;
-  const cityName = timezone?.split('/').pop()?.replace(/_/g, ' ') || 'Local';
+  const cityName = timezone?.split('/').pop()?.replace(/_/g, ' ') || t('local');
   const offset = currentTime?.toFormat('ZZZZ') ?? DateTime.local().toFormat('ZZZZ');
 
   if (!isVisible) {
@@ -42,7 +44,7 @@ export function LocalTimeCard() {
           className="text-muted-foreground"
         >
           <Eye className="h-4 w-4 mr-1" />
-          Show Local Time
+          {t('showLocalTime')}
         </Button>
       </div>
     );
@@ -54,7 +56,7 @@ export function LocalTimeCard() {
         {/* Title */}
         <h3 className="flex items-center gap-2 text-base font-semibold">
           <MapPin className="h-5 w-5 text-primary" />
-          Local Timezone
+          {t('localTimezone')}
         </h3>
 
         {/* Content */}

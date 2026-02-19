@@ -3,20 +3,41 @@ import { getAllPairSlugs, getPopularTripletSlugs } from '@/lib/cities';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.netlify.app';
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.com';
 
-  const pairUrls: MetadataRoute.Sitemap = getAllPairSlugs().map(pair => ({
+  const pairSlugs = getAllPairSlugs();
+  const tripletSlugs = getPopularTripletSlugs();
+
+  // English city pair pages
+  const enPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
     url: `${baseUrl}/cities/${pair}`,
     lastModified: new Date(),
     changeFrequency: 'daily',
     priority: 0.8,
   }));
 
-  const tripletUrls: MetadataRoute.Sitemap = getPopularTripletSlugs().map(pair => ({
+  // Japanese city pair pages
+  const jaPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
+    url: `${baseUrl}/ja/cities/${pair}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.7,
+  }));
+
+  // English triplet pages
+  const enTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
     url: `${baseUrl}/cities/${pair}`,
     lastModified: new Date(),
     changeFrequency: 'daily',
     priority: 0.6,
+  }));
+
+  // Japanese triplet pages
+  const jaTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
+    url: `${baseUrl}/ja/cities/${pair}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.5,
   }));
 
   return [
@@ -26,7 +47,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 1,
     },
-    ...pairUrls,
-    ...tripletUrls,
+    {
+      url: `${baseUrl}/ja`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    ...enPairUrls,
+    ...jaPairUrls,
+    ...enTripletUrls,
+    ...jaTripletUrls,
   ];
 }

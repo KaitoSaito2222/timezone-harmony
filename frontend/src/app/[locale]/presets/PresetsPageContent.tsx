@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Clock, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import { PresetFormDialog } from './_components/PresetFormDialog';
 import { DeletePresetDialog } from './_components/DeletePresetDialog';
 
 export function PresetsPageContent() {
+  const t = useTranslations('presets');
   const {
     presets,
     loading,
@@ -58,14 +60,14 @@ export function PresetsPageContent() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold">My Presets</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">{t('title')}</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Save and manage your timezone combinations
+            {t('pageDescription')}
           </p>
         </div>
         <Button onClick={() => setIsCreateDialogOpen(true)} className="w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
-          New Preset
+          {t('newPreset')}
         </Button>
       </div>
 
@@ -73,13 +75,13 @@ export function PresetsPageContent() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Clock className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No presets yet</h3>
+            <h3 className="text-lg font-medium mb-2">{t('emptyTitle')}</h3>
             <p className="text-muted-foreground text-center mb-4">
-              Create your first preset to quickly load your favorite timezone combinations
+              {t('emptyDesc')}
             </p>
             <Button onClick={() => setIsCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Create Preset
+              {t('createPreset')}
             </Button>
           </CardContent>
         </Card>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Clock, Lock } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -10,7 +11,10 @@ import { TimezoneComparison } from '@/components/timezone/TimezoneComparison';
 import { LocalTimeCard } from '@/components/timezone/LocalTimeCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 export function HomePageContent() {
+  const t = useTranslations('home');
+  const tc = useTranslations('common');
   const {
     popularTimezones,
     selectedTimezones,
@@ -55,7 +59,7 @@ export function HomePageContent() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-primary" />
-            Quick Access - Popular Timezones
+            {t('quickAccess')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -81,12 +85,10 @@ export function HomePageContent() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-2 text-primary">
                 <Lock className="h-5 w-5" />
-                <p className="font-medium">
-                  Login to save your timezone presets and business hours
-                </p>
+                <p className="font-medium">{t('loginPrompt')}</p>
               </div>
               <Link href="/login">
-                <Button>Login</Button>
+                <Button>{tc('login')}</Button>
               </Link>
             </div>
           </CardContent>

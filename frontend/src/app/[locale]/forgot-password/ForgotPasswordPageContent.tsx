@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,13 +22,15 @@ import {
 } from '@/components/ui/card';
 import { PageContainer } from '@/components/layout/PageContainer';
 
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Invalid email address'),
-});
-
-type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
-
 export function ForgotPasswordPageContent() {
+  const t = useTranslations('auth');
+  const tv = useTranslations('validation');
+
+  const forgotPasswordSchema = z.object({
+    email: z.string().email(tv('invalidEmail')),
+  });
+  type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
+
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const { resetPassword } = useAuthStore();
@@ -46,10 +49,10 @@ export function ForgotPasswordPageContent() {
     try {
       await resetPassword(data.email);
       setEmailSent(true);
-      toast.success('Password reset email sent! Please check your inbox.');
+      toast.success(t('toastResetEmailSent'));
     } catch (error: unknown) {
       const err = error as { message?: string };
-      toast.error(err.message || 'Failed to send reset email');
+      toast.error(err.message || t('toastResetEmailFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -66,17 +69,15 @@ export function ForgotPasswordPageContent() {
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-center">
-              Check your email
+              {t('checkEmailTitle')}
             </CardTitle>
             <CardDescription className="text-center">
-              We&apos;ve sent a password reset link to{' '}
-              <strong>{getValues('email')}</strong>
+              {t('checkEmailDesc', { email: getValues('email') })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              Click the link in the email to reset your password. If you
-              don&apos;t see the email, check your spam folder.
+              {t('checkEmailBody')}
             </p>
           </CardContent>
           <CardFooter className="flex flex-col space-y-2">
@@ -85,11 +86,11 @@ export function ForgotPasswordPageContent() {
               className="w-full"
               onClick={() => setEmailSent(false)}
             >
-              Try another email
+              {t('tryAnotherEmail')}
             </Button>
             <Link href="/login" className="w-full">
               <Button variant="ghost" className="w-full">
-                Back to login
+                {t('backToLogin')}
               </Button>
             </Link>
           </CardFooter>
@@ -103,22 +104,21 @@ export function ForgotPasswordPageContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Forgot Password
+            {t('forgotPasswordTitle')}
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your email address and we&apos;ll send you a link to reset
-            your password
+            {t('forgotPasswordDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 {...register('email')}
                 type="email"
                 id="email"
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
                 autoFocus
               />
               {errors.email && (
@@ -128,15 +128,15 @@ export function ForgotPasswordPageContent() {
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? 'Sending...' : 'Send reset link'}
+              {isLoading ? t('sending') : t('sendResetLink')}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
-            Remember your password?{' '}
+            {t('rememberPassword')}{' '}
             <Link href="/login" className="text-primary hover:underline font-medium">
-              Back to login
+              {t('backToLogin')}
             </Link>
           </p>
         </CardFooter>

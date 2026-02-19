@@ -1,13 +1,15 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageContainer } from '@/components/layout/PageContainer';
 
 export function AuthCallbackContent() {
+  const t = useTranslations('auth');
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
   const hasShownToast = useRef(false);
@@ -29,7 +31,7 @@ export function AuthCallbackContent() {
         if (session) {
           if (!hasShownToast.current) {
             hasShownToast.current = true;
-            toast.success('Welcome back!');
+            toast.success(t('toastWelcomeBack'));
           }
           router.replace('/');
         } else {
@@ -43,7 +45,7 @@ export function AuthCallbackContent() {
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, t]);
 
   if (!isChecking) {
     return null;
@@ -53,7 +55,7 @@ export function AuthCallbackContent() {
     <PageContainer centered>
       <div className="text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-        <p className="mt-4 text-muted-foreground">Completing authentication...</p>
+        <p className="mt-4 text-muted-foreground">{t('completingAuth')}</p>
       </div>
     </PageContainer>
   );
