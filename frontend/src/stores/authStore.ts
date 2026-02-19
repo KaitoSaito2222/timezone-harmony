@@ -46,10 +46,11 @@ export const useAuthStore = create<AuthState>()((set) => ({
     const supabase = createClient();
     const siteUrl =
       process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+    const locale = window.location.pathname.startsWith('/ja') ? 'ja' : 'en';
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${siteUrl}/auth/callback`,
+        redirectTo: `${siteUrl}/${locale}/auth/callback`,
       },
     });
     if (error) throw error;
