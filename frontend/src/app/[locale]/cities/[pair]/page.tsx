@@ -71,7 +71,7 @@ export async function generateMetadata({
         city2: cities[1].name, country2: cities[1].country,
       });
 
-  const enUrl = `${baseUrl}/cities/${pair}`;
+  const enUrl = `${baseUrl}/en/cities/${pair}`;
   const jaUrl = `${baseUrl}/ja/cities/${pair}`;
 
   const keywords = locale === 'ja'
@@ -97,6 +97,7 @@ export async function generateMetadata({
       locale: locale === 'ja' ? 'ja_JP' : 'en_US',
     },
     twitter: {
+      card: 'summary_large_image',
       title,
       description,
     },
@@ -175,7 +176,7 @@ export default async function CityPairPage({
   const cities = parseCities(pair);
   if (!cities) notFound();
 
-  const localePath = locale === 'ja' ? '/ja' : '';
+  const localePath = locale === 'ja' ? '/ja' : '/en';
 
   // Redirect to canonical URL if slugs are not in alphabetical order
   const sorted = [...cities].sort((a, b) => a.slug.localeCompare(b.slug));
@@ -245,7 +246,7 @@ export default async function CityPairPage({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: t('breadcrumbHome'), item: baseUrl },
+      { '@type': 'ListItem', position: 1, name: t('breadcrumbHome'), item: `${baseUrl}${localePath}/` },
       { '@type': 'ListItem', position: 2, name: t('breadcrumbCities'), item: `${baseUrl}${localePath}/cities` },
       { '@type': 'ListItem', position: 3, name: pageTitle, item: `${baseUrl}${localePath}/cities/${pair}` },
     ],
@@ -290,7 +291,9 @@ export default async function CityPairPage({
                 {t('breadcrumbHome')}
               </Link>
               <span>/</span>
-              <span>{t('breadcrumbCities')}</span>
+              <Link href={`${localePath}/cities`} className="hover:text-foreground transition-colors">
+                {t('breadcrumbCities')}
+              </Link>
               <span>/</span>
               <span className="text-foreground">{pageTitle}</span>
             </nav>
