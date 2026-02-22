@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +14,7 @@ interface DeletePresetDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   presetName?: string;
+  isSubmitting: boolean;
   onDelete: () => void;
 }
 
@@ -20,6 +22,7 @@ export function DeletePresetDialog({
   open,
   onOpenChange,
   presetName,
+  isSubmitting,
   onDelete,
 }: DeletePresetDialogProps) {
   return (
@@ -33,8 +36,11 @@ export function DeletePresetDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
+          <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onDelete} disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Delete
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

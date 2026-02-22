@@ -31,6 +31,7 @@ export function usePresetsData() {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<TimezonePreset | null>(null);
   const [formData, setFormData] = useState<PresetFormData>(INITIAL_FORM);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -88,7 +89,8 @@ export function usePresetsData() {
     }));
 
   const handleCreate = async () => {
-    if (!validateForm()) return;
+    if (isSubmitting || !validateForm()) return;
+    setIsSubmitting(true);
     try {
       await presetService.create({
         name: formData.name,
@@ -101,12 +103,14 @@ export function usePresetsData() {
       loadPresets();
     } catch {
       toast.error('Failed to create preset');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
-    if (!selectedPreset) return;
-    if (!validateForm()) return;
+    if (!selectedPreset || isSubmitting || !validateForm()) return;
+    setIsSubmitting(true);
     try {
       await presetService.update(selectedPreset.id, {
         name: formData.name,
@@ -119,11 +123,14 @@ export function usePresetsData() {
       loadPresets();
     } catch {
       toast.error('Failed to update preset');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!selectedPreset) return;
+    if (!selectedPreset || isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await presetService.delete(selectedPreset.id);
       toast.success('Preset deleted');
@@ -132,6 +139,8 @@ export function usePresetsData() {
       loadPresets();
     } catch {
       toast.error('Failed to delete preset');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -219,6 +228,7 @@ export function usePresetsData() {
   return {
     presets,
     loading,
+    isSubmitting,
     selectedPreset,
     formData,
     setFormData,

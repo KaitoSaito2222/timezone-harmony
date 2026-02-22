@@ -14,6 +14,7 @@ export function PresetsPageContent() {
   const {
     presets,
     loading,
+    isSubmitting,
     selectedPreset,
     formData,
     setFormData,
@@ -106,6 +107,7 @@ export function PresetsPageContent() {
         isEdit={isEditDialogOpen}
         formData={formData}
         isSelectorOpen={isSelectorOpen}
+        isSubmitting={isSubmitting}
         onNameChange={(value) => setFormData((prev) => ({ ...prev, name: value }))}
         onDescriptionChange={(value) =>
           setFormData((prev) => ({ ...prev, description: value }))
@@ -125,6 +127,7 @@ export function PresetsPageContent() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         presetName={selectedPreset?.name}
+        isSubmitting={isSubmitting}
         onDelete={handleDelete}
       />
 

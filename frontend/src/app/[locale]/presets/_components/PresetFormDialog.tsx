@@ -1,4 +1,4 @@
-import { Plus, Trash2, ChevronLeft } from 'lucide-react';
+import { Plus, Trash2, ChevronLeft, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,7 @@ interface PresetFormDialogProps {
   isEdit: boolean;
   formData: PresetFormData;
   isSelectorOpen: boolean;
+  isSubmitting: boolean;
   onNameChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onSave: () => void;
@@ -40,6 +41,7 @@ export function PresetFormDialog({
   isEdit,
   formData,
   isSelectorOpen,
+  isSubmitting,
   onNameChange,
   onDescriptionChange,
   onSave,
@@ -162,10 +164,13 @@ export function PresetFormDialog({
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={onCancel}>
+              <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
                 Cancel
               </Button>
-              <Button onClick={onSave}>{isEdit ? 'Save Changes' : 'Create'}</Button>
+              <Button onClick={onSave} disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isEdit ? 'Save Changes' : 'Create'}
+              </Button>
             </DialogFooter>
           </>
         )}
