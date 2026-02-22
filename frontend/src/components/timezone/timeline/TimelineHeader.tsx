@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { TimezonePreset } from '@/types/preset.types';
+import { MAX_TIMEZONES } from '@/stores/timezoneStore';
 
 interface TimelineHeaderProps {
   timezones: string[];
@@ -114,9 +115,18 @@ export function TimelineHeader({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          <Button onClick={onAddTimezone} size="sm" className="h-9">
+          <Button
+            onClick={onAddTimezone}
+            size="sm"
+            className="h-9"
+            disabled={timezones.length >= MAX_TIMEZONES}
+            title={timezones.length >= MAX_TIMEZONES ? `Max ${MAX_TIMEZONES} timezones` : undefined}
+          >
             <Plus className="h-4 w-4 mr-1.5" />
             Add Timezone
+            <span className="ml-1.5 text-xs opacity-70">
+              {timezones.length}/{MAX_TIMEZONES}
+            </span>
           </Button>
         </div>
       </div>
