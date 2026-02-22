@@ -16,19 +16,19 @@ export function TimelineControls({
   onToggleLayout,
 }: TimelineControlsProps) {
   return (
-    <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+    <div className="flex flex-wrap items-center justify-between mb-2 gap-2">
       {showBusinessHours ? (
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-green-100 dark:bg-green-900/30 border border-green-500" />
+        <div className="flex items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="w-3 h-3 rounded bg-green-100 dark:bg-green-900/30 border border-green-500 shrink-0" />
             <span>Work</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-amber-100 dark:bg-amber-900/30 border border-amber-500" />
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="w-3 h-3 rounded bg-amber-100 dark:bg-amber-900/30 border border-amber-500 shrink-0" />
             <span>Partial</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900/30 border border-red-500" />
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900/30 border border-red-500 shrink-0" />
             <span>Off</span>
           </div>
         </div>
@@ -43,7 +43,7 @@ export function TimelineControls({
           onClick={onToggleBusinessHours}
         >
           <Clock className="h-3.5 w-3.5 mr-1.5" />
-          {showBusinessHours ? 'Hide Work Hours' : 'Show Work Hours'}
+          Work Hours
         </Button>
         <Button
           variant="outline"
@@ -53,13 +53,13 @@ export function TimelineControls({
         >
           {layoutMode === 'vertical' ? (
             <>
-              <Rows3 className="h-3.5 w-3.5 mr-1.5" />
-              Horizontal
+              <Rows3 className="h-3.5 w-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Horizontal</span>
             </>
           ) : (
             <>
-              <Columns3 className="h-3.5 w-3.5 mr-1.5" />
-              Vertical
+              <Columns3 className="h-3.5 w-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Vertical</span>
             </>
           )}
         </Button>

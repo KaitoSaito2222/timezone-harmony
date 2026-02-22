@@ -3,6 +3,9 @@ import { DateTime } from 'luxon';
 export interface TimeSlot {
   hour: number;
   formatted: string;
+  hourLabel: string;
+  ampm: string;
+  isNewDay: boolean;
   className: string;
   fullTime: DateTime;
 }
@@ -59,7 +62,10 @@ export const generateTimeSlots = (
     const time = localBase.plus({ hours: i });
     slots.push({
       hour: time.hour,
-      formatted: time.toFormat('HH:mm'),
+      formatted: time.toFormat('ha'),
+      hourLabel: time.toFormat('h'),
+      ampm: time.toFormat('a'),
+      isNewDay: i > 0 && time.hour === 0,
       className: getTimeSlotClass(time.hour, startTime, endTime, showHighlight),
       fullTime: time,
     });

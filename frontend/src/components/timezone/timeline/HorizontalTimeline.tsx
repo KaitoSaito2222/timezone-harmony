@@ -49,8 +49,8 @@ export function HorizontalTimeline({
 
           return (
             <div key={timezone} className="flex">
-              <div className="sticky left-0 z-10 bg-primary text-primary-foreground rounded-l-lg p-3 min-w-36 sm:min-w-44 flex flex-col justify-center shrink-0">
-                <div className="font-bold text-sm">{cityName}</div>
+              <div className="sticky left-0 z-10 bg-primary text-primary-foreground rounded-l-lg p-3 w-36 sm:w-44 flex flex-col justify-center shrink-0 overflow-hidden">
+                <div className="font-bold text-sm truncate">{cityName}</div>
                 <div className="text-xs opacity-80">UTC{offset}</div>
                 <div className="text-xs opacity-70">{dateStr}</div>
               </div>
@@ -65,8 +65,12 @@ export function HorizontalTimeline({
                       p-2 text-center rounded-lg cursor-pointer transition-all duration-200
                       hover:scale-105 hover:shadow-md border-2 min-w-14
                     `}
+                    style={slot.isNewDay ? { borderLeftColor: 'black' } : undefined}
                   >
-                    <div className="text-xs font-bold">{slot.formatted}</div>
+                    <div className="leading-none">
+                      <span className="text-xs font-bold">{slot.hourLabel}</span>
+                      <span className="text-[10px] text-muted-foreground ml-0.5">{slot.ampm}</span>
+                    </div>
                   </div>
                 ))}
               </div>
