@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { Clock, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { TimezoneSelector } from '@/components/timezone/TimezoneSelector';
 import { usePresetsData } from './_hooks/usePresetsData';
 import { PresetCard } from './_components/PresetCard';
 import { PresetFormDialog } from './_components/PresetFormDialog';
@@ -106,6 +105,7 @@ export function PresetsPageContent() {
         open={isCreateDialogOpen || isEditDialogOpen}
         isEdit={isEditDialogOpen}
         formData={formData}
+        isSelectorOpen={isSelectorOpen}
         onNameChange={(value) => setFormData((prev) => ({ ...prev, name: value }))}
         onDescriptionChange={(value) =>
           setFormData((prev) => ({ ...prev, description: value }))
@@ -115,6 +115,8 @@ export function PresetsPageContent() {
         onAddTimezone={() => setIsSelectorOpen(true)}
         onRemoveTimezone={removeTimezone}
         onUpdateTimezoneHours={updateTimezoneHours}
+        onSelectTimezone={addTimezone}
+        onCloseSelector={() => setIsSelectorOpen(false)}
         getTimezoneName={getTimezoneName}
         getTimezoneOffset={getTimezoneOffset}
       />
@@ -126,13 +128,6 @@ export function PresetsPageContent() {
         onDelete={handleDelete}
       />
 
-      {isSelectorOpen && (
-        <TimezoneSelector
-          onSelect={addTimezone}
-          onClose={() => setIsSelectorOpen(false)}
-          excludeTimezones={formData.timezones.map((tz) => tz.timezoneIdentifier)}
-        />
-      )}
     </div>
   );
 }
