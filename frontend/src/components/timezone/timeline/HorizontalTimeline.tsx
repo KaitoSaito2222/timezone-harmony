@@ -1,5 +1,6 @@
 'use client';
 import { DateTime } from 'luxon';
+import { useLocale } from 'next-intl';
 import { generateTimeSlots } from '@/lib/timeline';
 import type { BusinessHoursMap } from '@/lib/timeline';
 
@@ -28,6 +29,8 @@ export function HorizontalTimeline({
   onTimeSlotClick,
   getDisplayName,
 }: HorizontalTimelineProps) {
+  const locale = useLocale();
+  const use24h = locale === 'ja';
   return (
     <div className="overflow-x-auto">
       <div className="min-w-fit space-y-2 pb-4">
@@ -68,8 +71,14 @@ export function HorizontalTimeline({
                     style={slot.isNewDay ? { borderLeftColor: 'black' } : undefined}
                   >
                     <div className="leading-none">
-                      <span className="text-xs font-bold">{slot.hourLabel}</span>
-                      <span className="text-[10px] text-muted-foreground ml-0.5">{slot.ampm}</span>
+                      {use24h ? (
+                        <span className="text-xs font-bold">{slot.hour}</span>
+                      ) : (
+                        <>
+                          <span className="text-xs font-bold">{slot.hourLabel}</span>
+                          <span className="text-[10px] text-muted-foreground ml-0.5">{slot.ampm}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -146,6 +146,19 @@
     "clickSlotToExport": "スロットをクリックしてカレンダーにエクスポート",
     "showLocalTime": "現地時刻を表示",
     "localTimezone": "ローカルタイムゾーン",
-    "local": "現地"
+    "local": "現地",
+    "timelineTitle": "タイムライン比較",
+    "addTimezone": "タイムゾーンを追加",
+    "presetsLabel": "プリセット",
+    "saveCurrentPreset": "現在の設定を保存",
+    "noPresetsYet": "プリセットなし",
+    "managePresets": "プリセットを管理",
+    "workHours": "営業時間",
+    "workLegend": "業務中",
+    "partialLegend": "一部",
+    "offLegend": "業務外",
+    "layoutHorizontal": "横表示",
+    "layoutVertical": "縦表示",
+    "inLabel": "の時間帯"
   }
 }

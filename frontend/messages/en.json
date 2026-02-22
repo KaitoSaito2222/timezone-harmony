@@ -146,6 +146,19 @@
     "clickSlotToExport": "Click slot to export to calendar",
     "showLocalTime": "Show Local Time",
     "localTimezone": "Local Timezone",
-    "local": "Local"
+    "local": "Local",
+    "timelineTitle": "Timeline Comparison",
+    "addTimezone": "Add Timezone",
+    "presetsLabel": "Presets",
+    "saveCurrentPreset": "Save Current as Preset",
+    "noPresetsYet": "No presets yet",
+    "managePresets": "Manage Presets",
+    "workHours": "Work Hours",
+    "workLegend": "Work",
+    "partialLegend": "Partial",
+    "offLegend": "Off",
+    "layoutHorizontal": "Horizontal",
+    "layoutVertical": "Vertical",
+    "inLabel": "in"
   }
 }

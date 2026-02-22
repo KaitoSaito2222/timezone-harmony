@@ -1,5 +1,6 @@
 'use client';
 import { DateTime } from 'luxon';
+import { useLocale } from 'next-intl';
 import { generateTimeSlots } from '@/lib/timeline';
 import type { BusinessHoursMap } from '@/lib/timeline';
 
@@ -32,6 +33,8 @@ export function VerticalTimeline({
   scrollRefs,
   onScroll,
 }: VerticalTimelineProps) {
+  const locale = useLocale();
+  const use24h = locale === 'ja';
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-2 sm:gap-3 min-w-fit pb-4">
@@ -76,8 +79,14 @@ export function VerticalTimeline({
                     style={slot.isNewDay ? { borderTopColor: 'black' } : undefined}
                   >
                     <div className="leading-none">
-                      <span className="text-sm font-bold">{slot.hourLabel}</span>
-                      <span className="text-xs text-muted-foreground ml-0.5">{slot.ampm}</span>
+                      {use24h ? (
+                        <span className="text-sm font-bold">{slot.hour}</span>
+                      ) : (
+                        <>
+                          <span className="text-sm font-bold">{slot.hourLabel}</span>
+                          <span className="text-xs text-muted-foreground ml-0.5">{slot.ampm}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
