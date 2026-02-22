@@ -87,6 +87,7 @@
     "backToLogin": "ログインに戻る",
     "checkEmailTitle": "メールをご確認ください",
     "checkEmailDesc": "{email}にパスワードリセットのリンクをお送りしました",
+    "registerCheckEmailDesc": "{email}に確認メールを送信しました。ログイン前にメール内のリンクをクリックしてアカウントを有効化してください。",
     "checkEmailBody": "メール内のリンクをクリックしてパスワードをリセットしてください。メールが届かない場合はスパムフォルダをご確認ください。",
     "tryAnotherEmail": "別のメールアドレスを試す",
     "verifyingLink": "リセットリンクを確認中...",

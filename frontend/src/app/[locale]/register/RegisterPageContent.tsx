@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link, useRouter } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mail } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,8 +40,26 @@ export function RegisterPageContent() {
   type RegisterForm = z.infer<typeof registerSchema>;
 
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const { register: registerUser } = useAuthStore();
+  const [isResending, setIsResending] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { register: registerUser, resendConfirmationEmail } = useAuthStore();
+
+  useEffect(() => {
+    return () => { if (cooldownRef.current) clearInterval(cooldownRef.current); };
+  }, []);
+
+  const startCooldown = (seconds: number) => {
+    setCooldown(seconds);
+    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) { clearInterval(cooldownRef.current!); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const {
     register,
@@ -55,16 +73,68 @@ export function RegisterPageContent() {
     setIsLoading(true);
     try {
       await registerUser(data.email, data.password, data.displayName);
-      toast.success(t('toastAccountCreated'));
-      setTimeout(() => {
-        router.push('/login');
-      }, 100);
+      setRegisteredEmail(data.email);
+      startCooldown(45);
     } catch (error: unknown) {
       const err = error as { message?: string };
       toast.error(err.message || t('toastRegistrationFailed'));
       setIsLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    if (!registeredEmail) return;
+    setIsResending(true);
+    try {
+      await resendConfirmationEmail(registeredEmail);
+      toast.success(t('toastConfirmationSent'));
+      startCooldown(45);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      const match = err.message?.match(/after (\d+) seconds/);
+      if (match) {
+        startCooldown(parseInt(match[1]) + 1);
+      }
+      toast.error(err.message || t('toastConfirmationFailed'));
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  if (registeredEmail) {
+    return (
+      <PageContainer centered>
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <div className="flex justify-center mb-2">
+              <div className="rounded-full bg-primary/10 p-3">
+                <Mail className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-center">
+              {t('checkEmailTitle')}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {t('registerCheckEmailDesc', { email: registeredEmail })}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <Button onClick={handleResend} variant="outline" className="w-full" disabled={isResending || cooldown > 0}>
+              {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isResending
+                ? t('sending')
+                : cooldown > 0
+                  ? `${t('resendConfirmation')} (${cooldown}s)`
+                  : t('resendConfirmation')}
+            </Button>
+            <Button asChild variant="ghost" className="w-full">
+              <Link href="/login">{t('backToLogin')}</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer centered>

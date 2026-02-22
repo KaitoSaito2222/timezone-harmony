@@ -87,6 +87,7 @@
     "backToLogin": "Back to login",
     "checkEmailTitle": "Check your email",
     "checkEmailDesc": "We've sent a password reset link to {email}",
+    "registerCheckEmailDesc": "We sent a confirmation email to {email}. Click the link in the email to activate your account before logging in.",
     "checkEmailBody": "Click the link in the email to reset your password. If you don't see the email, check your spam folder.",
     "tryAnotherEmail": "Try another email",
     "verifyingLink": "Verifying reset link...",
