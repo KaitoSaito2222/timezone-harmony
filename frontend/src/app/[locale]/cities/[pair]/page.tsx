@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { Clock, ArrowRight, Globe, CalendarClock } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, type CityDef } from '@/lib/cities';
+import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, getCityLocalized, type CityDef } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
 import { LiveClock } from './_components/LiveClock';
 
@@ -57,18 +57,19 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'cityPair' });
   const is3 = cities.length === 3;
+  const lc = cities.map(c => getCityLocalized(c, locale));
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.com';
 
   const title = is3
-    ? t('title3', { city1: cities[0].name, city2: cities[1].name, city3: cities[2].name })
-    : t('title2', { city1: cities[0].name, city2: cities[1].name });
+    ? t('title3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
+    : t('title2', { city1: lc[0].name, city2: lc[1].name });
 
   const description = is3
-    ? t('description3', { city1: cities[0].name, city2: cities[1].name, city3: cities[2].name })
+    ? t('description3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
     : t('description2', {
-        city1: cities[0].name, country1: cities[0].country,
-        city2: cities[1].name, country2: cities[1].country,
+        city1: lc[0].name, country1: lc[0].country,
+        city2: lc[1].name, country2: lc[1].country,
       });
 
   const enUrl = `${baseUrl}/en/cities/${pair}`;
@@ -187,8 +188,16 @@ export default async function CityPairPage({
   const t = await getTranslations('cityPair');
 
   const is3 = cities.length === 3;
+  const lc = cities.map(c => getCityLocalized(c, locale));
   const grid = buildHourlyGrid(cities);
-  const relatedPairs = getRelatedPairs(cities);
+  const relatedPairs = getRelatedPairs(cities).map(({ slug }) => {
+    const parts = slug.split('-');
+    const c1 = CITY_MAP.get(parts[0]);
+    const c2 = CITY_MAP.get(parts[1]);
+    const n1 = c1 ? getCityLocalized(c1, locale).name : parts[0];
+    const n2 = c2 ? getCityLocalized(c2, locale).name : parts[1];
+    return { slug, label: `${n1} ↔ ${n2}` };
+  });
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.com';
 
@@ -196,7 +205,7 @@ export default async function CityPairPage({
   const cityPairs: { c1: CityDef; c2: CityDef; diffHours: number }[] = [];
   for (let i = 0; i < cities.length; i++)
     for (let j = i + 1; j < cities.length; j++)
-      cityPairs.push({ c1: cities[i], c2: cities[j], diffHours: getDiffHours(cities[i].identifier, cities[j].identifier) });
+      cityPairs.push({ c1: lc[i], c2: lc[j], diffHours: getDiffHours(cities[i].identifier, cities[j].identifier) });
 
   const formatDiff = (h: number) => {
     if (h === 0) return t('diff0');
@@ -206,8 +215,8 @@ export default async function CityPairPage({
 
   // FAQ
   const allCitiesLabel = is3
-    ? t('citiesLabel3', { city1: cities[0].name, city2: cities[1].name, city3: cities[2].name })
-    : t('citiesLabel2', { city1: cities[0].name, city2: cities[1].name });
+    ? t('citiesLabel3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
+    : t('citiesLabel2', { city1: lc[0].name, city2: lc[1].name });
 
   const faqJsonLd = {
     '@context': 'https://schema.org',
@@ -219,7 +228,7 @@ export default async function CityPairPage({
         acceptedAnswer: {
           '@type': 'Answer',
           text: t('faqA1', {
-            offsets: cities.map(c => t('faqA1Offset', { city: c.name, offset: getOffsetLabel(c.identifier) })).join('. '),
+            offsets: cities.map((c, i) => t('faqA1Offset', { city: lc[i].name, offset: getOffsetLabel(c.identifier) })).join('. '),
           }),
         },
       },
@@ -235,8 +244,8 @@ export default async function CityPairPage({
   };
 
   const pageTitle = is3
-    ? `${cities[0].name}, ${cities[1].name} & ${cities[2].name}`
-    : `${cities[0].name} ↔ ${cities[1].name}`;
+    ? `${lc[0].name}, ${lc[1].name} & ${lc[2].name}`
+    : `${lc[0].name} ↔ ${lc[1].name}`;
 
   // URL to open the main app with these cities pre-loaded via query params
   const appUrl = `${localePath}/?tz=${cities.map(c => encodeURIComponent(c.identifier)).join(',')}`;
@@ -300,20 +309,20 @@ export default async function CityPairPage({
 
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
               {is3
-                ? t('title3', { city1: cities[0].name, city2: cities[1].name, city3: cities[2].name })
-                : t('title2', { city1: cities[0].name, city2: cities[1].name })}
+                ? t('title3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
+                : t('title2', { city1: lc[0].name, city2: lc[1].name })}
             </h1>
             <p className="text-muted-foreground mb-10">
               {is3
-                ? t('subtitle3', { cities: cities.map(c => c.name).join(', ') })
-                : t('subtitle2', { city1: cities[0].name, city2: cities[1].name })}
+                ? t('subtitle3', { cities: lc.map(c => c.name).join(', ') })
+                : t('subtitle2', { city1: lc[0].name, city2: lc[1].name })}
             </p>
 
             {/* Live clocks */}
             <div className="flex flex-wrap justify-center gap-8 md:gap-16">
               {cities.map((city, i) => (
                 <div key={city.slug} className="flex items-center gap-6">
-                  <LiveClock timezone={city.identifier} cityName={`${city.name}, ${city.country}`} />
+                  <LiveClock timezone={city.identifier} cityName={`${lc[i].name}, ${lc[i].country}`} />
                   {i < cities.length - 1 && (
                     <ArrowRight className="text-muted-foreground hidden md:block" />
                   )}
@@ -406,11 +415,11 @@ export default async function CityPairPage({
             <h2 className="text-xl font-semibold mb-6">{t('keyFacts')}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {/* UTC offset per city */}
-              {cities.map(city => (
+              {cities.map((city, i) => (
                 <div key={city.slug} className="rounded-lg border bg-card p-4">
                   <p className="text-sm text-muted-foreground mb-1">{t('utcOffset')}</p>
                   <p className="text-2xl font-bold tabular-nums">{getOffsetLabel(city.identifier)}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{city.name}, {city.country}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{lc[i].name}, {lc[i].country}</p>
                 </div>
               ))}
               {/* Time difference per pair */}
@@ -475,7 +484,7 @@ export default async function CityPairPage({
                 href={appUrl}
                 className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-6 py-3 font-medium hover:bg-primary/90 transition-colors"
               >
-                {t('openCitiesInApp', { cities: cities.map(c => c.name).join(' & ') })}
+                {t('openCitiesInApp', { cities: lc.map(c => c.name).join(' & ') })}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
