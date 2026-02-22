@@ -74,7 +74,7 @@ export function RegisterPageContent() {
     try {
       await registerUser(data.email, data.password, data.displayName);
       setRegisteredEmail(data.email);
-      startCooldown(45);
+      startCooldown(30);
     } catch (error: unknown) {
       const err = error as { message?: string };
       toast.error(err.message || t('toastRegistrationFailed'));
@@ -88,7 +88,7 @@ export function RegisterPageContent() {
     try {
       await resendConfirmationEmail(registeredEmail);
       toast.success(t('toastConfirmationSent'));
-      startCooldown(45);
+      startCooldown(30);
     } catch (error: unknown) {
       const err = error as { message?: string };
       const match = err.message?.match(/after (\d+) seconds/);
