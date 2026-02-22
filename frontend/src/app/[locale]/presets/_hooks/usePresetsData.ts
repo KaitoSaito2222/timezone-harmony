@@ -22,7 +22,7 @@ const INITIAL_FORM: PresetFormData = { name: '', description: '', timezones: [] 
 
 export function usePresetsData() {
   const router = useRouter();
-  const { loadPreset, allTimezones } = useTimezoneStore();
+  const { loadPreset, allTimezones, loadTimezones } = useTimezoneStore();
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -31,9 +31,13 @@ export function usePresetsData() {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<TimezonePreset | null>(null);
   const [formData, setFormData] = useState<PresetFormData>(INITIAL_FORM);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { loadPresets(); }, []);
+  useEffect(() => {
+    loadPresets();
+    if (allTimezones.length === 0) loadTimezones();
+  }, []);
 
   const loadPresets = async () => {
     try {
@@ -51,6 +55,30 @@ export function usePresetsData() {
     setSelectedPreset(null);
   };
 
+  const validateForm = (): boolean => {
+    if (!formData.name.trim()) {
+      toast.error('Preset name is required');
+      return false;
+    }
+    if (formData.timezones.length === 0) {
+      toast.error('Add at least one timezone');
+      return false;
+    }
+    for (const tz of formData.timezones) {
+      const hasStart = !!tz.startTime;
+      const hasEnd = !!tz.endTime;
+      if (hasStart !== hasEnd) {
+        toast.error(`Business hours require both start and end time (${getTimezoneName(tz.timezoneIdentifier)})`);
+        return false;
+      }
+      if (hasStart && hasEnd && tz.startTime! >= tz.endTime!) {
+        toast.error(`End time must be after start time (${getTimezoneName(tz.timezoneIdentifier)})`);
+        return false;
+      }
+    }
+    return true;
+  };
+
   const buildTimezonePayload = (timezones: TimezoneFormItem[]) =>
     timezones.map((tz, index) => ({
       timezoneIdentifier: tz.timezoneIdentifier,
@@ -61,8 +89,8 @@ export function usePresetsData() {
     }));
 
   const handleCreate = async () => {
-    if (!formData.name.trim()) { toast.error('Preset name is required'); return; }
-    if (formData.timezones.length === 0) { toast.error('Add at least one timezone'); return; }
+    if (isSubmitting || !validateForm()) return;
+    setIsSubmitting(true);
     try {
       await presetService.create({
         name: formData.name,
@@ -75,12 +103,14 @@ export function usePresetsData() {
       loadPresets();
     } catch {
       toast.error('Failed to create preset');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
-    if (!selectedPreset) return;
-    if (!formData.name.trim()) { toast.error('Preset name is required'); return; }
+    if (!selectedPreset || isSubmitting || !validateForm()) return;
+    setIsSubmitting(true);
     try {
       await presetService.update(selectedPreset.id, {
         name: formData.name,
@@ -93,11 +123,14 @@ export function usePresetsData() {
       loadPresets();
     } catch {
       toast.error('Failed to update preset');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!selectedPreset) return;
+    if (!selectedPreset || isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await presetService.delete(selectedPreset.id);
       toast.success('Preset deleted');
@@ -106,6 +139,8 @@ export function usePresetsData() {
       loadPresets();
     } catch {
       toast.error('Failed to delete preset');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -193,6 +228,7 @@ export function usePresetsData() {
   return {
     presets,
     loading,
+    isSubmitting,
     selectedPreset,
     formData,
     setFormData,

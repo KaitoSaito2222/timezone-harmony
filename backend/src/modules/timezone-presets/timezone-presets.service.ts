@@ -105,7 +105,7 @@ export class TimezonePresetsService {
         ...(dto.description !== undefined && { description: dto.description }),
         ...(dto.isFavorite !== undefined && { isFavorite: dto.isFavorite }),
         ...(dto.timezones && {
-          timezones: {
+          items: {
             create: dto.timezones.map((tz, index) => ({
               timezoneIdentifier: tz.timezoneIdentifier,
               displayLabel: tz.displayLabel,

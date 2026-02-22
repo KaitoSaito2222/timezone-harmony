@@ -23,18 +23,11 @@ export class UsersService {
     email: string,
     displayName?: string,
   ): Promise<User> {
-    let user = await this.findBySupabaseId(supabaseId);
-    if (!user) {
-      user = await this.prisma.user.create({
-        data: {
-          supabaseId,
-          email,
-          displayName,
-          role: UserRole.user,
-        },
-      });
-    }
-    return user;
+    return this.prisma.user.upsert({
+      where: { email },
+      create: { supabaseId, email, displayName, role: UserRole.user },
+      update: {},
+    });
   }
 
   async update(id: string, data: Partial<User>): Promise<User | null> {

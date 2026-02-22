@@ -5,6 +5,7 @@ export function useTimeline() {
   const [showBusinessHours, setShowBusinessHours] = useState(true);
   const [layoutMode, setLayoutMode] = useState<'vertical' | 'horizontal'>('vertical');
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isSyncing = useRef(false);
 
   useEffect(() => {
     const savedBH = localStorage.getItem('showBusinessHours');
@@ -22,9 +23,14 @@ export function useTimeline() {
   }, [layoutMode]);
 
   const handleScroll = (index: number) => {
-    const scrollTop = scrollRefs.current[index]?.scrollTop || 0;
-    scrollRefs.current.forEach((ref, i) => {
-      if (ref && i !== index) ref.scrollTop = scrollTop;
+    if (isSyncing.current) return;
+    isSyncing.current = true;
+    const scrollTop = scrollRefs.current[index]?.scrollTop ?? 0;
+    requestAnimationFrame(() => {
+      scrollRefs.current.forEach((ref, i) => {
+        if (ref && i !== index) ref.scrollTop = scrollTop;
+      });
+      isSyncing.current = false;
     });
   };
 

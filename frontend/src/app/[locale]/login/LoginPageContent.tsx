@@ -36,6 +36,7 @@ export function LoginPageContent() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showResendButton, setShowResendButton] = useState(false);
   const router = useRouter();
   const { login, loginWithGoogle, isAuthenticated, resendConfirmationEmail } =
@@ -101,11 +102,14 @@ export function LoginPageContent() {
   };
 
   const handleGoogleLogin = async () => {
+    setIsGoogleLoading(true);
     try {
       await loginWithGoogle();
     } catch (error: unknown) {
       const err = error as { message?: string };
       toast.error(err.message || t('toastGoogleFailed'));
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
@@ -183,8 +187,8 @@ export function LoginPageContent() {
             </span>
           </div>
 
-          <Button variant="outline" className="w-full" onClick={handleGoogleLogin}>
-            <FcGoogle className="mr-2 h-5 w-5" />
+          <Button variant="outline" className="w-full" onClick={handleGoogleLogin} disabled={isGoogleLoading || isLoading}>
+            {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FcGoogle className="mr-2 h-5 w-5" />}
             {t('loginWithGoogle')}
           </Button>
         </CardContent>
