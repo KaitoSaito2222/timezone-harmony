@@ -136,7 +136,7 @@ export function Header() {
                   <span className="sr-only">{t('openMenu')}</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-70 sm:w-80">
+              <SheetContent side="right" className="w-70 sm:w-80" aria-describedby={undefined}>
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     <Clock className="h-5 w-5 text-primary" />
