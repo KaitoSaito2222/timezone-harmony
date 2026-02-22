@@ -21,10 +21,10 @@ export function Layout({ children }: LayoutProps) {
       {/* Footer: popular city pair links for internal linking */}
       <footer className="border-t mt-auto">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8">
-          <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+          <p className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide text-center">
             {t('popularComparisons')}
           </p>
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
             {POPULAR_PAIRS.map(({ slug, label }) => (
               <Link
                 key={slug}
@@ -35,7 +35,7 @@ export function Layout({ children }: LayoutProps) {
               </Link>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-6">
+          <p className="text-xs text-muted-foreground mt-6 text-center">
             {t('copyright', { year: new Date().getFullYear() })}
           </p>
         </div>

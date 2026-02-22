@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Clock, Lock } from 'lucide-react';
-import { useTimezoneStore } from '@/stores/timezoneStore';
+import { useTimezoneStore, MAX_TIMEZONES } from '@/stores/timezoneStore';
 import { useAuthStore } from '@/stores/authStore';
 import { TimezoneSelector } from '@/components/timezone/TimezoneSelector';
 import { TimezoneComparison } from '@/components/timezone/TimezoneComparison';
@@ -51,7 +51,7 @@ export function HomePageContent() {
 
       <TimezoneComparison
         timezones={selectedTimezones}
-        onAddTimezone={() => setShowSelector(true)}
+        onAddTimezone={() => selectedTimezones.length < MAX_TIMEZONES && setShowSelector(true)}
         onRemoveTimezone={removeTimezone}
       />
 
@@ -70,7 +70,7 @@ export function HomePageContent() {
                 variant="outline"
                 size="sm"
                 onClick={() => addTimezone(tz.identifier)}
-                disabled={selectedTimezones.includes(tz.identifier)}
+                disabled={selectedTimezones.includes(tz.identifier) || selectedTimezones.length >= MAX_TIMEZONES}
               >
                 {tz.displayName} ({tz.offset})
               </Button>

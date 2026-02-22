@@ -1,5 +1,6 @@
 'use client';
 import { DateTime } from 'luxon';
+import { useLocale } from 'next-intl';
 import { generateTimeSlots } from '@/lib/timeline';
 import type { BusinessHoursMap } from '@/lib/timeline';
 
@@ -32,6 +33,8 @@ export function VerticalTimeline({
   scrollRefs,
   onScroll,
 }: VerticalTimelineProps) {
+  const locale = useLocale();
+  const use24h = locale === 'ja';
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-2 sm:gap-3 min-w-fit pb-4">
@@ -54,7 +57,7 @@ export function VerticalTimeline({
           return (
             <div key={timezone} className="shrink-0 w-32 sm:w-40 md:w-48">
               <div className="bg-primary text-primary-foreground rounded-t-lg p-2 sm:p-3 text-center">
-                <div className="text-base sm:text-lg font-bold">{cityName}</div>
+                <div className="text-base sm:text-lg font-bold truncate">{cityName}</div>
                 <div className="text-xs sm:text-sm opacity-80 mt-0.5">{dateStr}</div>
                 <div className="text-xs opacity-75">UTC{offset}</div>
               </div>
@@ -73,8 +76,18 @@ export function VerticalTimeline({
                       py-2.5 px-1 text-center rounded cursor-pointer transition-colors
                       hover:brightness-90 border-2
                     `}
+                    style={slot.isNewDay ? { borderTopColor: 'black' } : undefined}
                   >
-                    <div className="text-sm font-bold">{slot.formatted}</div>
+                    <div className="leading-none">
+                      {use24h ? (
+                        <span className="text-sm font-bold">{slot.hour}</span>
+                      ) : (
+                        <>
+                          <span className="text-sm font-bold">{slot.hourLabel}</span>
+                          <span className="text-xs text-muted-foreground ml-0.5">{slot.ampm}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

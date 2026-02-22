@@ -1,5 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
 import {
   Globe,
@@ -23,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { TimezonePreset } from '@/types/preset.types';
+import { MAX_TIMEZONES } from '@/stores/timezoneStore';
 
 interface TimelineHeaderProps {
   timezones: string[];
@@ -56,13 +58,14 @@ export function TimelineHeader({
   onReset,
 }: TimelineHeaderProps) {
   const router = useRouter();
+  const t = useTranslations('timezone');
 
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <CardTitle className="flex items-center gap-2">
           <Globe className="h-5 w-5 text-primary" />
-          Timeline Comparison
+          {t('timelineTitle')}
         </CardTitle>
         <div className="flex flex-wrap items-center gap-2">
           {isAuthenticated && (
@@ -70,7 +73,7 @@ export function TimelineHeader({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-9">
                   <BookmarkPlus className="h-4 w-4 mr-1.5" />
-                  Presets
+                  {t('presetsLabel')}
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
@@ -79,7 +82,7 @@ export function TimelineHeader({
                   <>
                     <DropdownMenuItem onClick={onOpenSaveDialog}>
                       <Plus className="h-4 w-4 mr-2" />
-                      Save Current as Preset
+                      {t('saveCurrentPreset')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>
@@ -103,20 +106,29 @@ export function TimelineHeader({
                   </>
                 ) : (
                   <>
-                    <DropdownMenuItem disabled>No presets yet</DropdownMenuItem>
+                    <DropdownMenuItem disabled>{t('noPresetsYet')}</DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>
                 )}
                 <DropdownMenuItem onClick={() => router.push('/presets')}>
                   <Settings className="h-4 w-4 mr-2" />
-                  Manage Presets
+                  {t('managePresets')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          <Button onClick={onAddTimezone} size="sm" className="h-9">
+          <Button
+            onClick={onAddTimezone}
+            size="sm"
+            className="h-9"
+            disabled={timezones.length >= MAX_TIMEZONES}
+            title={timezones.length >= MAX_TIMEZONES ? `Max ${MAX_TIMEZONES} timezones` : undefined}
+          >
             <Plus className="h-4 w-4 mr-1.5" />
-            Add Timezone
+            {t('addTimezone')}
+            <span className="ml-1.5 text-xs opacity-70">
+              {timezones.length}/{MAX_TIMEZONES}
+            </span>
           </Button>
         </div>
       </div>
@@ -131,7 +143,7 @@ export function TimelineHeader({
               onChange={(e) => onDateTimeChange(e.target.value)}
               className="w-auto"
             />
-            <span className="text-sm text-muted-foreground">in</span>
+            <span className="text-sm text-muted-foreground">{t('inLabel')}</span>
             <select
               value={baseTimezone}
               onChange={(e) => onBaseTimezoneChange(e.target.value)}
@@ -173,7 +185,7 @@ export function TimelineHeader({
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">
-          No timezones selected. Click &quot;Add Timezone&quot; to get started.
+          {t('noTimezonesDesc')}
         </p>
       )}
     </>

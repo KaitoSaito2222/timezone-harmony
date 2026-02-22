@@ -4,6 +4,8 @@ import type { TimezonePreset } from '@/types/preset.types';
 import { timezoneService } from '@/services/timezone.service';
 import { presetService } from '@/services/preset.service';
 
+export const MAX_TIMEZONES = 5;
+
 interface BusinessHoursMap {
   [timezoneIdentifier: string]: {
     startTime: string | null;
@@ -59,7 +61,7 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
 
   addTimezone: (identifier: string) => {
     const { selectedTimezones } = get();
-    if (!selectedTimezones.includes(identifier)) {
+    if (!selectedTimezones.includes(identifier) && selectedTimezones.length < MAX_TIMEZONES) {
       set({ selectedTimezones: [...selectedTimezones, identifier] });
     }
   },
@@ -72,7 +74,7 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
   },
 
   setSelectedTimezones: (timezones: string[], businessHours?: BusinessHoursMap) => {
-    set({ selectedTimezones: timezones, businessHours: businessHours || {} });
+    set({ selectedTimezones: timezones.slice(0, MAX_TIMEZONES), businessHours: businessHours || {} });
   },
 
   loadPreset: (preset: TimezonePreset) => {

@@ -1,17 +1,11 @@
 'use client';
-import { useState, useMemo } from 'react';
-import { Search } from 'lucide-react';
-import { useTimezoneStore } from '@/stores/timezoneStore';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { TimezoneSelectorContent } from './TimezoneSelectorContent';
 
 interface TimezoneSelectorProps {
   onSelect: (identifier: string) => void;
@@ -24,28 +18,6 @@ export function TimezoneSelector({
   onClose,
   excludeTimezones = [],
 }: TimezoneSelectorProps) {
-  const { allTimezones, popularTimezones } = useTimezoneStore();
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const localTimezone = useMemo(() => {
-    const identifier = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return allTimezones.find((tz) => tz.identifier === identifier) ?? null;
-  }, [allTimezones]);
-
-  const filteredTimezones = useMemo(() => {
-    if (searchQuery.length < 2) {
-      return allTimezones.filter((tz) => !excludeTimezones.includes(tz.identifier));
-    }
-    const query = searchQuery.toLowerCase();
-    return allTimezones.filter(
-      (tz) =>
-        !excludeTimezones.includes(tz.identifier) &&
-        (tz.identifier.toLowerCase().includes(query) ||
-          tz.displayName.toLowerCase().includes(query) ||
-          tz.country?.toLowerCase().includes(query))
-    );
-  }, [searchQuery, allTimezones, excludeTimezones]);
-
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
@@ -55,78 +27,10 @@ export function TimezoneSelector({
         <DialogHeader>
           <DialogTitle>Select Timezone</DialogTitle>
         </DialogHeader>
-
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search timezones..."
-            className="pl-10"
-          />
-        </div>
-
-        {searchQuery.length < 2 && (
-          <>
-            {localTimezone && !excludeTimezones.includes(localTimezone.identifier) && (
-              <>
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Your timezone</h3>
-                  <Badge
-                    variant="secondary"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                    onClick={() => onSelect(localTimezone.identifier)}
-                  >
-                    {localTimezone.displayName}
-                  </Badge>
-                </div>
-                <Separator />
-              </>
-            )}
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-muted-foreground">Popular</h3>
-              <div className="flex flex-wrap gap-2">
-                {popularTimezones
-                  .filter((tz) => !excludeTimezones.includes(tz.identifier))
-                  .map((tz) => (
-                    <Badge
-                      key={tz.identifier}
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                      onClick={() => onSelect(tz.identifier)}
-                    >
-                      {tz.displayName}
-                    </Badge>
-                  ))}
-              </div>
-            </div>
-            <Separator />
-          </>
-        )}
-
-        <div className="flex-1 overflow-y-auto space-y-1 min-h-50">
-          <h3 className="text-sm font-medium text-muted-foreground mb-2 sticky top-0 bg-background py-1">
-            {searchQuery.length >= 2 ? 'Search Results' : 'All Timezones'}
-          </h3>
-          {filteredTimezones.length > 0 ? (
-            filteredTimezones.map((tz) => (
-              <Button
-                key={tz.identifier}
-                variant="ghost"
-                className="w-full justify-between h-auto py-2"
-                onClick={() => onSelect(tz.identifier)}
-              >
-                <span>{tz.displayName}</span>
-                <span className="text-sm text-muted-foreground">{tz.offset}</span>
-              </Button>
-            ))
-          ) : (
-            <p className="text-center text-muted-foreground py-8">
-              No timezones found
-            </p>
-          )}
-        </div>
+        <TimezoneSelectorContent
+          onSelect={onSelect}
+          excludeTimezones={excludeTimezones}
+        />
       </DialogContent>
     </Dialog>
   );

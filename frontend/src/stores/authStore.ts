@@ -32,11 +32,14 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
   register: async (email: string, password: string, displayName?: string) => {
     const supabase = createClient();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+    const locale = window.location.pathname.startsWith('/ja') ? 'ja' : 'en';
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { display_name: displayName },
+        emailRedirectTo: `${siteUrl}/${locale}/auth/callback`,
       },
     });
     if (error) throw error;
@@ -82,9 +85,14 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
   resendConfirmationEmail: async (email: string) => {
     const supabase = createClient();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+    const locale = window.location.pathname.startsWith('/ja') ? 'ja' : 'en';
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,
+      options: {
+        emailRedirectTo: `${siteUrl}/${locale}/auth/callback`,
+      },
     });
     if (error) throw error;
   },
