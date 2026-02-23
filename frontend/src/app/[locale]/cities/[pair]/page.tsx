@@ -21,11 +21,11 @@ export async function generateStaticParams() {
   // 2-city pairs: all 435
   const pairSlugs = getAllPairSlugs();
 
-  // 3-city triplets: top-10 popular cities only (10C3 = 120 combinations)
+  // 3-city triplets: top-10 popular cities only (10C3 = 120 combinations, alphabetical order)
   const popularSlugs = [
     'tokyo', 'newyork', 'london', 'paris', 'singapore',
     'sydney', 'dubai', 'seoul', 'shanghai', 'mumbai',
-  ];
+  ].sort();
   const tripletSlugs: string[] = [];
   for (let i = 0; i < popularSlugs.length; i++)
     for (let j = i + 1; j < popularSlugs.length; j++)

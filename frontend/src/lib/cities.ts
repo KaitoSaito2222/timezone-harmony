@@ -72,9 +72,9 @@ export function parseCities(pair: string): CityDef[] | null {
   return cities;
 }
 
-/** Returns all 435 two-city pair slugs in alphabetical order */
+/** Returns all 435 two-city pair slugs in alphabetical order (canonical form) */
 export function getAllPairSlugs(): string[] {
-  const slugs = CITIES.map(c => c.slug);
+  const slugs = CITIES.map(c => c.slug).sort();
   const pairs: string[] = [];
   for (let i = 0; i < slugs.length; i++)
     for (let j = i + 1; j < slugs.length; j++)
@@ -90,11 +90,12 @@ export const POPULAR_SLUGS = [
 
 /** Returns the 120 popular 3-city triplet slugs (10C3, alphabetical order within each) */
 export function getPopularTripletSlugs(): string[] {
+  const sortedSlugs = [...POPULAR_SLUGS].sort();
   const triplets: string[] = [];
-  for (let i = 0; i < POPULAR_SLUGS.length; i++)
-    for (let j = i + 1; j < POPULAR_SLUGS.length; j++)
-      for (let k = j + 1; k < POPULAR_SLUGS.length; k++)
-        triplets.push(`${POPULAR_SLUGS[i]}-${POPULAR_SLUGS[j]}-${POPULAR_SLUGS[k]}`);
+  for (let i = 0; i < sortedSlugs.length; i++)
+    for (let j = i + 1; j < sortedSlugs.length; j++)
+      for (let k = j + 1; k < sortedSlugs.length; k++)
+        triplets.push(`${sortedSlugs[i]}-${sortedSlugs[j]}-${sortedSlugs[k]}`);
   return triplets;
 }
 
