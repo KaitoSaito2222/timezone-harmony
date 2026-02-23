@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { getLocale } from 'next-intl/server';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -7,7 +8,11 @@ export const metadata: Metadata = {
   ),
 };
 
-// Required root layout — [locale]/layout.tsx handles <html>/<body>
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const locale = await getLocale();
+  return (
+    <html lang={locale} suppressHydrationWarning>
+      <body className="antialiased">{children}</body>
+    </html>
+  );
 }
