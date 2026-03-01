@@ -20,3 +20,8 @@
   to = "/en"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/cities/*"
+  to = "/en/cities/:splat"
+  status = 301
