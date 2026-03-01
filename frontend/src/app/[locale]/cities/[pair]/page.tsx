@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
 import { Clock, ArrowRight, Globe, CalendarClock } from 'lucide-react';
@@ -182,7 +182,7 @@ export default async function CityPairPage({
   // Redirect to canonical URL if slugs are not in alphabetical order
   const sorted = [...cities].sort((a, b) => a.slug.localeCompare(b.slug));
   if (pair !== sorted.map(c => c.slug).join('-')) {
-    redirect(`${localePath}/cities/${sorted.map(c => c.slug).join('-')}`);
+    permanentRedirect(`${localePath}/cities/${sorted.map(c => c.slug).join('-')}`);
   }
 
   const t = await getTranslations('cityPair');
