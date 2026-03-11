@@ -24,7 +24,7 @@ export function useTimeline() {
   }, [layoutMode]);
 
   const handleScroll = (index: number) => {
-    // プログラム的に同期された他カラムからのイベントは無視
+    // Ignore scroll events from other columns that were synced programmatically
     if (syncingFrom.current !== null && syncingFrom.current !== index) return;
 
     syncingFrom.current = index;
@@ -35,10 +35,10 @@ export function useTimeline() {
       scrollRefs.current.forEach((ref, i) => {
         if (ref && i !== index) ref.scrollTop = scrollTop;
       });
-      // 他カラムのscrollイベントが落ち着いてからリセット
-      requestAnimationFrame(() => {
+      // Reset after programmatic scroll events settle (setTimeout(0) is faster than RAF)
+      setTimeout(() => {
         syncingFrom.current = null;
-      });
+      }, 0);
     });
   };
 

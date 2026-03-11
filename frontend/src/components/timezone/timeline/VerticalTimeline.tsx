@@ -15,7 +15,7 @@ interface VerticalTimelineProps {
   selectedRow: number | null;
   onTimeSlotClick: (rowIndex: number) => void;
   getDisplayName: (identifier: string) => string;
-  scrollRefs: React.MutableRefObject<(HTMLDivElement | null)[]>;
+  scrollRefs: React.RefObject<(HTMLDivElement | null)[]>;
   onScroll: (index: number) => void;
 }
 
@@ -64,7 +64,7 @@ export function VerticalTimeline({
               <div
                 ref={(el) => { scrollRefs.current[colIndex] = el; }}
                 onScroll={() => onScroll(colIndex)}
-                className="bg-muted/30 rounded-b-lg p-1 sm:p-1.5 max-h-125 overflow-y-auto space-y-0.5"
+                className="bg-muted/30 rounded-b-lg p-1 sm:p-1.5 max-h-125 overflow-y-auto space-y-0.5 overscroll-contain will-change-scroll"
               >
                 {slots.map((slot, rowIndex) => (
                   <div
