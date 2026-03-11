@@ -1,48 +1,15 @@
 import { Controller, Post, Body, Res } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import type { Response } from 'express';
-import {
-  IsString,
-  IsNumber,
-  IsOptional,
-  IsArray,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
 import { CalendarService } from './calendar.service';
+import { ExportCalendarDto } from './dto/export-calendar.dto';
 
-class TimezoneInfoDto {
-  @IsString()
-  timezone: string;
-
-  @IsString()
-  localTime: string;
-}
-
-class ExportCalendarDto {
-  @IsString()
-  title: string;
-
-  @IsString()
-  startTime: string;
-
-  @IsNumber()
-  duration: number;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TimezoneInfoDto)
-  timezones?: TimezoneInfoDto[];
-}
-
+@ApiTags('calendar')
 @Controller('calendar')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
+  @ApiOperation({ summary: 'Export event as ICS file' })
   @Post('export')
   exportCalendar(@Body() dto: ExportCalendarDto, @Res() res: Response) {
     const icsContent = this.calendarService.generateICS(dto);
