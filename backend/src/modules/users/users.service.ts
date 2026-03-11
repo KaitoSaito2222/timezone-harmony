@@ -23,10 +23,11 @@ export class UsersService {
     email: string,
     displayName?: string,
   ): Promise<User> {
+    // Use supabaseId (stable) as the upsert key; sync email in case it changes in Supabase.
     return this.prisma.user.upsert({
-      where: { email },
+      where: { supabaseId },
       create: { supabaseId, email, displayName, role: UserRole.user },
-      update: {},
+      update: { email },
     });
   }
 
