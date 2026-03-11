@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { DateTime } from 'luxon';
+import { useTranslations } from 'next-intl';
 import { calendarService } from '@/services/calendar.service';
 import { generateTimeSlots } from '@/lib/timeline';
 import type { BusinessHoursMap } from '@/lib/timeline';
 import { toast } from 'sonner';
+
+export type CalendarExportMethod = 'ics' | 'google' | 'outlook';
 
 export interface ExportSlotData {
   rowIndex: number;
@@ -25,6 +28,7 @@ export function useCalendarExport({
   showBusinessHours,
   setSelectedRow,
 }: UseCalendarExportParams) {
+  const t = useTranslations('timezone');
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [exportSlotData, setExportSlotData] = useState<ExportSlotData | null>(null);
   const [exportEventTitle, setExportEventTitle] = useState('Meeting');
@@ -47,10 +51,54 @@ export function useCalendarExport({
     setIsExportDialogOpen(true);
   };
 
-  const handleExportCalendar = async () => {
+  const buildDescription = (slots: ExportSlotData['slots']) =>
+    slots
+      .map((s) => {
+        const label = s.timezone.split('/')[1]?.replace(/_/g, ' ') || s.timezone;
+        return `${label}: ${s.time.toFormat('MMM dd, HH:mm')}`;
+      })
+      .join('\n');
+
+  const handleExportCalendar = async (method: CalendarExportMethod) => {
     if (!exportSlotData) return;
+    const startTime = exportSlotData.slots[0].time;
+    const endTime = startTime.plus({ minutes: exportDuration });
+    const description = buildDescription(exportSlotData.slots);
+
+    if (method === 'google') {
+      const fmt = (dt: DateTime) => dt.toUTC().toFormat("yyyyMMdd'T'HHmmss'Z'");
+      const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: exportEventTitle,
+        dates: `${fmt(startTime)}/${fmt(endTime)}`,
+        details: description,
+      });
+      window.open(`https://calendar.google.com/calendar/render?${params}`, '_blank');
+      toast.success(t('calendarToastGoogle'));
+      setIsExportDialogOpen(false);
+      setSelectedRow(null);
+      return;
+    }
+
+    if (method === 'outlook') {
+      const params = new URLSearchParams({
+        subject: exportEventTitle,
+        startdt: startTime.toUTC().toISO() || '',
+        enddt: endTime.toUTC().toISO() || '',
+        body: description,
+      });
+      window.open(
+        `https://outlook.live.com/calendar/0/deeplink/compose?${params}`,
+        '_blank'
+      );
+      toast.success(t('calendarToastOutlook'));
+      setIsExportDialogOpen(false);
+      setSelectedRow(null);
+      return;
+    }
+
+    // ICS download (default)
     try {
-      const startTime = exportSlotData.slots[0].time;
       const blob = await calendarService.exportToICS({
         title: exportEventTitle,
         startTime: startTime.toISO() || '',
@@ -62,12 +110,12 @@ export function useCalendarExport({
       });
       const filename = `${exportEventTitle.replace(/[^a-zA-Z0-9]/g, '_')}.ics`;
       calendarService.downloadICS(blob, filename);
-      toast.success('Calendar event exported!');
+      toast.success(t('calendarToastExported'));
       setIsExportDialogOpen(false);
       setExportEventTitle('Meeting');
       setSelectedRow(null);
     } catch {
-      toast.error('Failed to export calendar event');
+      toast.error(t('calendarToastFailed'));
     }
   };
 
