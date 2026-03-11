@@ -8,7 +8,13 @@ export function useDateTimePicker(timezones: string[]) {
   const hasInitializedBaseTimezone = useRef(false);
 
   useEffect(() => {
-    setSelectedDateTime(DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"));
+    if (isLiveMode.current) {
+      setSelectedDateTime(
+        baseTimezone === 'local'
+          ? DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")
+          : DateTime.now().setZone(baseTimezone).toFormat("yyyy-MM-dd'T'HH:mm")
+      );
+    }
 
     const interval = setInterval(() => {
       if (isLiveMode.current) {
@@ -50,7 +56,7 @@ export function useDateTimePicker(timezones: string[]) {
     baseTimezone === 'local'
       ? DateTime.fromISO(selectedDateTime)
       : DateTime.fromISO(selectedDateTime, { zone: baseTimezone });
-  const baseTime = selectedDT.startOf('day');
+  const baseTime = selectedDT.startOf('hour');
   const isNow = isLiveMode.current;
 
   return {
