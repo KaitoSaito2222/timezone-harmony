@@ -9,104 +9,39 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import {
-  IsString,
-  IsOptional,
-  IsBoolean,
-  IsArray,
-  ValidateNested,
-  IsNumber,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TimezonePresetsService } from './timezone-presets.service';
+import { CreatePresetDto } from './dto/create-preset.dto';
+import { UpdatePresetDto } from './dto/update-preset.dto';
+import type { RequestWithUser } from '../../common/types/request-with-user.interface';
 
-interface RequestWithUser extends Request {
-  user: {
-    userId: string;
-    email: string;
-  };
-}
-
-class TimezoneItemDto {
-  @IsString()
-  timezoneIdentifier: string;
-
-  @IsOptional()
-  @IsString()
-  displayLabel?: string;
-
-  @IsOptional()
-  @IsNumber()
-  position?: number;
-
-  @IsOptional()
-  @IsString()
-  startTime?: string;
-
-  @IsOptional()
-  @IsString()
-  endTime?: string;
-}
-
-class CreatePresetDto {
-  @IsString()
-  name: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isFavorite?: boolean;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TimezoneItemDto)
-  timezones: TimezoneItemDto[];
-}
-
-class UpdatePresetDto {
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isFavorite?: boolean;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TimezoneItemDto)
-  timezones?: TimezoneItemDto[];
-}
-
+@ApiTags('presets')
+@ApiBearerAuth()
 @Controller('presets')
 @UseGuards(JwtAuthGuard)
 export class TimezonePresetsController {
   constructor(private readonly presetsService: TimezonePresetsService) {}
 
+  @ApiOperation({ summary: 'Get all presets for the authenticated user' })
   @Get()
   findAll(@Request() req: RequestWithUser) {
     return this.presetsService.findAllByUser(req.user.userId);
   }
 
+  @ApiOperation({ summary: 'Get a preset by ID' })
   @Get(':id')
   findOne(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.presetsService.findById(id, req.user.userId);
   }
 
+  @ApiOperation({ summary: 'Create a new preset' })
   @Post()
   create(@Body() dto: CreatePresetDto, @Request() req: RequestWithUser) {
     return this.presetsService.create(req.user.userId, dto);
   }
 
+  @ApiOperation({ summary: 'Update a preset by ID' })
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -116,11 +51,13 @@ export class TimezonePresetsController {
     return this.presetsService.update(id, req.user.userId, dto);
   }
 
+  @ApiOperation({ summary: 'Delete a preset by ID' })
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.presetsService.delete(id, req.user.userId);
   }
 
+  @ApiOperation({ summary: 'Toggle favorite status of a preset' })
   @Post(':id/favorite')
   toggleFavorite(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.presetsService.toggleFavorite(id, req.user.userId);

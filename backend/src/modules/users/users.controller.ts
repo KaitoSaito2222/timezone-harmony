@@ -1,18 +1,16 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
+import type { RequestWithUser } from '../../common/types/request-with-user.interface';
 
-interface RequestWithUser extends Request {
-  user: {
-    userId: string;
-    email: string;
-  };
-}
-
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current authenticated user profile' })
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(@Request() req: RequestWithUser) {

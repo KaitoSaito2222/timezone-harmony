@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import ct from 'countries-and-timezones';
+import { TimezoneInfo } from './dto/timezone-info.dto';
 
 const POPULAR_TIMEZONES = [
   'Asia/Tokyo',
@@ -15,16 +16,9 @@ const POPULAR_TIMEZONES = [
   'America/Chicago',
 ];
 
-export interface TimezoneInfo {
-  identifier: string;
-  displayName: string;
-  offset: string;
-  offsetMinutes: number;
-  country?: string;
-}
-
 @Injectable()
 export class TimezonesService {
+  // Converts a UTC offset in minutes to a formatted string (e.g. 540 → "+09:00", -300 → "-05:00").
   private formatOffset(minutes: number): string {
     const sign = minutes >= 0 ? '+' : '-';
     const absMinutes = Math.abs(minutes);
@@ -33,6 +27,9 @@ export class TimezonesService {
     return `${sign}${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   }
 
+  // Extracts the city name from an IANA timezone identifier.
+  // IANA (Internet Assigned Numbers Authority) defines the standard timezone database used by all major OSes and languages.
+  // Its identifiers follow the "Region/City" format and use underscores instead of spaces (e.g. "America/New_York").
   private formatDisplayName(identifier: string): string {
     // "Asia/Tokyo" → "Tokyo"
     // "America/New_York" → "New York"
@@ -41,12 +38,14 @@ export class TimezonesService {
     return city.replace(/_/g, ' ');
   }
 
+  // offset is calculated at call time so DST (Daylight Saving Time) changes are reflected correctly.
   private toTimezoneInfo(identifier: string): TimezoneInfo | null {
     try {
       const now = DateTime.now().setZone(identifier);
       if (!now.isValid) return null;
 
       const tzData = ct.getTimezone(identifier);
+      // Some timezones span multiple countries; use only the first one as a representative.
       const country = tzData?.countries?.[0]
         ? ct.getCountry(tzData.countries[0])?.name
         : undefined;
@@ -64,17 +63,18 @@ export class TimezonesService {
   }
 
   getAllTimezones(): TimezoneInfo[] {
-    // Intl APIから全タイムゾーンを取得
+    // Retrieve all supported timezone identifiers from the built-in Intl API.
+    // IntlAPI is included as standard in Node.js.
     const allZones = Intl.supportedValuesOf('timeZone');
     return allZones
       .map((tz) => this.toTimezoneInfo(tz))
       .filter((tz): tz is TimezoneInfo => tz !== null)
-      .sort((a, b) => a.offsetMinutes - b.offsetMinutes);
+      .sort((a, b) => a.offsetMinutes - b.offsetMinutes); // Sorted west to east (e.g. -12:00 → +14:00)
   }
 
   getPopularTimezones(): TimezoneInfo[] {
     return POPULAR_TIMEZONES.map((tz) => this.toTimezoneInfo(tz))
       .filter((tz): tz is TimezoneInfo => tz !== null)
-      .sort((a, b) => a.offsetMinutes - b.offsetMinutes);
+      .sort((a, b) => a.offsetMinutes - b.offsetMinutes); // Sorted west to east (e.g. -12:00 → +14:00)
   }
 }

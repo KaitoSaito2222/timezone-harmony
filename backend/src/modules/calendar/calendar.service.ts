@@ -1,17 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-
-interface CalendarEventDto {
-  title: string;
-  startTime: string; // ISO format
-  duration: number; // minutes
-  description?: string;
-  timezones?: { timezone: string; localTime: string }[];
-}
+import { ExportCalendarDto } from './dto/export-calendar.dto';
 
 @Injectable()
 export class CalendarService {
-  generateICS(event: CalendarEventDto): string {
+  generateICS(event: ExportCalendarDto): string {
     const startTime = DateTime.fromISO(event.startTime);
     const endTime = startTime.plus({ minutes: event.duration });
 
@@ -30,6 +23,8 @@ export class CalendarService {
 
     const uid = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}@timezone-harmony`;
 
+    // Build ICS content as an array of lines, then join with CRLF as required by RFC 5545.
+    // UID uniquely identifies the event; DTSTAMP is when this ICS was generated.
     return [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
@@ -48,6 +43,8 @@ export class CalendarService {
     ].join('\r\n');
   }
 
+  // Escapes special characters per the iCalendar spec (RFC 5545).
+  // Backslash first to avoid double-escaping; ; and , are delimiters; newlines become literal \n.
   private escapeICSText(text: string): string {
     return text
       .replace(/\\/g, '\\\\')
