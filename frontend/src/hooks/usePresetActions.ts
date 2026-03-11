@@ -3,6 +3,7 @@ import { useTimezoneStore } from '@/stores/timezoneStore';
 import { presetService } from '@/services/preset.service';
 import type { TimezonePreset } from '@/types/preset.types';
 import { toast } from 'sonner';
+import { useSubmitGuard } from './useSubmitGuard';
 
 export function usePresetActions(timezones: string[], isAuthenticated: boolean) {
   const { loadPreset: loadPresetToStore } = useTimezoneStore();
@@ -10,6 +11,7 @@ export function usePresetActions(timezones: string[], isAuthenticated: boolean) 
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [presetDescription, setPresetDescription] = useState('');
+  const guard = useSubmitGuard();
 
   const loadPresets = async () => {
     try {
@@ -29,7 +31,7 @@ export function usePresetActions(timezones: string[], isAuthenticated: boolean) 
     toast.success(`Loaded "${preset.name}"`);
   };
 
-  const handleSavePreset = async () => {
+  const handleSavePreset = () => guard(async () => {
     if (!presetName.trim()) {
       toast.error('Preset name is required');
       return;
@@ -38,24 +40,20 @@ export function usePresetActions(timezones: string[], isAuthenticated: boolean) 
       toast.error('Add at least one timezone first');
       return;
     }
-    try {
-      await presetService.create({
-        name: presetName,
-        description: presetDescription || undefined,
-        timezones: timezones.map((tz, index) => ({
-          timezoneIdentifier: tz,
-          position: index,
-        })),
-      });
-      toast.success('Preset saved!');
-      setIsSaveDialogOpen(false);
-      setPresetName('');
-      setPresetDescription('');
-      loadPresets();
-    } catch {
-      toast.error('Failed to save preset');
-    }
-  };
+    await presetService.create({
+      name: presetName,
+      description: presetDescription || undefined,
+      timezones: timezones.map((tz, index) => ({
+        timezoneIdentifier: tz,
+        position: index,
+      })),
+    });
+    toast.success('Preset saved!');
+    setIsSaveDialogOpen(false);
+    setPresetName('');
+    setPresetDescription('');
+    loadPresets();
+  });
 
   return {
     presets,

@@ -5,6 +5,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { TimezoneSelectorContent } from './TimezoneSelectorContent';
 
 interface TimezoneSelectorProps {
@@ -18,10 +25,30 @@ export function TimezoneSelector({
   onClose,
   excludeTimezones = [],
 }: TimezoneSelectorProps) {
+  const isMobile = useMediaQuery('(max-width: 640px)');
+
+  if (isMobile) {
+    return (
+      <Sheet open onOpenChange={(open) => !open && onClose()}>
+        <SheetContent side="bottom" className="max-h-[92vh] flex flex-col gap-2 rounded-t-xl px-4 pb-8">
+          <SheetHeader className="px-0 pt-3 pb-0">
+            <SheetTitle>Select Timezone</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto">
+            <TimezoneSelectorContent
+              onSelect={onSelect}
+              excludeTimezones={excludeTimezones}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="max-w-lg max-h-[80vh] flex flex-col"
+        className="max-w-lg max-h-[90vh] flex flex-col gap-3"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader>

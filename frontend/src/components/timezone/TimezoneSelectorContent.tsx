@@ -40,6 +40,40 @@ export function TimezoneSelectorContent({
 
   return (
     <div className="flex flex-col gap-3">
+      {localTimezone && !excludeTimezones.includes(localTimezone.identifier) && (
+        <>
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">Your timezone</h3>
+            <Badge
+              variant="secondary"
+              className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={() => onSelect(localTimezone.identifier)}
+            >
+              {localTimezone.displayName}
+            </Badge>
+          </div>
+          <Separator />
+        </>
+      )}
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-muted-foreground">Popular</h3>
+        <div className="flex flex-wrap gap-2">
+          {popularTimezones
+            .filter((tz) => !excludeTimezones.includes(tz.identifier))
+            .map((tz) => (
+              <Badge
+                key={tz.identifier}
+                variant="secondary"
+                className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                onClick={() => onSelect(tz.identifier)}
+              >
+                {tz.displayName}
+              </Badge>
+            ))}
+        </div>
+      </div>
+      <Separator />
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -51,45 +85,7 @@ export function TimezoneSelectorContent({
         />
       </div>
 
-      {searchQuery.length < 2 && (
-        <>
-          {localTimezone && !excludeTimezones.includes(localTimezone.identifier) && (
-            <>
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Your timezone</h3>
-                <Badge
-                  variant="secondary"
-                  className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                  onClick={() => onSelect(localTimezone.identifier)}
-                >
-                  {localTimezone.displayName}
-                </Badge>
-              </div>
-              <Separator />
-            </>
-          )}
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Popular</h3>
-            <div className="flex flex-wrap gap-2">
-              {popularTimezones
-                .filter((tz) => !excludeTimezones.includes(tz.identifier))
-                .map((tz) => (
-                  <Badge
-                    key={tz.identifier}
-                    variant="secondary"
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                    onClick={() => onSelect(tz.identifier)}
-                  >
-                    {tz.displayName}
-                  </Badge>
-                ))}
-            </div>
-          </div>
-          <Separator />
-        </>
-      )}
-
-      <div className="flex-1 overflow-y-auto space-y-1 max-h-48">
+      <div className="flex-1 overflow-y-auto space-y-1 max-h-64 sm:max-h-80">
         <h3 className="text-sm font-medium text-muted-foreground mb-2 sticky top-0 bg-background py-1">
           {searchQuery.length >= 2 ? 'Search Results' : 'All Timezones'}
         </h3>
