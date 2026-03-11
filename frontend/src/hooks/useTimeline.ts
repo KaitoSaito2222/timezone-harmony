@@ -5,7 +5,8 @@ export function useTimeline() {
   const [showBusinessHours, setShowBusinessHours] = useState(true);
   const [layoutMode, setLayoutMode] = useState<'vertical' | 'horizontal'>('vertical');
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const isSyncing = useRef(false);
+  const syncingFrom = useRef<number | null>(null);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     const savedBH = localStorage.getItem('showBusinessHours');
@@ -23,14 +24,21 @@ export function useTimeline() {
   }, [layoutMode]);
 
   const handleScroll = (index: number) => {
-    if (isSyncing.current) return;
-    isSyncing.current = true;
+    // プログラム的に同期された他カラムからのイベントは無視
+    if (syncingFrom.current !== null && syncingFrom.current !== index) return;
+
+    syncingFrom.current = index;
+    cancelAnimationFrame(rafRef.current);
+
     const scrollTop = scrollRefs.current[index]?.scrollTop ?? 0;
-    requestAnimationFrame(() => {
+    rafRef.current = requestAnimationFrame(() => {
       scrollRefs.current.forEach((ref, i) => {
         if (ref && i !== index) ref.scrollTop = scrollTop;
       });
-      isSyncing.current = false;
+      // 他カラムのscrollイベントが落ち着いてからリセット
+      requestAnimationFrame(() => {
+        syncingFrom.current = null;
+      });
     });
   };
 
