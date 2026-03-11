@@ -4,6 +4,7 @@ import { useTimezoneStore } from '@/stores/timezoneStore';
 import { presetService } from '@/services/preset.service';
 import type { TimezonePreset } from '@/types/preset.types';
 import { toast } from 'sonner';
+import { useSubmitGuard } from '@/hooks/useSubmitGuard';
 
 export interface TimezoneFormItem {
   timezoneIdentifier: string;
@@ -32,6 +33,7 @@ export function usePresetsData() {
   const [selectedPreset, setSelectedPreset] = useState<TimezonePreset | null>(null);
   const [formData, setFormData] = useState<PresetFormData>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const guard = useSubmitGuard();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -88,60 +90,66 @@ export function usePresetsData() {
       endTime: tz.endTime || undefined,
     }));
 
-  const handleCreate = async () => {
-    if (isSubmitting || !validateForm()) return;
-    setIsSubmitting(true);
-    try {
-      await presetService.create({
-        name: formData.name,
-        description: formData.description || undefined,
-        timezones: buildTimezonePayload(formData.timezones),
-      });
-      toast.success('Preset created');
-      setIsCreateDialogOpen(false);
-      resetForm();
-      loadPresets();
-    } catch {
-      toast.error('Failed to create preset');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleCreate = () => {
+    if (!validateForm()) return;
+    guard(async () => {
+      setIsSubmitting(true);
+      try {
+        await presetService.create({
+          name: formData.name,
+          description: formData.description || undefined,
+          timezones: buildTimezonePayload(formData.timezones),
+        });
+        toast.success('Preset created');
+        setIsCreateDialogOpen(false);
+        resetForm();
+        loadPresets();
+      } catch {
+        toast.error('Failed to create preset');
+      } finally {
+        setIsSubmitting(false);
+      }
+    });
   };
 
-  const handleUpdate = async () => {
-    if (!selectedPreset || isSubmitting || !validateForm()) return;
-    setIsSubmitting(true);
-    try {
-      await presetService.update(selectedPreset.id, {
-        name: formData.name,
-        description: formData.description || undefined,
-        timezones: buildTimezonePayload(formData.timezones),
-      });
-      toast.success('Preset updated');
-      setIsEditDialogOpen(false);
-      resetForm();
-      loadPresets();
-    } catch {
-      toast.error('Failed to update preset');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleUpdate = () => {
+    if (!selectedPreset || !validateForm()) return;
+    guard(async () => {
+      setIsSubmitting(true);
+      try {
+        await presetService.update(selectedPreset.id, {
+          name: formData.name,
+          description: formData.description || undefined,
+          timezones: buildTimezonePayload(formData.timezones),
+        });
+        toast.success('Preset updated');
+        setIsEditDialogOpen(false);
+        resetForm();
+        loadPresets();
+      } catch {
+        toast.error('Failed to update preset');
+      } finally {
+        setIsSubmitting(false);
+      }
+    });
   };
 
-  const handleDelete = async () => {
-    if (!selectedPreset || isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      await presetService.delete(selectedPreset.id);
-      toast.success('Preset deleted');
-      setIsDeleteDialogOpen(false);
-      setSelectedPreset(null);
-      loadPresets();
-    } catch {
-      toast.error('Failed to delete preset');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleDelete = () => {
+    if (!selectedPreset) return;
+    guard(async () => {
+      setIsSubmitting(true);
+      try {
+        await presetService.delete(selectedPreset.id);
+        toast.success('Preset deleted');
+        setIsDeleteDialogOpen(false);
+        setSelectedPreset(null);
+        loadPresets();
+      } catch {
+        toast.error('Failed to delete preset');
+      } finally {
+        setIsSubmitting(false);
+      }
+    });
   };
 
   const handleToggleFavorite = async (preset: TimezonePreset) => {
