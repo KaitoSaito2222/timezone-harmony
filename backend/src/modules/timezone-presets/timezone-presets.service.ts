@@ -4,35 +4,14 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { TimezonePreset, TimezonePresetItem } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { CreatePresetDto } from './dto/create-preset.dto';
+import { UpdatePresetDto } from './dto/update-preset.dto';
 
-interface CreatePresetDto {
-  name: string;
-  description?: string;
-  isFavorite?: boolean;
-  timezones: {
-    timezoneIdentifier: string;
-    displayLabel?: string;
-    position?: number;
-    startTime?: string;
-    endTime?: string;
-  }[];
-}
-
-interface UpdatePresetDto {
-  name?: string;
-  description?: string;
-  isFavorite?: boolean;
-  timezones?: {
-    timezoneIdentifier: string;
-    displayLabel?: string;
-    position?: number;
-    startTime?: string;
-    endTime?: string;
-  }[];
-}
-
-type PresetWithTimezones = TimezonePreset & { items: TimezonePresetItem[] };
+// Derived from the query shape so Prisma guarantees items is always present.
+type PresetWithTimezones = Prisma.TimezonePresetGetPayload<{
+  include: { items: true };
+}>;
 
 @Injectable()
 export class TimezonePresetsService {

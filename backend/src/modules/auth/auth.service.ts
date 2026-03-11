@@ -5,7 +5,7 @@ import { UsersService } from '../users/users.service';
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
-  // Method for JIT provisioning (called from JWT Strategy)
+  // Delegates JIT provisioning to UsersService (called from JwtStrategy.validate)
   async findOrCreateUser(
     supabaseId: string,
     email: string,

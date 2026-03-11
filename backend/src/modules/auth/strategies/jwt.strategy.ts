@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import * as jwksRsa from 'jwks-rsa';
 
+// Validates incoming requests by verifying the Supabase-issued JWT.
+// Flow: extract Bearer token → verify signature via JWKS → call validate()
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -14,8 +16,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const supabaseUrl = configService.get<string>('SUPABASE_URL');
 
     super({
+      // Step 1: Extract JWT from "Authorization: Bearer <token>" header
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
+      // Step 2: Verify JWT signature using Supabase public keys (no secret key needed on our side)
       secretOrKeyProvider: jwksRsa.passportJwtSecret({
         cache: true,
         rateLimit: true,
@@ -26,8 +30,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  // Step 3: Called after signature is verified. payload.sub is the Supabase user UUID.
+  // Performs JIT provisioning: syncs the Supabase user into our own users table on first login.
+  // The returned object is attached to request.user in downstream controllers.
   async validate(payload: { sub: string; email: string }) {
-    // JIT provisioning: Retrieve or create the app-side User from the Supabase user UUID (sub)
     const user = await this.usersService.findOrCreateFromSupabase(
       payload.sub,
       payload.email,
