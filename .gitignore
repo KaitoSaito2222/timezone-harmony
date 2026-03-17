@@ -30,3 +30,7 @@ coverage/
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Postman environment files (may contain secrets)
+*postman_environment.json
+*postman_globals.json
