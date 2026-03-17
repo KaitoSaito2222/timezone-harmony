@@ -85,7 +85,7 @@
                 }
               ]
             },
-            "description": "Supabase のメールアドレス・パスワードでログイン。\n成功すると `token` 変数に access_token が自動セットされます。\n\n## 事前に設定する変数\n- `supabaseUrl`: Supabase ダッシュボード > Settings > API > Project URL\n- `supabaseAnonKey`: Supabase ダッシュボード > Settings > API > anon/public key"
+            "description": "Login with Supabase email and password. On success, the `token` variable is automatically set with the access_token.\n\n## Required variables\n- `supabaseUrl`: Supabase dashboard > Settings > API > Project URL\n- `supabaseAnonKey`: Supabase dashboard > Settings > API > anon/public key"
           }
         }
       ]
