@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
 import { MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 const STORAGE_KEY = 'localTimeCard_visible';
@@ -51,15 +51,14 @@ export function LocalTimeCard() {
   }
 
   return (
-    <Card className="p-4">
-      <div className="space-y-2">
-        {/* Title */}
-        <h3 className="flex items-center gap-2 text-base font-semibold">
+    <Card className="gap-1 sm:gap-2">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" />
           {t('localTimezone')}
-        </h3>
-
-        {/* Content */}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
         <div className="flex items-center justify-between">
           <div className='ml-2'>
             <div className="flex items-center gap-2">
@@ -107,7 +106,7 @@ export function LocalTimeCard() {
             </div>
           </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 }
