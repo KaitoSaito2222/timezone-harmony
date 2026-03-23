@@ -1,6 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { getTimezoneCity } from '@/lib/timezone-utils';
 import { DateTime } from 'luxon';
 import {
   Globe,
@@ -173,7 +174,7 @@ export function TimelineHeader({
               variant="secondary"
               className="px-3 py-1.5 text-sm flex items-center gap-2"
             >
-              <span>{tz.split('/')[1]?.replace(/_/g, ' ') || tz}</span>
+              <span>{getTimezoneCity(tz)}</span>
               <button
                 onClick={() => onRemoveTimezone(tz)}
                 className="hover:bg-muted rounded-full p-0.5 transition-colors"

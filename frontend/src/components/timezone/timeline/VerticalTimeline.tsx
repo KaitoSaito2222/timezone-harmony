@@ -1,6 +1,6 @@
 'use client';
 import { DateTime } from 'luxon';
-import { useLocale } from 'next-intl';
+import { useLocaleConfig } from '@/hooks/useLocaleConfig';
 import { generateTimeSlots } from '@/lib/timeline';
 import type { BusinessHoursMap } from '@/lib/timeline';
 
@@ -33,8 +33,8 @@ export function VerticalTimeline({
   scrollRefs,
   onScroll,
 }: VerticalTimelineProps) {
-  const locale = useLocale();
-  const use24h = locale === 'ja';
+  const { use24h } = useLocaleConfig();
+
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-2 sm:gap-3 min-w-fit pb-4">

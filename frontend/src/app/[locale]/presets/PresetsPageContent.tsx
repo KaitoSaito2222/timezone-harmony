@@ -109,9 +109,7 @@ export function PresetsPageContent() {
         isSelectorOpen={isSelectorOpen}
         isSubmitting={isSubmitting}
         onNameChange={(value) => setFormData((prev) => ({ ...prev, name: value }))}
-        onDescriptionChange={(value) =>
-          setFormData((prev) => ({ ...prev, description: value }))
-        }
+        onDescriptionChange={(value) => setFormData((prev) => ({ ...prev, description: value }))}
         onSave={isEditDialogOpen ? handleUpdate : handleCreate}
         onCancel={closeForm}
         onAddTimezone={() => setIsSelectorOpen(true)}
@@ -130,7 +128,6 @@ export function PresetsPageContent() {
         isSubmitting={isSubmitting}
         onDelete={handleDelete}
       />
-
     </div>
   );
 }

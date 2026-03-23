@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@/types/auth.types';
+import { getLocaleFromPathname } from '@/lib/timezone-utils';
 
 interface AuthState {
   user: User | null;
@@ -33,7 +34,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
   register: async (email: string, password: string, displayName?: string) => {
     const supabase = createClient();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
-    const locale = window.location.pathname.startsWith('/ja') ? 'ja' : 'en';
+    const locale = getLocaleFromPathname();
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -49,7 +50,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
     const supabase = createClient();
     const siteUrl =
       process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
-    const locale = window.location.pathname.startsWith('/ja') ? 'ja' : 'en';
+    const locale = getLocaleFromPathname();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -86,7 +87,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
   resendConfirmationEmail: async (email: string) => {
     const supabase = createClient();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
-    const locale = window.location.pathname.startsWith('/ja') ? 'ja' : 'en';
+    const locale = getLocaleFromPathname();
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useTimezoneStore } from '@/stores/timezoneStore';
+import { getTimezoneCity } from '@/lib/timezone-utils';
 import { presetService } from '@/services/preset.service';
 import type { TimezonePreset } from '@/types/preset.types';
 import { toast } from 'sonner';
@@ -219,7 +220,7 @@ export function usePresetsData() {
 
   const getTimezoneName = (identifier: string) => {
     const tz = allTimezones.find((t) => t.identifier === identifier);
-    return tz?.displayName || identifier.split('/').pop()?.replace(/_/g, ' ') || identifier;
+    return tz?.displayName || getTimezoneCity(identifier);
   };
 
   const getTimezoneOffset = (identifier: string) => {

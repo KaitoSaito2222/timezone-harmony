@@ -34,11 +34,7 @@ interface PresetFormDialogProps {
   onCancel: () => void;
   onAddTimezone: () => void;
   onRemoveTimezone: (index: number) => void;
-  onUpdateTimezoneHours: (
-    index: number,
-    field: 'startTime' | 'endTime',
-    value: string
-  ) => void;
+  onUpdateTimezoneHours: (index: number, field: 'startTime' | 'endTime', value: string) => void;
   onSelectTimezone: (identifier: string) => void;
   onCloseSelector: () => void;
   getTimezoneName: (identifier: string) => string;
@@ -68,12 +64,10 @@ export function PresetFormDialog({
   const tp = useTranslations('presets');
 
   const selectorContent = (
-    <>
-      <TimezoneSelectorContent
-        onSelect={onSelectTimezone}
-        excludeTimezones={formData.timezones.map((tz) => tz.timezoneIdentifier)}
-      />
-    </>
+    <TimezoneSelectorContent
+      onSelect={onSelectTimezone}
+      excludeTimezones={formData.timezones.map((tz) => tz.timezoneIdentifier)}
+    />
   );
 
   const formContent = (
@@ -141,18 +135,14 @@ export function PresetFormDialog({
                     <Input
                       type="time"
                       value={tz.startTime || ''}
-                      onChange={(e) =>
-                        onUpdateTimezoneHours(index, 'startTime', e.target.value)
-                      }
+                      onChange={(e) => onUpdateTimezoneHours(index, 'startTime', e.target.value)}
                       className="h-8 w-24"
                     />
                     <span className="text-muted-foreground">-</span>
                     <Input
                       type="time"
                       value={tz.endTime || ''}
-                      onChange={(e) =>
-                        onUpdateTimezoneHours(index, 'endTime', e.target.value)
-                      }
+                      onChange={(e) => onUpdateTimezoneHours(index, 'endTime', e.target.value)}
                       className="h-8 w-24"
                     />
                   </div>
@@ -165,6 +155,18 @@ export function PresetFormDialog({
     </div>
   );
 
+  const actionButtons = (
+    <>
+      <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
+        {tp('cancel')}
+      </Button>
+      <Button onClick={onSave} disabled={isSubmitting}>
+        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isEdit ? tp('saveChanges') : tp('create')}
+      </Button>
+    </>
+  );
+
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel(); }}>
@@ -172,12 +174,7 @@ export function PresetFormDialog({
           <SheetHeader className="px-0 pt-3 pb-0">
             <SheetTitle className="flex items-center gap-2">
               {isSelectorOpen && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0"
-                  onClick={onCloseSelector}
-                >
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={onCloseSelector}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
               )}
@@ -188,15 +185,7 @@ export function PresetFormDialog({
             {isSelectorOpen ? selectorContent : formContent}
           </div>
           {!isSelectorOpen && (
-            <SheetFooter className="px-0">
-              <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
-                {tp('cancel')}
-              </Button>
-              <Button onClick={onSave} disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEdit ? tp('saveChanges') : tp('create')}
-              </Button>
-            </SheetFooter>
+            <SheetFooter className="px-0">{actionButtons}</SheetFooter>
           )}
         </SheetContent>
       </Sheet>
@@ -210,12 +199,7 @@ export function PresetFormDialog({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0"
-                  onClick={onCloseSelector}
-                >
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={onCloseSelector}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 {tp('selectTimezone')}
@@ -233,18 +217,8 @@ export function PresetFormDialog({
             <DialogHeader>
               <DialogTitle>{isEdit ? tp('editPreset') : tp('createNewPreset')}</DialogTitle>
             </DialogHeader>
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              {formContent}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
-                {tp('cancel')}
-              </Button>
-              <Button onClick={onSave} disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEdit ? tp('saveChanges') : tp('create')}
-              </Button>
-            </DialogFooter>
+            <div className="flex-1 min-h-0 overflow-y-auto">{formContent}</div>
+            <DialogFooter>{actionButtons}</DialogFooter>
           </>
         )}
       </DialogContent>
