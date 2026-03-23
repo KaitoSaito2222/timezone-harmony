@@ -22,7 +22,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'citiesPage' });
-  const localePath = locale === 'ja' ? '/ja' : '/en';
+  const localePath = locale === 'ja' ? '/ja' : '';
 
   return {
     title: t('title'),
@@ -30,9 +30,9 @@ export async function generateMetadata({
     alternates: {
       canonical: `${baseUrl}${localePath}/cities`,
       languages: {
-        en: `${baseUrl}/en/cities`,
+        en: `${baseUrl}/cities`,
         ja: `${baseUrl}/ja/cities`,
-        'x-default': `${baseUrl}/en/cities`,
+        'x-default': `${baseUrl}/cities`,
       },
     },
     openGraph: {
@@ -59,7 +59,7 @@ export default async function CitiesPage({
 
   const t = await getTranslations({ locale, namespace: 'citiesPage' });
   const tPair = await getTranslations({ locale, namespace: 'cityPair' });
-  const localePath = locale === 'ja' ? '/ja' : '/en';
+  const localePath = locale === 'ja' ? '/ja' : '';
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
