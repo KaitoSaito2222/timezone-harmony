@@ -150,7 +150,7 @@ export function CalendarExportDialog({
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={handleOpenChange}>
-        <SheetContent side="bottom" className="flex flex-col gap-4 rounded-t-xl px-4 pb-8">
+        <SheetContent side="bottom" className="flex flex-col gap-4 rounded-t-xl px-4 pb-8" onOpenAutoFocus={(e) => e.preventDefault()}>
           <SheetHeader className="px-0 pt-3 pb-0">
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
@@ -166,7 +166,7 @@ export function CalendarExportDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />

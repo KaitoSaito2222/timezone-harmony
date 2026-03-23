@@ -79,7 +79,7 @@ export function SavePresetDialog({
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="flex flex-col gap-4 rounded-t-xl px-4 pb-8">
+        <SheetContent side="bottom" className="flex flex-col gap-4 rounded-t-xl px-4 pb-8" onOpenAutoFocus={(e) => e.preventDefault()}>
           <SheetHeader className="px-0 pt-3 pb-0">
             <SheetTitle>Save as Preset</SheetTitle>
           </SheetHeader>
@@ -97,7 +97,7 @@ export function SavePresetDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Save as Preset</DialogTitle>
         </DialogHeader>
