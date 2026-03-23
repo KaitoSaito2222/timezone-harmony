@@ -160,7 +160,7 @@ export function PresetFormDialog({
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel(); }}>
-        <SheetContent side="bottom" className="max-h-[92vh] flex flex-col gap-4 rounded-t-xl px-4 pb-8">
+        <SheetContent side="bottom" className="max-h-[92vh] flex flex-col gap-4 rounded-t-xl px-4 pb-8" onOpenAutoFocus={(e) => e.preventDefault()}>
           <SheetHeader className="px-0 pt-3 pb-0">
             <SheetTitle className="flex items-center gap-2">
               {isSelectorOpen && (
@@ -197,7 +197,7 @@ export function PresetFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel(); }}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
         {isSelectorOpen ? (
           <>
             <DialogHeader>
