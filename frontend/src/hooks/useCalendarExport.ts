@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { calendarService } from '@/services/calendar.service';
 import { generateTimeSlots } from '@/lib/timeline';
 import type { BusinessHoursMap } from '@/lib/timeline';
+import { getTimezoneCity } from '@/lib/timezone-utils';
 import { toast } from 'sonner';
 
 export type CalendarExportMethod = 'ics' | 'google' | 'outlook';
@@ -53,10 +54,7 @@ export function useCalendarExport({
 
   const buildDescription = (slots: ExportSlotData['slots']) =>
     slots
-      .map((s) => {
-        const label = s.timezone.split('/')[1]?.replace(/_/g, ' ') || s.timezone;
-        return `${label}: ${s.time.toFormat('MMM dd, HH:mm')}`;
-      })
+      .map((s) => `${getTimezoneCity(s.timezone)}: ${s.time.toFormat('MMM dd, HH:mm')}`)
       .join('\n');
 
   const handleExportCalendar = async (method: CalendarExportMethod) => {
@@ -104,7 +102,7 @@ export function useCalendarExport({
         startTime: startTime.toISO() || '',
         duration: exportDuration,
         timezones: exportSlotData.slots.map((slot) => ({
-          timezone: slot.timezone.split('/')[1]?.replace(/_/g, ' ') || slot.timezone,
+          timezone: getTimezoneCity(slot.timezone),
           localTime: slot.time.toFormat('MMM dd, HH:mm'),
         })),
       });

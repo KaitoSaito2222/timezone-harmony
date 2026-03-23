@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Star, Play, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,8 +24,10 @@ export function PresetCard({
   onDelete,
   onToggleFavorite,
 }: PresetCardProps) {
+  const t = useTranslations('presets');
+
   return (
-    <Card className="relative">
+    <Card className="relative flex flex-col">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg">{preset.name}</CardTitle>
@@ -47,7 +50,7 @@ export function PresetCard({
           <p className="text-sm text-muted-foreground">{preset.description}</p>
         )}
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="flex flex-col flex-1 space-y-4">
         <div className="flex flex-wrap gap-1">
           {preset.items
             .sort((a, b) => a.position - b.position)
@@ -63,11 +66,11 @@ export function PresetCard({
             })}
           {preset.items.length > 5 && (
             <Badge variant="outline" className="text-xs">
-              +{preset.items.length - 5} more
+              {t('moreCount', { count: preset.items.length - 5 })}
             </Badge>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-auto">
           <Button
             variant="default"
             size="sm"
@@ -75,7 +78,7 @@ export function PresetCard({
             onClick={() => onLoad(preset)}
           >
             <Play className="h-3 w-3 mr-1" />
-            Load
+            {t('load')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => onEdit(preset)}>
             <Edit className="h-3 w-3" />

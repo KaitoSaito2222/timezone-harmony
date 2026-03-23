@@ -3,35 +3,27 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
 import { MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-
-const STORAGE_KEY = 'localTimeCard_visible';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { getTimezoneCity } from '@/lib/timezone-utils';
 
 export function LocalTimeCard() {
   const t = useTranslations('timezone');
   const [currentTime, setCurrentTime] = useState<DateTime | null>(null);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useLocalStorage<boolean>('localTimeCard_visible', true);
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === 'false') setIsVisible(false);
-
     setCurrentTime(DateTime.local());
     const interval = setInterval(() => {
       setCurrentTime(DateTime.local());
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, String(isVisible));
-  }, [isVisible]);
-
   const timezone = currentTime?.zoneName ?? null;
-  const cityName = timezone?.split('/').pop()?.replace(/_/g, ' ') || t('local');
+  const cityName = timezone ? getTimezoneCity(timezone) : t('local');
   const offset = currentTime?.toFormat('ZZZZ') ?? null;
 
   if (!isVisible) {
@@ -51,15 +43,14 @@ export function LocalTimeCard() {
   }
 
   return (
-    <Card className="p-4">
-      <div className="space-y-2">
-        {/* Title */}
-        <h3 className="flex items-center gap-2 text-base font-semibold">
+    <Card className="gap-1 sm:gap-2">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" />
           {t('localTimezone')}
-        </h3>
-
-        {/* Content */}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
         <div className="flex items-center justify-between">
           <div className='ml-2'>
             <div className="flex items-center gap-2">
@@ -107,7 +98,7 @@ export function LocalTimeCard() {
             </div>
           </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 }

@@ -1,3 +1,5 @@
+'use client';
+import { useTranslations } from 'next-intl';
 import { Lightbulb, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,18 +10,20 @@ interface OptimalMeetingTimesProps {
 }
 
 export function OptimalMeetingTimes({ optimalTimes }: OptimalMeetingTimesProps) {
+  const t = useTranslations('timezone');
+
   if (optimalTimes.length > 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-green-600" />
-            Recommended Meeting Times
+            {t('recommendedMeetingTimes')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground mb-4">
-            Found {optimalTimes.length} time slots where all participants are within business hours!
+            {t('foundTimeSlots', { count: optimalTimes.length })}
           </p>
           <div className="flex flex-wrap gap-3">
             {optimalTimes.slice(0, 5).map((opt, index) => (
@@ -38,13 +42,12 @@ export function OptimalMeetingTimes({ optimalTimes }: OptimalMeetingTimesProps) 
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-amber-600" />
-          No Perfect Match Found
+          {t('noPerfectMatch')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground">
-          No time slots found where all participants are within business hours.
-          Some participants may need to meet outside their normal hours.
+          {t('noPerfectMatchDesc')}
         </p>
       </CardContent>
     </Card>

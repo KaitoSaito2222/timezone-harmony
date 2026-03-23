@@ -1,0 +1,316 @@
+{
+  "info": {
+    "name": "Timezone Harmony API",
+    "description": "Postman collection for Timezone Harmony backend API (NestJS + Supabase JWT Auth)\n\n## Setup\n1. Set `baseUrl` variable (default: http://localhost:3000)\n2. Set `token` variable with your Supabase JWT access token\n\nSwagger UI (dev): {{baseUrl}}/api/docs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "supabaseUrl",
+      "value": "https://your-project-ref.supabase.co",
+      "type": "string",
+      "description": "Supabase project URL (from Supabase dashboard > Settings > API)"
+    },
+    {
+      "key": "supabaseAnonKey",
+      "value": "<anon key here>",
+      "type": "string",
+      "description": "Supabase anon/public key (from Supabase dashboard > Settings > API)"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "Auto-set after running 'Auth - Login'"
+    },
+    {
+      "key": "presetId",
+      "value": "",
+      "type": "string",
+      "description": "Auto-set after creating a preset"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (get JWT token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access_token) {",
+                  "  pm.collectionVariables.set('token', res.access_token);",
+                  "  console.log('token set successfully');",
+                  "} else {",
+                  "  console.error('Login failed:', JSON.stringify(res));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{supabaseAnonKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"your@email.com\",\n  \"password\": \"yourpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{supabaseUrl}}/auth/v1/token?grant_type=password",
+              "host": ["{{supabaseUrl}}"],
+              "path": ["auth", "v1", "token"],
+              "query": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                }
+              ]
+            },
+            "description": "Login with Supabase email and password. On success, the `token` variable is automatically set with the access_token.\n\n## Required variables\n- `supabaseUrl`: Supabase dashboard > Settings > API > Project URL\n- `supabaseAnonKey`: Supabase dashboard > Settings > API > anon/public key"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Timezones",
+      "item": [
+        {
+          "name": "Get all timezones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/timezones",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "timezones"]
+            },
+            "description": "Returns all IANA timezones sorted by UTC offset. No auth required."
+          }
+        },
+        {
+          "name": "Get popular timezones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/timezones/popular",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "timezones", "popular"]
+            },
+            "description": "Returns 10 popular timezones (Tokyo, NY, LA, London, Paris, Singapore, Shanghai, Sydney, Dubai, Chicago). No auth required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get current user (me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            },
+            "description": "Returns the authenticated user's profile. Requires Supabase JWT Bearer token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Presets",
+      "item": [
+        {
+          "name": "Get all presets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/presets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "presets"]
+            },
+            "description": "Returns all presets for the authenticated user."
+          }
+        },
+        {
+          "name": "Get preset by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/presets/{{presetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "presets", "{{presetId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create preset",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) {",
+                  "  pm.collectionVariables.set('presetId', res.id);",
+                  "  console.log('presetId set to:', res.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Work Hours\",\n  \"description\": \"Daily standup timezones\",\n  \"isFavorite\": false,\n  \"timezones\": [\n    {\n      \"timezoneIdentifier\": \"Asia/Tokyo\",\n      \"displayLabel\": \"Tokyo Office\",\n      \"position\": 0,\n      \"startTime\": \"09:00\",\n      \"endTime\": \"18:00\"\n    },\n    {\n      \"timezoneIdentifier\": \"America/New_York\",\n      \"displayLabel\": \"NY Team\",\n      \"position\": 1,\n      \"startTime\": \"09:00\",\n      \"endTime\": \"18:00\"\n    },\n    {\n      \"timezoneIdentifier\": \"Europe/London\",\n      \"displayLabel\": \"London Office\",\n      \"position\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/presets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "presets"]
+            },
+            "description": "Creates a new preset. The `presetId` collection variable is auto-set on success."
+          }
+        },
+        {
+          "name": "Update preset",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Preset Name\",\n  \"description\": \"Updated description\",\n  \"isFavorite\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/presets/{{presetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "presets", "{{presetId}}"]
+            }
+          }
+        },
+        {
+          "name": "Toggle favorite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/presets/{{presetId}}/favorite",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "presets", "{{presetId}}", "favorite"]
+            },
+            "description": "Toggles the favorite status of the specified preset."
+          }
+        },
+        {
+          "name": "Delete preset",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/presets/{{presetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "presets", "{{presetId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calendar",
+      "item": [
+        {
+          "name": "Export event as ICS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Team Standup\",\n  \"startTime\": \"2026-03-15T09:00:00Z\",\n  \"duration\": 30,\n  \"description\": \"Daily team standup across timezones\",\n  \"timezones\": [\n    {\n      \"timezone\": \"Asia/Tokyo\",\n      \"localTime\": \"2026-03-15T18:00:00+09:00\"\n    },\n    {\n      \"timezone\": \"America/New_York\",\n      \"localTime\": \"2026-03-15T05:00:00-04:00\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/calendar/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calendar", "export"]
+            },
+            "description": "Exports an event as an ICS file. Response is a downloadable .ics attachment. No auth required."
+          }
+        }
+      ]
+    }
+  ]
+}

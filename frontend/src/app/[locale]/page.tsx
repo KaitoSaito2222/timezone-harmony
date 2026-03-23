@@ -24,7 +24,7 @@ export async function generateMetadata({
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}/en`,
+      url: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}`,
       locale: locale === 'ja' ? 'ja_JP' : 'en_US',
     },
     twitter: {
@@ -33,11 +33,11 @@ export async function generateMetadata({
       description: t('description'),
     },
     alternates: {
-      canonical: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}/en`,
+      canonical: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}`,
       languages: {
-        en: `${baseUrl}/en`,
+        en: `${baseUrl}`,
         ja: `${baseUrl}/ja`,
-        'x-default': `${baseUrl}/en`,
+        'x-default': `${baseUrl}`,
       },
     },
   };

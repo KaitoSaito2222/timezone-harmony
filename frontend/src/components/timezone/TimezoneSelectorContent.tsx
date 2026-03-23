@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import { Input } from '@/components/ui/input';
@@ -18,6 +19,7 @@ export function TimezoneSelectorContent({
 }: TimezoneSelectorContentProps) {
   const { allTimezones, popularTimezones } = useTimezoneStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const t = useTranslations('timezone');
 
   const localTimezone = useMemo(() => {
     const identifier = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -39,11 +41,11 @@ export function TimezoneSelectorContent({
   }, [searchQuery, allTimezones, excludeTimezones]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 h-full">
       {localTimezone && !excludeTimezones.includes(localTimezone.identifier) && (
         <>
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Your timezone</h3>
+          <div className="shrink-0 space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">{t('yourTimezone')}</h3>
             <Badge
               variant="secondary"
               className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -52,11 +54,11 @@ export function TimezoneSelectorContent({
               {localTimezone.displayName}
             </Badge>
           </div>
-          <Separator />
+          <Separator className="shrink-0" />
         </>
       )}
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium text-muted-foreground">Popular</h3>
+      <div className="shrink-0 space-y-2">
+        <h3 className="text-sm font-medium text-muted-foreground">{t('popular')}</h3>
         <div className="flex flex-wrap gap-2">
           {popularTimezones
             .filter((tz) => !excludeTimezones.includes(tz.identifier))
@@ -72,22 +74,22 @@ export function TimezoneSelectorContent({
             ))}
         </div>
       </div>
-      <Separator />
+      <Separator className="shrink-0" />
 
-      <div className="relative">
+      <div className="shrink-0 relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search timezones..."
+          placeholder={t('searchTimezones')}
           className="pl-10"
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-1 max-h-64 sm:max-h-80">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-1">
         <h3 className="text-sm font-medium text-muted-foreground mb-2 sticky top-0 bg-background py-1">
-          {searchQuery.length >= 2 ? 'Search Results' : 'All Timezones'}
+          {searchQuery.length >= 2 ? t('searchResults') : t('allTimezones')}
         </h3>
         {filteredTimezones.length > 0 ? (
           filteredTimezones.map((tz) => (
@@ -103,7 +105,7 @@ export function TimezoneSelectorContent({
           ))
         ) : (
           <p className="text-center text-muted-foreground py-8">
-            No timezones found
+            {t('noTimezonesFound')}
           </p>
         )}
       </div>

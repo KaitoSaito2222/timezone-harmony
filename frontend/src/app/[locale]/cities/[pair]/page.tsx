@@ -72,7 +72,7 @@ export async function generateMetadata({
         city2: lc[1].name, country2: lc[1].country,
       });
 
-  const enUrl = `${baseUrl}/en/cities/${pair}`;
+  const enUrl = `${baseUrl}/cities/${pair}`;
   const jaUrl = `${baseUrl}/ja/cities/${pair}`;
 
   const keywords = locale === 'ja'
@@ -177,7 +177,7 @@ export default async function CityPairPage({
   const cities = parseCities(pair);
   if (!cities) notFound();
 
-  const localePath = locale === 'ja' ? '/ja' : '/en';
+  const localePath = locale === 'ja' ? '/ja' : '';
 
   // Redirect to canonical URL if slugs are not in alphabetical order
   const sorted = [...cities].sort((a, b) => a.slug.localeCompare(b.slug));

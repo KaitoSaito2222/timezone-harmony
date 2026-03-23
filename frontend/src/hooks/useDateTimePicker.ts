@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { DateTime } from 'luxon';
+import { DATETIME_LOCAL_FORMAT } from '@/lib/constants';
 
 export function useDateTimePicker(timezones: string[]) {
-  const [selectedDateTime, setSelectedDateTime] = useState<string>('');
+  const [selectedDateTime, setSelectedDateTime] = useState<string>(
+    () => DateTime.now().toFormat(DATETIME_LOCAL_FORMAT)
+  );
   const [baseTimezone, setBaseTimezone] = useState<string>('local');
   const isLiveMode = useRef(true);
   const hasInitializedBaseTimezone = useRef(false);
@@ -11,8 +14,8 @@ export function useDateTimePicker(timezones: string[]) {
     if (isLiveMode.current) {
       setSelectedDateTime(
         baseTimezone === 'local'
-          ? DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")
-          : DateTime.now().setZone(baseTimezone).toFormat("yyyy-MM-dd'T'HH:mm")
+          ? DateTime.now().toFormat(DATETIME_LOCAL_FORMAT)
+          : DateTime.now().setZone(baseTimezone).toFormat(DATETIME_LOCAL_FORMAT)
       );
     }
 
@@ -20,8 +23,8 @@ export function useDateTimePicker(timezones: string[]) {
       if (isLiveMode.current) {
         const nowStr =
           baseTimezone === 'local'
-            ? DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")
-            : DateTime.now().setZone(baseTimezone).toFormat("yyyy-MM-dd'T'HH:mm");
+            ? DateTime.now().toFormat(DATETIME_LOCAL_FORMAT)
+            : DateTime.now().setZone(baseTimezone).toFormat(DATETIME_LOCAL_FORMAT);
         setSelectedDateTime((prev) => (prev !== nowStr ? nowStr : prev));
       }
     }, 1000);
@@ -46,8 +49,8 @@ export function useDateTimePicker(timezones: string[]) {
     const resetTz = timezones[0] || 'local';
     setSelectedDateTime(
       resetTz === 'local'
-        ? DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")
-        : DateTime.now().setZone(resetTz).toFormat("yyyy-MM-dd'T'HH:mm")
+        ? DateTime.now().toFormat(DATETIME_LOCAL_FORMAT)
+        : DateTime.now().setZone(resetTz).toFormat(DATETIME_LOCAL_FORMAT)
     );
     setBaseTimezone(resetTz);
   };
