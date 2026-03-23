@@ -41,7 +41,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^4.41.6",
+    "@netlify/plugin-nextjs": "^5.15.9",
     "@tailwindcss/postcss": "^4",
     "@types/luxon": "^3.7.1",
     "@types/node": "^20",
