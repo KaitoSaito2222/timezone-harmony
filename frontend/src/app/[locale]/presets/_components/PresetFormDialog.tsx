@@ -194,7 +194,7 @@ export function PresetFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel(); }}>
-      <DialogContent className="max-w-md h-150 flex flex-col" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-md h-150 flex flex-col overflow-hidden" onOpenAutoFocus={(e) => e.preventDefault()}>
         {isSelectorOpen ? (
           <>
             <DialogHeader>
