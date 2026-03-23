@@ -165,7 +165,7 @@ export function PresetFormDialog({
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel(); }}>
-        <SheetContent side="bottom" className="max-h-[92vh] flex flex-col gap-4 rounded-t-xl px-4 pb-8" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <SheetContent side="bottom" className="h-[85vh] flex flex-col gap-4 rounded-t-xl px-4 pb-8" onOpenAutoFocus={(e) => e.preventDefault()}>
           <SheetHeader className="px-0 pt-3 pb-0">
             <SheetTitle className="flex items-center gap-2">
               {isSelectorOpen && (
@@ -181,7 +181,7 @@ export function PresetFormDialog({
               {isSelectorOpen ? 'Select Timezone' : (isEdit ? 'Edit Preset' : 'Create New Preset')}
             </SheetTitle>
           </SheetHeader>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             {isSelectorOpen ? selectorContent : formContent}
           </div>
           {!isSelectorOpen && (
@@ -202,7 +202,7 @@ export function PresetFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel(); }}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-md h-150 flex flex-col" onOpenAutoFocus={(e) => e.preventDefault()}>
         {isSelectorOpen ? (
           <>
             <DialogHeader>
@@ -218,17 +218,21 @@ export function PresetFormDialog({
                 Select Timezone
               </DialogTitle>
             </DialogHeader>
-            <TimezoneSelectorContent
-              onSelect={onSelectTimezone}
-              excludeTimezones={formData.timezones.map((tz) => tz.timezoneIdentifier)}
-            />
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <TimezoneSelectorContent
+                onSelect={onSelectTimezone}
+                excludeTimezones={formData.timezones.map((tz) => tz.timezoneIdentifier)}
+              />
+            </div>
           </>
         ) : (
           <>
             <DialogHeader>
               <DialogTitle>{isEdit ? 'Edit Preset' : 'Create New Preset'}</DialogTitle>
             </DialogHeader>
-            {formContent}
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              {formContent}
+            </div>
             <DialogFooter>
               <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
                 Cancel

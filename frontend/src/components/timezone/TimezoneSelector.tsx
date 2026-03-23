@@ -34,7 +34,7 @@ export function TimezoneSelector({
           <SheetHeader className="px-0 pt-3 pb-0">
             <SheetTitle>Select Timezone</SheetTitle>
           </SheetHeader>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             <TimezoneSelectorContent
               onSelect={onSelect}
               excludeTimezones={excludeTimezones}
@@ -54,10 +54,12 @@ export function TimezoneSelector({
         <DialogHeader>
           <DialogTitle>Select Timezone</DialogTitle>
         </DialogHeader>
-        <TimezoneSelectorContent
-          onSelect={onSelect}
-          excludeTimezones={excludeTimezones}
-        />
+        <div className="flex-1 min-h-0">
+          <TimezoneSelectorContent
+            onSelect={onSelect}
+            excludeTimezones={excludeTimezones}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

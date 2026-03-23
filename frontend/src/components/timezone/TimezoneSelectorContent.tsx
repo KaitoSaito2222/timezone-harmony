@@ -39,7 +39,7 @@ export function TimezoneSelectorContent({
   }, [searchQuery, allTimezones, excludeTimezones]);
 
   return (
-    <div className="flex flex-col gap-3 h-105 sm:h-125">
+    <div className="flex flex-col gap-3 h-full">
       {localTimezone && !excludeTimezones.includes(localTimezone.identifier) && (
         <>
           <div className="shrink-0 space-y-2">

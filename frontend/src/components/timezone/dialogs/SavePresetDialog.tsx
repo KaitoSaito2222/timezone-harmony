@@ -97,7 +97,7 @@ export function SavePresetDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-md min-h-80" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Save as Preset</DialogTitle>
         </DialogHeader>
