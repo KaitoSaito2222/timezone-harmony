@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import { Input } from '@/components/ui/input';
@@ -18,6 +19,7 @@ export function TimezoneSelectorContent({
 }: TimezoneSelectorContentProps) {
   const { allTimezones, popularTimezones } = useTimezoneStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const t = useTranslations('timezone');
 
   const localTimezone = useMemo(() => {
     const identifier = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -43,7 +45,7 @@ export function TimezoneSelectorContent({
       {localTimezone && !excludeTimezones.includes(localTimezone.identifier) && (
         <>
           <div className="shrink-0 space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Your timezone</h3>
+            <h3 className="text-sm font-medium text-muted-foreground">{t('yourTimezone')}</h3>
             <Badge
               variant="secondary"
               className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -56,7 +58,7 @@ export function TimezoneSelectorContent({
         </>
       )}
       <div className="shrink-0 space-y-2">
-        <h3 className="text-sm font-medium text-muted-foreground">Popular</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">{t('popular')}</h3>
         <div className="flex flex-wrap gap-2">
           {popularTimezones
             .filter((tz) => !excludeTimezones.includes(tz.identifier))
@@ -80,14 +82,14 @@ export function TimezoneSelectorContent({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search timezones..."
+          placeholder={t('searchTimezones')}
           className="pl-10"
         />
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto space-y-1">
         <h3 className="text-sm font-medium text-muted-foreground mb-2 sticky top-0 bg-background py-1">
-          {searchQuery.length >= 2 ? 'Search Results' : 'All Timezones'}
+          {searchQuery.length >= 2 ? t('searchResults') : t('allTimezones')}
         </h3>
         {filteredTimezones.length > 0 ? (
           filteredTimezones.map((tz) => (
@@ -103,7 +105,7 @@ export function TimezoneSelectorContent({
           ))
         ) : (
           <p className="text-center text-muted-foreground py-8">
-            No timezones found
+            {t('noTimezonesFound')}
           </p>
         )}
       </div>

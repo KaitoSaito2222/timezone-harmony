@@ -1,27 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export function useTimeline() {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  const [showBusinessHours, setShowBusinessHours] = useState(true);
-  const [layoutMode, setLayoutMode] = useState<'vertical' | 'horizontal'>('vertical');
+  const [showBusinessHours, setShowBusinessHours] = useLocalStorage<boolean>('showBusinessHours', true);
+  const [layoutMode, setLayoutMode] = useLocalStorage<'vertical' | 'horizontal'>('timelineLayout', 'vertical');
   const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
   const syncingFrom = useRef<number | null>(null);
   const rafRef = useRef<number>(0);
-
-  useEffect(() => {
-    const savedBH = localStorage.getItem('showBusinessHours');
-    if (savedBH === 'false') setShowBusinessHours(false);
-    const savedLayout = localStorage.getItem('timelineLayout');
-    if (savedLayout === 'horizontal') setLayoutMode('horizontal');
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('showBusinessHours', String(showBusinessHours));
-  }, [showBusinessHours]);
-
-  useEffect(() => {
-    localStorage.setItem('timelineLayout', layoutMode);
-  }, [layoutMode]);
 
   const handleScroll = (index: number) => {
     // Ignore scroll events from other columns that were synced programmatically
@@ -35,7 +21,7 @@ export function useTimeline() {
       scrollRefs.current.forEach((ref, i) => {
         if (ref && i !== index) ref.scrollTop = scrollTop;
       });
-      // Reset after programmatic scroll events settle (setTimeout(0) is faster than RAF)
+      // Reset after programmatic scroll events settle
       setTimeout(() => {
         syncingFrom.current = null;
       }, 0);

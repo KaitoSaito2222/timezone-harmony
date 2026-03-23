@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import { isInBusinessHours } from '@/lib/timeline';
 import type { OptimalTime } from '@/lib/timeline';
 import type { TimezoneInfo } from '@/types/timezone.types';
+import { getTimezoneCity } from '@/lib/timezone-utils';
 
 export function useOptimalMeetingTimes(
   timezones: string[],
@@ -15,7 +16,7 @@ export function useOptimalMeetingTimes(
   const getDisplayName = useCallback(
     (identifier: string): string => {
       const tz = allTimezones.find((t) => t.identifier === identifier);
-      return tz?.displayName ?? identifier.split('/')[1]?.replace(/_/g, ' ') ?? identifier;
+      return tz?.displayName ?? getTimezoneCity(identifier);
     },
     [allTimezones]
   );

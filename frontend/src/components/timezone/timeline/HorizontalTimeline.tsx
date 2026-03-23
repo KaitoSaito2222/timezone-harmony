@@ -1,6 +1,6 @@
 'use client';
 import { DateTime } from 'luxon';
-import { useLocale } from 'next-intl';
+import { useLocaleConfig } from '@/hooks/useLocaleConfig';
 import { generateTimeSlots } from '@/lib/timeline';
 import type { BusinessHoursMap } from '@/lib/timeline';
 
@@ -29,8 +29,8 @@ export function HorizontalTimeline({
   onTimeSlotClick,
   getDisplayName,
 }: HorizontalTimelineProps) {
-  const locale = useLocale();
-  const use24h = locale === 'ja';
+  const { use24h } = useLocaleConfig();
+
   return (
     <div className="overflow-x-auto">
       <div className="min-w-fit space-y-2 pb-4">

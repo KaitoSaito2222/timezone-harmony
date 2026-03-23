@@ -2,6 +2,7 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
+import { getTimezoneCity } from '@/lib/timezone-utils';
 import { Globe, Plus, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,7 @@ export function TimezoneComparison({
   const getDisplayName = useCallback(
     (identifier: string): string => {
       const tz = allTimezones.find((item) => item.identifier === identifier);
-      return tz?.displayName ?? identifier.split('/')[1]?.replace(/_/g, ' ') ?? identifier;
+      return tz?.displayName ?? getTimezoneCity(identifier);
     },
     [allTimezones]
   );

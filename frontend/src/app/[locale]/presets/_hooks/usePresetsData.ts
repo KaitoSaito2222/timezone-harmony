@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useTimezoneStore } from '@/stores/timezoneStore';
+import { getTimezoneCity } from '@/lib/timezone-utils';
 import { presetService } from '@/services/preset.service';
 import type { TimezonePreset } from '@/types/preset.types';
 import { toast } from 'sonner';
@@ -23,6 +25,7 @@ const INITIAL_FORM: PresetFormData = { name: '', description: '', timezones: [] 
 
 export function usePresetsData() {
   const router = useRouter();
+  const t = useTranslations('presets');
   const { loadPreset, allTimezones, loadTimezones } = useTimezoneStore();
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +49,7 @@ export function usePresetsData() {
       const data = await presetService.getAll();
       setPresets(data);
     } catch {
-      toast.error('Failed to load presets');
+      toast.error(t('toastFailedLoad'));
     } finally {
       setLoading(false);
     }
@@ -59,22 +62,22 @@ export function usePresetsData() {
 
   const validateForm = (): boolean => {
     if (!formData.name.trim()) {
-      toast.error('Preset name is required');
+      toast.error(t('toastNameRequired'));
       return false;
     }
     if (formData.timezones.length === 0) {
-      toast.error('Add at least one timezone');
+      toast.error(t('toastAddTimezone'));
       return false;
     }
     for (const tz of formData.timezones) {
       const hasStart = !!tz.startTime;
       const hasEnd = !!tz.endTime;
       if (hasStart !== hasEnd) {
-        toast.error(`Business hours require both start and end time (${getTimezoneName(tz.timezoneIdentifier)})`);
+        toast.error(t('toastBusinessHoursRequired', { name: getTimezoneName(tz.timezoneIdentifier) }));
         return false;
       }
       if (hasStart && hasEnd && tz.startTime! >= tz.endTime!) {
-        toast.error(`End time must be after start time (${getTimezoneName(tz.timezoneIdentifier)})`);
+        toast.error(t('toastEndAfterStart', { name: getTimezoneName(tz.timezoneIdentifier) }));
         return false;
       }
     }
@@ -100,12 +103,12 @@ export function usePresetsData() {
           description: formData.description || undefined,
           timezones: buildTimezonePayload(formData.timezones),
         });
-        toast.success('Preset created');
+        toast.success(t('toastCreated'));
         setIsCreateDialogOpen(false);
         resetForm();
         loadPresets();
       } catch {
-        toast.error('Failed to create preset');
+        toast.error(t('toastFailedCreate'));
       } finally {
         setIsSubmitting(false);
       }
@@ -122,12 +125,12 @@ export function usePresetsData() {
           description: formData.description || undefined,
           timezones: buildTimezonePayload(formData.timezones),
         });
-        toast.success('Preset updated');
+        toast.success(t('toastUpdated'));
         setIsEditDialogOpen(false);
         resetForm();
         loadPresets();
       } catch {
-        toast.error('Failed to update preset');
+        toast.error(t('toastFailedUpdate'));
       } finally {
         setIsSubmitting(false);
       }
@@ -140,12 +143,12 @@ export function usePresetsData() {
       setIsSubmitting(true);
       try {
         await presetService.delete(selectedPreset.id);
-        toast.success('Preset deleted');
+        toast.success(t('toastDeleted'));
         setIsDeleteDialogOpen(false);
         setSelectedPreset(null);
         loadPresets();
       } catch {
-        toast.error('Failed to delete preset');
+        toast.error(t('toastFailedDelete'));
       } finally {
         setIsSubmitting(false);
       }
@@ -157,13 +160,13 @@ export function usePresetsData() {
       await presetService.toggleFavorite(preset.id);
       loadPresets();
     } catch {
-      toast.error('Failed to update favorite');
+      toast.error(t('toastFailedFavorite'));
     }
   };
 
   const handleLoadPreset = (preset: TimezonePreset) => {
     loadPreset(preset);
-    toast.success(`Loaded "${preset.name}"`);
+    toast.success(t('toastLoaded', { name: preset.name }));
     router.push('/');
   };
 
@@ -217,7 +220,7 @@ export function usePresetsData() {
 
   const getTimezoneName = (identifier: string) => {
     const tz = allTimezones.find((t) => t.identifier === identifier);
-    return tz?.displayName || identifier.split('/').pop()?.replace(/_/g, ' ') || identifier;
+    return tz?.displayName || getTimezoneCity(identifier);
   };
 
   const getTimezoneOffset = (identifier: string) => {
