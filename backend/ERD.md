@@ -34,8 +34,8 @@ admin admin
     String timezone_identifier 
     String display_label "❓"
     Int position 
-    String start_time "❓"
-    String end_time "❓"
+    DateTime start_time "❓"
+    DateTime end_time "❓"
     DateTime created_at 
     }
   

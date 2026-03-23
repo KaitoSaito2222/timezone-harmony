@@ -127,27 +127,32 @@ export function PresetFormDialog({
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="space-y-1 text-sm">
                   <span className="text-muted-foreground whitespace-nowrap">
-                    Business Hours:
+                    Business Hours{' '}
+                    <span className="text-xs opacity-70">
+                      ({getTimezoneName(tz.timezoneIdentifier)} time)
+                    </span>
                   </span>
-                  <Input
-                    type="time"
-                    value={tz.startTime || ''}
-                    onChange={(e) =>
-                      onUpdateTimezoneHours(index, 'startTime', e.target.value)
-                    }
-                    className="h-8 w-24"
-                  />
-                  <span className="text-muted-foreground">-</span>
-                  <Input
-                    type="time"
-                    value={tz.endTime || ''}
-                    onChange={(e) =>
-                      onUpdateTimezoneHours(index, 'endTime', e.target.value)
-                    }
-                    className="h-8 w-24"
-                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="time"
+                      value={tz.startTime || ''}
+                      onChange={(e) =>
+                        onUpdateTimezoneHours(index, 'startTime', e.target.value)
+                      }
+                      className="h-8 w-24"
+                    />
+                    <span className="text-muted-foreground">-</span>
+                    <Input
+                      type="time"
+                      value={tz.endTime || ''}
+                      onChange={(e) =>
+                        onUpdateTimezoneHours(index, 'endTime', e.target.value)
+                      }
+                      className="h-8 w-24"
+                    />
+                  </div>
                 </div>
               </div>
             ))}

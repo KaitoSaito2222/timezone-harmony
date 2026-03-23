@@ -50,8 +50,8 @@ model TimezonePresetItem {
   timezoneIdentifier String         @map("timezone_identifier") @db.VarChar(100)
   displayLabel       String?        @map("display_label") @db.VarChar(200)
   position           Int            @default(0)
-  startTime          String?        @map("start_time") @db.VarChar(5)
-  endTime            String?        @map("end_time") @db.VarChar(5)
+  startTime          DateTime?      @map("start_time")
+  endTime            DateTime?      @map("end_time")
   createdAt          DateTime       @default(now()) @map("created_at")
   preset             TimezonePreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
 
