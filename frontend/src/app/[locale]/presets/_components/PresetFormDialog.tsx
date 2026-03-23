@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { Plus, Trash2, ChevronLeft, Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -63,6 +64,8 @@ export function PresetFormDialog({
   getTimezoneOffset,
 }: PresetFormDialogProps) {
   const isMobile = useMediaQuery('(max-width: 640px)');
+  const t = useTranslations('timezone');
+  const tp = useTranslations('presets');
 
   const selectorContent = (
     <>
@@ -76,35 +79,35 @@ export function PresetFormDialog({
   const formContent = (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">{t('presetName')}</Label>
         <Input
           id="name"
           value={formData.name}
           onChange={(e) => onNameChange(e.target.value)}
-          placeholder="e.g., Team Meeting"
+          placeholder={t('presetNamePlaceholder')}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="description">Description (optional)</Label>
+        <Label htmlFor="description">{t('presetDescriptionOptional')}</Label>
         <Textarea
           id="description"
           value={formData.description}
           onChange={(e) => onDescriptionChange(e.target.value)}
-          placeholder="e.g., Weekly sync with US and EU teams"
+          placeholder={t('presetDescriptionPlaceholder')}
           rows={2}
         />
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label>Timezones</Label>
+          <Label>{tp('timezones')}</Label>
           <Button variant="outline" size="sm" onClick={onAddTimezone}>
             <Plus className="h-3 w-3 mr-1" />
-            Add
+            {tp('add')}
           </Button>
         </div>
         {formData.timezones.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            No timezones added yet
+            {tp('noTimezonesAdded')}
           </p>
         ) : (
           <div className="space-y-3 max-h-64 overflow-y-auto">
@@ -129,9 +132,9 @@ export function PresetFormDialog({
                 </div>
                 <div className="space-y-1 text-sm">
                   <span className="text-muted-foreground whitespace-nowrap">
-                    Business Hours{' '}
+                    {t('workHours')}{' '}
                     <span className="text-xs opacity-70">
-                      ({getTimezoneName(tz.timezoneIdentifier)} time)
+                      {tp('businessHoursOf', { name: getTimezoneName(tz.timezoneIdentifier) })}
                     </span>
                   </span>
                   <div className="flex items-center gap-2">
@@ -178,7 +181,7 @@ export function PresetFormDialog({
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
               )}
-              {isSelectorOpen ? 'Select Timezone' : (isEdit ? 'Edit Preset' : 'Create New Preset')}
+              {isSelectorOpen ? tp('selectTimezone') : (isEdit ? tp('editPreset') : tp('createNewPreset'))}
             </SheetTitle>
           </SheetHeader>
           <div className="flex-1 min-h-0 overflow-y-auto">
@@ -187,11 +190,11 @@ export function PresetFormDialog({
           {!isSelectorOpen && (
             <SheetFooter className="px-0">
               <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
-                Cancel
+                {tp('cancel')}
               </Button>
               <Button onClick={onSave} disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEdit ? 'Save Changes' : 'Create'}
+                {isEdit ? tp('saveChanges') : tp('create')}
               </Button>
             </SheetFooter>
           )}
@@ -215,7 +218,7 @@ export function PresetFormDialog({
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                Select Timezone
+                {tp('selectTimezone')}
               </DialogTitle>
             </DialogHeader>
             <div className="flex-1 min-h-0 overflow-y-auto">
@@ -228,18 +231,18 @@ export function PresetFormDialog({
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>{isEdit ? 'Edit Preset' : 'Create New Preset'}</DialogTitle>
+              <DialogTitle>{isEdit ? tp('editPreset') : tp('createNewPreset')}</DialogTitle>
             </DialogHeader>
             <div className="flex-1 min-h-0 overflow-y-auto">
               {formContent}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
-                Cancel
+                {tp('cancel')}
               </Button>
               <Button onClick={onSave} disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEdit ? 'Save Changes' : 'Create'}
+                {isEdit ? tp('saveChanges') : tp('create')}
               </Button>
             </DialogFooter>
           </>

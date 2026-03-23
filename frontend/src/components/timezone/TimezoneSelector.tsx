@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -26,13 +27,14 @@ export function TimezoneSelector({
   excludeTimezones = [],
 }: TimezoneSelectorProps) {
   const isMobile = useMediaQuery('(max-width: 640px)');
+  const t = useTranslations('timezone');
 
   if (isMobile) {
     return (
       <Sheet open onOpenChange={(open) => !open && onClose()}>
         <SheetContent side="bottom" className="max-h-[92vh] flex flex-col gap-2 rounded-t-xl px-4 pb-8">
           <SheetHeader className="px-0 pt-3 pb-0">
-            <SheetTitle>Select Timezone</SheetTitle>
+            <SheetTitle>{t('selectTimezone')}</SheetTitle>
           </SheetHeader>
           <div className="flex-1 min-h-0 overflow-y-auto">
             <TimezoneSelectorContent
@@ -52,7 +54,7 @@ export function TimezoneSelector({
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Select Timezone</DialogTitle>
+          <DialogTitle>{t('selectTimezone')}</DialogTitle>
         </DialogHeader>
         <div className="flex-1 min-h-0">
           <TimezoneSelectorContent

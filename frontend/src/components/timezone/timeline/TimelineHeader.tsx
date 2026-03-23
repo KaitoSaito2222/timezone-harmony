@@ -122,7 +122,7 @@ export function TimelineHeader({
             size="sm"
             className="h-9"
             disabled={timezones.length >= MAX_TIMEZONES}
-            title={timezones.length >= MAX_TIMEZONES ? `Max ${MAX_TIMEZONES} timezones` : undefined}
+            title={timezones.length >= MAX_TIMEZONES ? t('maxTimezones', { max: MAX_TIMEZONES }) : undefined}
           >
             <Plus className="h-4 w-4 mr-1.5" />
             {t('addTimezone')}
@@ -149,7 +149,7 @@ export function TimelineHeader({
               onChange={(e) => onBaseTimezoneChange(e.target.value)}
               className="h-9 px-3 py-1 rounded-md border border-input bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] md:text-sm"
             >
-              <option value="local">Local ({DateTime.local().zoneName})</option>
+              <option value="local">{t('localWithZone', { zone: DateTime.local().zoneName })}</option>
               {timezones.map((tz) => (
                 <option key={tz} value={tz}>
                   {tz.split('/')[1]?.replace(/_/g, ' ') || tz}
@@ -158,7 +158,7 @@ export function TimelineHeader({
             </select>
             {!isNow && (
               <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={onReset}>
-                Reset
+                {t('reset')}
               </Button>
             )}
           </div>

@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { DateTime } from 'luxon';
 
 export function useDateTimePicker(timezones: string[]) {
-  const [selectedDateTime, setSelectedDateTime] = useState<string>('');
+  const [selectedDateTime, setSelectedDateTime] = useState<string>(
+    () => DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm")
+  );
   const [baseTimezone, setBaseTimezone] = useState<string>('local');
   const isLiveMode = useRef(true);
   const hasInitializedBaseTimezone = useRef(false);

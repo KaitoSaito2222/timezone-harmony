@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -41,30 +42,31 @@ export function SavePresetDialog({
   onSave,
 }: SavePresetDialogProps) {
   const isMobile = useMediaQuery('(max-width: 640px)');
+  const t = useTranslations('timezone');
 
   const content = (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="preset-name">Name</Label>
+        <Label htmlFor="preset-name">{t('presetName')}</Label>
         <Input
           id="preset-name"
           value={presetName}
           onChange={(e) => onPresetNameChange(e.target.value)}
-          placeholder="e.g., Team Meeting"
+          placeholder={t('presetNamePlaceholder')}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="preset-description">Description (optional)</Label>
+        <Label htmlFor="preset-description">{t('presetDescriptionOptional')}</Label>
         <Textarea
           id="preset-description"
           value={presetDescription}
           onChange={(e) => onPresetDescriptionChange(e.target.value)}
-          placeholder="e.g., Weekly sync with US and EU teams"
+          placeholder={t('presetDescriptionPlaceholder')}
           rows={2}
         />
       </div>
       <div className="text-sm text-muted-foreground">
-        Timezones to save: {timezones.length}
+        {t('timezonesToSave', { count: timezones.length })}
         <div className="flex flex-wrap gap-1 mt-2">
           {timezones.map((tz) => (
             <Badge key={tz} variant="secondary" className="text-xs">
@@ -81,14 +83,14 @@ export function SavePresetDialog({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="flex flex-col gap-4 rounded-t-xl px-4 pb-8" onOpenAutoFocus={(e) => e.preventDefault()}>
           <SheetHeader className="px-0 pt-3 pb-0">
-            <SheetTitle>Save as Preset</SheetTitle>
+            <SheetTitle>{t('saveAsPreset')}</SheetTitle>
           </SheetHeader>
           {content}
           <SheetFooter className="px-0">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
-            <Button onClick={onSave}>Save Preset</Button>
+            <Button onClick={onSave}>{t('savePreset')}</Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
@@ -99,14 +101,14 @@ export function SavePresetDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md min-h-80" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Save as Preset</DialogTitle>
+          <DialogTitle>{t('saveAsPreset')}</DialogTitle>
         </DialogHeader>
         {content}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('cancel')}
           </Button>
-          <Button onClick={onSave}>Save Preset</Button>
+          <Button onClick={onSave}>{t('savePreset')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
