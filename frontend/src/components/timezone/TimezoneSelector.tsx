@@ -22,9 +22,9 @@ export function TimezoneSelector({
       onOpenChange={(open) => !open && onClose()}
       title={t('selectTimezone')}
       dialogClassName="max-w-lg h-150 flex flex-col gap-3 overflow-hidden"
-      sheetClassName="max-h-[92vh] flex flex-col gap-2 rounded-t-xl px-4 pb-8"
+      sheetClassName="h-[92vh] flex flex-col gap-2 rounded-t-xl px-4 pb-8"
     >
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <TimezoneSelectorContent
           onSelect={onSelect}
           excludeTimezones={excludeTimezones}
