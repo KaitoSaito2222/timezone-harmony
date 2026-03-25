@@ -28,7 +28,7 @@ export function Layout({ children }: LayoutProps) {
             {POPULAR_PAIRS.map(({ slug, label }) => (
               <Link
                 key={slug}
-                href={`/cities/${slug}`}
+                href={`/${slug}`}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 {label}
