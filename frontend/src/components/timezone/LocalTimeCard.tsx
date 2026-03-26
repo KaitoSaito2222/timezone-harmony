@@ -1,15 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { DateTime } from 'luxon';
 import { MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { getTimezoneCity } from '@/lib/timezone-utils';
+import { useTimezoneStore } from '@/stores/timezoneStore';
 
 export function LocalTimeCard() {
   const t = useTranslations('timezone');
+  const locale = useLocale();
+  const { allTimezones } = useTimezoneStore();
   const [currentTime, setCurrentTime] = useState<DateTime | null>(null);
   const [isVisible, setIsVisible] = useLocalStorage<boolean>('localTimeCard_visible', true);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -23,8 +26,11 @@ export function LocalTimeCard() {
   }, []);
 
   const timezone = currentTime?.zoneName ?? null;
-  const cityName = timezone ? getTimezoneCity(timezone) : t('local');
+  const cityName = timezone
+    ? (allTimezones.find(tz => tz.identifier === timezone)?.localizedCities?.[locale] ?? getTimezoneCity(timezone))
+    : t('local');
   const offset = currentTime?.toFormat('ZZZZ') ?? null;
+  const utcOffset = currentTime ? `UTC${currentTime.toFormat('ZZ')}` : null;
 
   if (!isVisible) {
     return (
@@ -57,9 +63,9 @@ export function LocalTimeCard() {
               <span className="font-medium text-sm sm:text-base">{cityName}</span>
               <span className="text-xs text-muted-foreground">{offset}</span>
             </div>
-            {isExpanded && (
-              <p className="text-xs text-muted-foreground">{timezone}</p>
-            )}
+              {isExpanded && utcOffset && (
+                <p className="ml-1 text-xs text-muted-foreground">{utcOffset}</p>
+              )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -69,7 +75,7 @@ export function LocalTimeCard() {
               </div>
               {isExpanded && (
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  {currentTime ? currentTime.toFormat('cccc, MMMM d, yyyy') : ''}
+                  {currentTime ? currentTime.setLocale(locale).toFormat('cccc, MMMM d, yyyy') : ''}
                 </p>
               )}
             </div>

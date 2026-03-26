@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Clock, Lock } from 'lucide-react';
 import { useTimezoneStore, MAX_TIMEZONES } from '@/stores/timezoneStore';
@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export function HomePageContent() {
   const t = useTranslations('home');
   const tc = useTranslations('common');
+  const locale = useLocale();
   const {
     popularTimezones,
     selectedTimezones,
@@ -72,7 +73,7 @@ export function HomePageContent() {
                 onClick={() => addTimezone(tz.identifier)}
                 disabled={selectedTimezones.includes(tz.identifier) || selectedTimezones.length >= MAX_TIMEZONES}
               >
-                {tz.displayName} ({tz.offset})
+                {tz.localizedCities?.[locale] ?? tz.displayName} ({tz.offset})
               </Button>
             ))}
           </div>

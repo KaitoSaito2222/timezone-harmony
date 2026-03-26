@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { getTimezoneCity } from '@/lib/timezone-utils';
 import { DateTime } from 'luxon';
 import {
   Globe,
@@ -27,6 +26,8 @@ import {
 import type { TimezonePreset } from '@/types/preset.types';
 import { MAX_TIMEZONES } from '@/stores/timezoneStore';
 
+
+
 interface TimelineHeaderProps {
   timezones: string[];
   onAddTimezone: () => void;
@@ -41,6 +42,7 @@ interface TimelineHeaderProps {
   onBaseTimezoneChange: (value: string) => void;
   isNow: boolean;
   onReset: () => void;
+  getDisplayName: (identifier: string) => string;
 }
 
 export function TimelineHeader({
@@ -57,6 +59,7 @@ export function TimelineHeader({
   onBaseTimezoneChange,
   isNow,
   onReset,
+  getDisplayName,
 }: TimelineHeaderProps) {
   const router = useRouter();
   const t = useTranslations('timezone');
@@ -153,7 +156,7 @@ export function TimelineHeader({
               <option value="local">{t('localWithZone', { zone: DateTime.local().zoneName })}</option>
               {timezones.map((tz) => (
                 <option key={tz} value={tz}>
-                  {tz.split('/')[1]?.replace(/_/g, ' ') || tz}
+                  {getDisplayName(tz)}
                 </option>
               ))}
             </select>
@@ -174,7 +177,7 @@ export function TimelineHeader({
               variant="secondary"
               className="px-3 py-1.5 text-sm flex items-center gap-2"
             >
-              <span>{getTimezoneCity(tz)}</span>
+              <span>{getDisplayName(tz)}</span>
               <button
                 onClick={() => onRemoveTimezone(tz)}
                 className="hover:bg-muted rounded-full p-0.5 transition-colors"
