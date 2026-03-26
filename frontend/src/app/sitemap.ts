@@ -10,28 +10,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // English city pair pages
   const enPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/cities/${pair}`,
+    url: `${baseUrl}/${pair}`,
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
 
   // Japanese city pair pages
   const jaPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/ja/cities/${pair}`,
+    url: `${baseUrl}/ja/${pair}`,
     changeFrequency: 'weekly',
     priority: 0.7,
   }));
 
   // English triplet pages
   const enTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/cities/${pair}`,
+    url: `${baseUrl}/${pair}`,
     changeFrequency: 'weekly',
     priority: 0.6,
   }));
 
   // Japanese triplet pages
   const jaTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/ja/cities/${pair}`,
+    url: `${baseUrl}/ja/${pair}`,
     changeFrequency: 'weekly',
     priority: 0.5,
   }));
@@ -46,16 +46,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/ja`,
       changeFrequency: 'weekly',
       priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/cities`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/ja/cities`,
-      changeFrequency: 'weekly',
-      priority: 0.8,
     },
     ...enPairUrls,
     ...jaPairUrls,

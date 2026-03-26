@@ -100,17 +100,17 @@ export function getPopularTripletSlugs(): string[] {
 }
 
 /** Popular 2-city pairs for internal linking (hand-picked high-traffic combos) */
-export const POPULAR_PAIRS: { slug: string; label: string }[] = [
-  { slug: 'london-newyork',    label: 'London ↔ New York' },
-  { slug: 'london-tokyo',      label: 'London ↔ Tokyo' },
-  { slug: 'newyork-tokyo',     label: 'New York ↔ Tokyo' },
-  { slug: 'london-singapore',  label: 'London ↔ Singapore' },
-  { slug: 'dubai-london',      label: 'Dubai ↔ London' },
-  { slug: 'singapore-tokyo',   label: 'Singapore ↔ Tokyo' },
-  { slug: 'newyork-paris',     label: 'New York ↔ Paris' },
-  { slug: 'london-paris',      label: 'London ↔ Paris' },
-  { slug: 'dubai-mumbai',      label: 'Dubai ↔ Mumbai' },
-  { slug: 'seoul-tokyo',       label: 'Seoul ↔ Tokyo' },
-  { slug: 'losangeles-newyork', label: 'Los Angeles ↔ New York' },
-  { slug: 'london-sydney',     label: 'London ↔ Sydney' },
+export const POPULAR_PAIRS: { slug: string }[] = [
+  { slug: 'london-newyork' },
+  { slug: 'london-tokyo' },
+  { slug: 'newyork-tokyo' },
+  { slug: 'london-singapore' },
+  { slug: 'dubai-london' },
+  { slug: 'singapore-tokyo' },
+  { slug: 'newyork-paris' },
+  { slug: 'london-paris' },
+  { slug: 'dubai-mumbai' },
+  { slug: 'seoul-tokyo' },
+  { slug: 'losangeles-newyork' },
+  { slug: 'london-sydney' },
 ];

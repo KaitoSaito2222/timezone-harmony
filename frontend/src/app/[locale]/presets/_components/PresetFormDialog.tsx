@@ -71,7 +71,7 @@ export function PresetFormDialog({
   );
 
   const formContent = (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full space-y-4">
       <div className="space-y-2">
         <Label htmlFor="name">{t('presetName')}</Label>
         <Input
@@ -91,7 +91,7 @@ export function PresetFormDialog({
           rows={2}
         />
       </div>
-      <div className="space-y-2">
+      <div className="flex flex-col flex-1 min-h-0 space-y-2">
         <div className="flex items-center justify-between">
           <Label>{tp('timezones')}</Label>
           <Button variant="outline" size="sm" onClick={onAddTimezone}>
@@ -104,7 +104,7 @@ export function PresetFormDialog({
             {tp('noTimezonesAdded')}
           </p>
         ) : (
-          <div className="space-y-3 max-h-64 overflow-y-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-3">
             {formData.timezones.map((tz, index) => (
               <div key={index} className="p-3 bg-muted rounded-lg space-y-2">
                 <div className="flex items-center justify-between">
@@ -136,14 +136,14 @@ export function PresetFormDialog({
                       type="time"
                       value={tz.startTime || ''}
                       onChange={(e) => onUpdateTimezoneHours(index, 'startTime', e.target.value)}
-                      className="h-8 w-24"
+                      className="h-8 w-fit px-2"
                     />
                     <span className="text-muted-foreground">-</span>
                     <Input
                       type="time"
                       value={tz.endTime || ''}
                       onChange={(e) => onUpdateTimezoneHours(index, 'endTime', e.target.value)}
-                      className="h-8 w-24"
+                      className="h-8 w-fit px-2"
                     />
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export function PresetFormDialog({
               {isSelectorOpen ? tp('selectTimezone') : (isEdit ? tp('editPreset') : tp('createNewPreset'))}
             </SheetTitle>
           </SheetHeader>
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto px-1">
             {isSelectorOpen ? selectorContent : formContent}
           </div>
           {!isSelectorOpen && (
@@ -194,7 +194,7 @@ export function PresetFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel(); }}>
-      <DialogContent className="max-w-md h-150 flex flex-col overflow-hidden" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="w-240 h-[85vh] max-w-[90vw] flex flex-col overflow-hidden" onOpenAutoFocus={(e) => e.preventDefault()}>
         {isSelectorOpen ? (
           <>
             <DialogHeader>
@@ -217,7 +217,7 @@ export function PresetFormDialog({
             <DialogHeader>
               <DialogTitle>{isEdit ? tp('editPreset') : tp('createNewPreset')}</DialogTitle>
             </DialogHeader>
-            <div className="flex-1 min-h-0 overflow-y-auto">{formContent}</div>
+            <div className="flex-1 min-h-0 overflow-y-auto px-1">{formContent}</div>
             <DialogFooter>{actionButtons}</DialogFooter>
           </>
         )}

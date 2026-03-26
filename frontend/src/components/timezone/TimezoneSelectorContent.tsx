@@ -1,6 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Search } from 'lucide-react';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,7 @@ export function TimezoneSelectorContent({
   const { allTimezones, popularTimezones } = useTimezoneStore();
   const [searchQuery, setSearchQuery] = useState('');
   const t = useTranslations('timezone');
+  const locale = useLocale();
 
   const localTimezone = useMemo(() => {
     const identifier = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -27,16 +28,31 @@ export function TimezoneSelectorContent({
   }, [allTimezones]);
 
   const filteredTimezones = useMemo(() => {
-    if (searchQuery.length < 2) {
+    if (searchQuery.length < 1) {
       return allTimezones.filter((tz) => !excludeTimezones.includes(tz.identifier));
     }
-    const query = searchQuery.toLowerCase();
+    // Converts hiragana characters to katakana so that searching "とうきょう" also matches "トウキョウ".
+    // Unicode: hiragana U+3041–U+3096, katakana starts 0x60 higher (e.g. あ U+3041 → ア U+30A1).
+    const toKatakana = (str: string) =>
+      str.replace(/[\u3041-\u3096]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60));
+    // Normalize the search query: lowercase + hiragana→katakana conversion.
+    const query = toKatakana(searchQuery.toLowerCase());
+    // Returns true if any locale value in a localized field (e.g. localizedCities, localizedCountry)
+    // contains the search query after the same normalization.
+    const matchesLocalizedField = (field?: Record<string, string>) =>
+      field ? Object.values(field).some((v) => toKatakana(v.toLowerCase()).includes(query)) : false;
     return allTimezones.filter(
       (tz) =>
+        // Skip timezones that are already selected elsewhere in the UI.
         !excludeTimezones.includes(tz.identifier) &&
-        (tz.identifier.toLowerCase().includes(query) ||
-          tz.displayName.toLowerCase().includes(query) ||
-          tz.country?.toLowerCase().includes(query))
+        // Match against every searchable field. At least one must contain the query.
+        (tz.identifier.toLowerCase().includes(query) || // e.g. "America/New_York"
+          tz.displayName.toLowerCase().includes(query) || // e.g. "New York"
+          tz.country?.toLowerCase().includes(query) || // e.g. "United States"
+          matchesLocalizedField(tz.localizedCities) || // e.g. "ニューヨーク"
+          matchesLocalizedField(tz.localizedCitiesReading) || // e.g. "ニューヨーク" (katakana reading for kana search)
+          matchesLocalizedField(tz.localizedCountry) || // e.g. "アメリカ合衆国"
+          matchesLocalizedField(tz.localizedCountryReading)) // e.g. "アメリカガッシュウコク" (katakana reading)
     );
   }, [searchQuery, allTimezones, excludeTimezones]);
 
@@ -51,7 +67,8 @@ export function TimezoneSelectorContent({
               className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
               onClick={() => onSelect(localTimezone.identifier)}
             >
-              {localTimezone.displayName}
+              {localTimezone.localizedCities?.[locale] ?? localTimezone.displayName}
+              <span className="ml-1 opacity-60">{localTimezone.offset}</span>
             </Badge>
           </div>
           <Separator className="shrink-0" />
@@ -69,7 +86,8 @@ export function TimezoneSelectorContent({
                 className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
                 onClick={() => onSelect(tz.identifier)}
               >
-                {tz.displayName}
+                {tz.localizedCities?.[locale] ?? tz.displayName}
+                <span className="ml-1 opacity-60">{tz.offset}</span>
               </Badge>
             ))}
         </div>
@@ -89,7 +107,7 @@ export function TimezoneSelectorContent({
 
       <div className="flex-1 min-h-0 overflow-y-auto space-y-1">
         <h3 className="text-sm font-medium text-muted-foreground mb-2 sticky top-0 bg-background py-1">
-          {searchQuery.length >= 2 ? t('searchResults') : t('allTimezones')}
+          {searchQuery.length >= 1 ? t('searchResults') : t('allTimezones')}
         </h3>
         {filteredTimezones.length > 0 ? (
           filteredTimezones.map((tz) => (
@@ -99,8 +117,15 @@ export function TimezoneSelectorContent({
               className="w-full justify-between h-auto py-2"
               onClick={() => onSelect(tz.identifier)}
             >
-              <span>{tz.displayName}</span>
-              <span className="text-sm text-muted-foreground">{tz.offset}</span>
+              <span className="flex flex-col items-start">
+                <span>{tz.localizedCities?.[locale] ?? tz.displayName}</span>
+                {(tz.localizedCountry?.[locale] ?? tz.country) && (
+                  <span className="text-xs text-muted-foreground">
+                    {tz.localizedCountry?.[locale] ?? tz.country}
+                  </span>
+                )}
+              </span>
+              <span className="text-sm text-muted-foreground shrink-0">{tz.offset}</span>
             </Button>
           ))
         ) : (

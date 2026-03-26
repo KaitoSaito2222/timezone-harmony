@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useTimezoneStore } from '@/stores/timezoneStore';
 import { getTimezoneCity } from '@/lib/timezone-utils';
 import { presetService } from '@/services/preset.service';
@@ -26,6 +26,7 @@ const INITIAL_FORM: PresetFormData = { name: '', description: '', timezones: [] 
 export function usePresetsData() {
   const router = useRouter();
   const t = useTranslations('presets');
+  const locale = useLocale();
   const { loadPreset, allTimezones, loadTimezones } = useTimezoneStore();
   const [presets, setPresets] = useState<TimezonePreset[]>([]);
   const [loading, setLoading] = useState(true);
@@ -220,7 +221,7 @@ export function usePresetsData() {
 
   const getTimezoneName = (identifier: string) => {
     const tz = allTimezones.find((t) => t.identifier === identifier);
-    return tz?.displayName || getTimezoneCity(identifier);
+    return tz?.localizedCities?.[locale] ?? tz?.displayName ?? getTimezoneCity(identifier);
   };
 
   const getTimezoneOffset = (identifier: string) => {

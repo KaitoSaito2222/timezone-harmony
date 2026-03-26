@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Header } from './Header';
-import { POPULAR_PAIRS } from '@/lib/cities';
+import { POPULAR_PAIRS, parseCities, getCityLocalized } from '@/lib/cities';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +11,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const t = useTranslations('common');
+  const locale = useLocale();
   return (
     <div className="min-h-screen bg-transparent flex flex-col">
       <Header />
@@ -25,15 +26,21 @@ export function Layout({ children }: LayoutProps) {
             {t('popularComparisons')}
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
-            {POPULAR_PAIRS.map(({ slug, label }) => (
-              <Link
-                key={slug}
-                href={`/cities/${slug}`}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {label}
-              </Link>
-            ))}
+            {POPULAR_PAIRS.map(({ slug }) => {
+              const cities = parseCities(slug);
+              const label = cities
+                ? cities.map(c => getCityLocalized(c, locale).name).join(' ↔ ')
+                : slug;
+              return (
+                <Link
+                  key={slug}
+                  href={`/${slug}`}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {label}
+                </Link>
+              );
+            })}
           </div>
           <p className="text-xs text-muted-foreground mt-6 text-center">
             {t('copyright', { year: new Date().getFullYear() })}

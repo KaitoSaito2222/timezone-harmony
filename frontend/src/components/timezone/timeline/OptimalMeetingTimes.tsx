@@ -7,9 +7,10 @@ import type { OptimalTime } from '@/lib/timeline';
 
 interface OptimalMeetingTimesProps {
   optimalTimes: OptimalTime[];
+  getDisplayName: (identifier: string) => string;
 }
 
-export function OptimalMeetingTimes({ optimalTimes }: OptimalMeetingTimesProps) {
+export function OptimalMeetingTimes({ optimalTimes, getDisplayName }: OptimalMeetingTimesProps) {
   const t = useTranslations('timezone');
 
   if (optimalTimes.length > 0) {
@@ -26,9 +27,9 @@ export function OptimalMeetingTimes({ optimalTimes }: OptimalMeetingTimesProps) 
             {t('foundTimeSlots', { count: optimalTimes.length })}
           </p>
           <div className="flex flex-wrap gap-3">
-            {optimalTimes.slice(0, 5).map((opt, index) => (
+            {optimalTimes.map((opt, index) => (
               <Badge key={index} variant="outline" className="px-3 py-2 text-sm">
-                {opt.times.map((t) => `${t.timezone}: ${t.time}`).join(' | ')}
+                {opt.times.map((t) => `${getDisplayName(t.timezone)}: ${t.time}`).join(' | ')}
               </Badge>
             ))}
           </div>
