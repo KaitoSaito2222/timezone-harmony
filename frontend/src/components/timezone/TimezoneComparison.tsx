@@ -25,7 +25,7 @@ interface TimezoneComparisonProps {
   timezones: string[];
   onAddTimezone: () => void;
   onRemoveTimezone: (identifier: string) => void;
-  onClearTimezones: () => void;
+  onClearTimezones?: () => void;
 }
 
 export function TimezoneComparison({
