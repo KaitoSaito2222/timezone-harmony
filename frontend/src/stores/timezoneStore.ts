@@ -24,6 +24,7 @@ interface TimezoneState {
   loadPresets: () => Promise<void>;
   addTimezone: (identifier: string) => void;
   removeTimezone: (identifier: string) => void;
+  clearTimezones: () => void;
   setSelectedTimezones: (timezones: string[], businessHours?: BusinessHoursMap) => void;
   loadPreset: (preset: TimezonePreset) => void;
 }
@@ -71,6 +72,10 @@ export const useTimezoneStore = create<TimezoneState>((set, get) => ({
     set({
       selectedTimezones: selectedTimezones.filter((tz) => tz !== identifier),
     });
+  },
+
+  clearTimezones: () => {
+    set({ selectedTimezones: [], businessHours: {} });
   },
 
   setSelectedTimezones: (timezones: string[], businessHours?: BusinessHoursMap) => {
