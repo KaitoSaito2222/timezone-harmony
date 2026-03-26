@@ -64,10 +64,7 @@ export async function generateMetadata({
 
   const description = is3
     ? t('description3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
-    : t('description2', {
-        city1: lc[0].name, country1: lc[0].country,
-        city2: lc[1].name, country2: lc[1].country,
-      });
+    : t('description2', { city1: lc[0].name, city2: lc[1].name });
 
   const enUrl = `${baseUrl}/${pair}`;
   const jaUrl = `${baseUrl}/ja/${pair}`;
