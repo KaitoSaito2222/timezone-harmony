@@ -14,7 +14,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'home' });
 
   const keywords = locale === 'ja'
-    ? ['タイムゾーン', '時差', '世界時計', 'ミーティング計画', 'タイムゾーン比較', 'グローバルチーム']
+    ? ['時差計算', 'タイムゾーン', '時差', '世界時計', 'ミーティング計画', 'タイムゾーン比較', 'グローバルチーム']
     : ['timezone', 'time zone converter', 'world clock', 'meeting planner', 'timezone comparison', 'global team'];
 
   return {

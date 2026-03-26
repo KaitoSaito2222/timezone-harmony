@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { Clock } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, getCityLocalized, type CityDef } from '@/lib/cities';
+import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
 import { CityPairApp } from './_components/CityPairApp';
 
@@ -20,15 +20,12 @@ export async function generateStaticParams() {
 
   const pairSlugs = getAllPairSlugs();
 
-  const popularSlugs = [
-    'tokyo', 'newyork', 'london', 'paris', 'singapore',
-    'sydney', 'dubai', 'seoul', 'shanghai', 'mumbai',
-  ].sort();
+  const sortedPopular = [...POPULAR_SLUGS].sort();
   const tripletSlugs: string[] = [];
-  for (let i = 0; i < popularSlugs.length; i++)
-    for (let j = i + 1; j < popularSlugs.length; j++)
-      for (let k = j + 1; k < popularSlugs.length; k++)
-        tripletSlugs.push(`${popularSlugs[i]}-${popularSlugs[j]}-${popularSlugs[k]}`);
+  for (let i = 0; i < sortedPopular.length; i++)
+    for (let j = i + 1; j < sortedPopular.length; j++)
+      for (let k = j + 1; k < sortedPopular.length; k++)
+        tripletSlugs.push(`${sortedPopular[i]}-${sortedPopular[j]}-${sortedPopular[k]}`);
 
   const allSlugs = [...pairSlugs, ...tripletSlugs];
 
@@ -70,7 +67,7 @@ export async function generateMetadata({
   const jaUrl = `${baseUrl}/ja/${pair}`;
 
   const keywords = locale === 'ja'
-    ? [...cities.map(c => c.name), '時差', 'タイムゾーン', '現地時刻', '世界時計']
+    ? [...cities.map(c => c.name), '時差計算', '時差', 'タイムゾーン', '現地時刻', '世界時計']
     : [...cities.map(c => c.name), 'time difference', 'timezone', 'local time', 'world clock'];
 
   return {
