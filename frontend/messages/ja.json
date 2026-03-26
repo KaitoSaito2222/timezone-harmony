@@ -13,16 +13,16 @@
     "copyright": "© {year} Timezone Harmony"
   },
   "home": {
-    "title": "世界のタイムゾーン比較",
-    "description": "無料のタイムゾーン比較ツール。好きな都市を追加してリアルタイムで時刻を比較、最適なミーティング時間などをすぐに確認。",
+    "title": "世界の時差計算・タイムゾーン比較 | Timezone Harmony",
+    "description": "無料の時差計算ツール。好きな都市を追加してリアルタイムで時刻を比較、最適なミーティング時間をすぐに確認。",
     "quickAccess": "クイックアクセス - 人気のタイムゾーン",
     "loginPrompt": "ログインしてタイムゾーンのプリセットと営業時間を保存しましょう"
   },
   "cityPair": {
-    "title2": "{city1}↔{city2}の時差・リアルタイム時計",
-    "title3": "{city1}・{city2}・{city3}の時間比較",
-    "description2": "{city1}・{city2}のリアルタイム時計、時差、ミーティング時間を無料で確認。最適なミーティング時間も一目でわかります。",
-    "description3": "{city1}・{city2}・{city3}のリアルタイム時計と時差を一画面で比較。3都市をまたぐミーティング時間調整も無料で。",
+    "title2": "{city1}↔{city2} 時差計算・リアルタイム時計 | Timezone Harmony",
+    "title3": "{city1}・{city2}・{city3} 時差比較 | Timezone Harmony",
+    "description2": "{city1}と{city2}の時差を無料で計算。リアルタイム時計、UTC差、最適なミーティング時間を一覧表示。",
+    "description3": "{city1}・{city2}・{city3}の時差を一画面で比較。リアルタイム時計とミーティング計画を無料で。",
     "subtitle2": "{city1}と{city2}の現在の現地時刻とタイムゾーンのオフセット。",
     "subtitle3": "{cities}の現在の現地時刻とタイムゾーンの比較。",
     "openInApp": "アプリで開く",

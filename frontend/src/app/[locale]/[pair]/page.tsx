@@ -70,7 +70,7 @@ export async function generateMetadata({
   const jaUrl = `${baseUrl}/ja/${pair}`;
 
   const keywords = locale === 'ja'
-    ? [...cities.map(c => c.name), '時差', 'タイムゾーン', '現地時刻', '世界時計']
+    ? [...cities.map(c => c.name), '時差計算', '時差', 'タイムゾーン', '現地時刻', '世界時計']
     : [...cities.map(c => c.name), 'time difference', 'timezone', 'local time', 'world clock'];
 
   return {
