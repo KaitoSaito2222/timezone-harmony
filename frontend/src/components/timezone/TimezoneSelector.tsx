@@ -24,7 +24,7 @@ export function TimezoneSelector({
       dialogClassName="max-w-lg h-150 flex flex-col gap-3 overflow-hidden"
       sheetClassName="h-[80vh] flex flex-col gap-2 rounded-t-xl px-4 pb-8"
     >
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden px-0.5">
         <TimezoneSelectorContent
           onSelect={onSelect}
           excludeTimezones={excludeTimezones}
