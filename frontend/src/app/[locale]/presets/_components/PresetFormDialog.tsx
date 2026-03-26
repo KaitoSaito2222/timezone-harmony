@@ -136,14 +136,14 @@ export function PresetFormDialog({
                       type="time"
                       value={tz.startTime || ''}
                       onChange={(e) => onUpdateTimezoneHours(index, 'startTime', e.target.value)}
-                      className="h-8 w-24"
+                      className="h-8 w-fit px-2"
                     />
                     <span className="text-muted-foreground">-</span>
                     <Input
                       type="time"
                       value={tz.endTime || ''}
                       onChange={(e) => onUpdateTimezoneHours(index, 'endTime', e.target.value)}
-                      className="h-8 w-24"
+                      className="h-8 w-fit px-2"
                     />
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export function PresetFormDialog({
               {isSelectorOpen ? tp('selectTimezone') : (isEdit ? tp('editPreset') : tp('createNewPreset'))}
             </SheetTitle>
           </SheetHeader>
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto px-1">
             {isSelectorOpen ? selectorContent : formContent}
           </div>
           {!isSelectorOpen && (
@@ -217,7 +217,7 @@ export function PresetFormDialog({
             <DialogHeader>
               <DialogTitle>{isEdit ? tp('editPreset') : tp('createNewPreset')}</DialogTitle>
             </DialogHeader>
-            <div className="flex-1 min-h-0 overflow-hidden">{formContent}</div>
+            <div className="flex-1 min-h-0 overflow-y-auto px-1">{formContent}</div>
             <DialogFooter>{actionButtons}</DialogFooter>
           </>
         )}
