@@ -22,6 +22,7 @@ export function HomePageContent() {
     loadTimezones,
     addTimezone,
     removeTimezone,
+    clearTimezones,
     setSelectedTimezones,
   } = useTimezoneStore();
   const { isAuthenticated } = useAuthStore();
@@ -54,6 +55,7 @@ export function HomePageContent() {
         timezones={selectedTimezones}
         onAddTimezone={() => selectedTimezones.length < MAX_TIMEZONES && setShowSelector(true)}
         onRemoveTimezone={removeTimezone}
+        onClearTimezones={clearTimezones}
       />
 
       <Card>

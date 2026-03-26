@@ -219,6 +219,7 @@
     "maxTimezones": "Max {max} timezones",
     "localWithZone": "Local ({zone})",
     "reset": "Reset",
+    "clearAll": "Clear all",
     "recommendedMeetingTimes": "Recommended Meeting Times",
     "foundTimeSlots": "Found {count} time slots where all participants are within business hours!",
     "noPerfectMatch": "No Perfect Match Found",

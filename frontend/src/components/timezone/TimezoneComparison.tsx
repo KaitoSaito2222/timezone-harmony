@@ -25,12 +25,14 @@ interface TimezoneComparisonProps {
   timezones: string[];
   onAddTimezone: () => void;
   onRemoveTimezone: (identifier: string) => void;
+  onClearTimezones: () => void;
 }
 
 export function TimezoneComparison({
   timezones,
   onAddTimezone,
   onRemoveTimezone,
+  onClearTimezones,
 }: TimezoneComparisonProps) {
   const t = useTranslations('timezone');
   const { allTimezones, businessHours } = useTimezoneStore();
@@ -84,6 +86,7 @@ export function TimezoneComparison({
             timezones={timezones}
             onAddTimezone={onAddTimezone}
             onRemoveTimezone={onRemoveTimezone}
+            onClearTimezones={onClearTimezones}
             isAuthenticated={isAuthenticated}
             presets={presetActions.presets}
             onLoadPreset={presetActions.handleLoadPreset}

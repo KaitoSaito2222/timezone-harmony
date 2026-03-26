@@ -32,6 +32,7 @@ interface TimelineHeaderProps {
   timezones: string[];
   onAddTimezone: () => void;
   onRemoveTimezone: (identifier: string) => void;
+  onClearTimezones: () => void;
   isAuthenticated: boolean;
   presets: TimezonePreset[];
   onLoadPreset: (preset: TimezonePreset) => void;
@@ -49,6 +50,7 @@ export function TimelineHeader({
   timezones,
   onAddTimezone,
   onRemoveTimezone,
+  onClearTimezones,
   isAuthenticated,
   presets,
   onLoadPreset,
@@ -170,7 +172,7 @@ export function TimelineHeader({
       )}
 
       {timezones.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {timezones.map((tz) => (
             <Badge
               key={tz}
@@ -186,6 +188,9 @@ export function TimelineHeader({
               </button>
             </Badge>
           ))}
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={onClearTimezones}>
+            {t('clearAll')}
+          </Button>
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">
