@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
-import { getTimezoneCity } from '@/lib/timezone-utils';
+import { getTimezoneCity, getLocaleFromPathname } from '@/lib/timezone-utils';
 import { Globe, Plus, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,9 @@ export function TimezoneComparison({
   const getDisplayName = useCallback(
     (identifier: string): string => {
       const tz = allTimezones.find((item) => item.identifier === identifier);
-      return tz?.displayName ?? getTimezoneCity(identifier);
+      if (!tz) return getTimezoneCity(identifier);
+      const locale = getLocaleFromPathname();
+      return tz.localizedCities?.[locale] ?? tz.displayName;
     },
     [allTimezones]
   );
@@ -58,7 +60,6 @@ export function TimezoneComparison({
     timezones,
     datePicker.selectedDateTime,
     datePicker.baseTimezone,
-    allTimezones
   );
 
   const now = DateTime.now();
@@ -87,6 +88,7 @@ export function TimezoneComparison({
             presets={presetActions.presets}
             onLoadPreset={presetActions.handleLoadPreset}
             onOpenSaveDialog={() => presetActions.setIsSaveDialogOpen(true)}
+            getDisplayName={getDisplayName}
             selectedDateTime={datePicker.selectedDateTime}
             onDateTimeChange={datePicker.handleDateTimeChange}
             baseTimezone={datePicker.baseTimezone}
@@ -138,7 +140,7 @@ export function TimezoneComparison({
         </CardContent>
       </Card>
 
-      {timezones.length > 0 && <OptimalMeetingTimes optimalTimes={optimalTimes} />}
+      {timezones.length > 0 && <OptimalMeetingTimes optimalTimes={optimalTimes} getDisplayName={getDisplayName} />}
 
       <SavePresetDialog
         open={presetActions.isSaveDialogOpen}

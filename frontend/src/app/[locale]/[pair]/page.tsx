@@ -271,9 +271,9 @@ export default async function CityPairPage({
               <thead>
                 <tr className="bg-muted/50">
                   <th className="px-4 py-3 text-left font-medium text-muted-foreground w-20">{t('utcHeader')}</th>
-                  {cities.map(city => (
+                  {cities.map((city, i) => (
                     <th key={city.slug} className="px-4 py-3 text-left font-medium">
-                      {city.name}
+                      {lc[i].name}
                       <span className="ml-1 text-xs text-muted-foreground font-normal">
                         ({getOffsetLabel(city.identifier)})
                       </span>
