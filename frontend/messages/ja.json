@@ -219,6 +219,7 @@
     "maxTimezones": "最大{max}タイムゾーン",
     "localWithZone": "現地 ({zone})",
     "reset": "リセット",
+    "clearAll": "すべてクリア",
     "recommendedMeetingTimes": "おすすめのミーティング時間",
     "foundTimeSlots": "{count}件の全員が営業時間内に当たるタイムスロットが見つかりました！",
     "noPerfectMatch": "最適な時間帯が見つかりません",

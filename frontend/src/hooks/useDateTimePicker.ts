@@ -39,6 +39,16 @@ export function useDateTimePicker(timezones: string[]) {
   }, [timezones]);
 
   const handleDateTimeChange = (value: string) => {
+    if (!value) {
+      isLiveMode.current = true;
+      const resetTz = timezones[0] || 'local';
+      setSelectedDateTime(
+        resetTz === 'local'
+          ? DateTime.now().toFormat(DATETIME_LOCAL_FORMAT)
+          : DateTime.now().setZone(resetTz).toFormat(DATETIME_LOCAL_FORMAT)
+      );
+      return;
+    }
     isLiveMode.current = false;
     setSelectedDateTime(value);
   };
