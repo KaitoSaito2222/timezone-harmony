@@ -32,7 +32,7 @@ interface TimelineHeaderProps {
   timezones: string[];
   onAddTimezone: () => void;
   onRemoveTimezone: (identifier: string) => void;
-  onClearTimezones: () => void;
+  onClearTimezones?: () => void;
   isAuthenticated: boolean;
   presets: TimezonePreset[];
   onLoadPreset: (preset: TimezonePreset) => void;
@@ -188,9 +188,11 @@ export function TimelineHeader({
               </button>
             </Badge>
           ))}
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={onClearTimezones}>
-            {t('clearAll')}
-          </Button>
+          {onClearTimezones && (
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={onClearTimezones}>
+              {t('clearAll')}
+            </Button>
+          )}
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">
