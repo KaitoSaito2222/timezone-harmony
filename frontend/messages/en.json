@@ -21,8 +21,8 @@
   "cityPair": {
     "title2": "{city1} ↔ {city2} Time Difference",
     "title3": "{city1}, {city2} & {city3} Time Comparison",
-    "description2": "Live clocks for {city1} & {city2}, instant time difference & meeting planner. Free interactive timezone tool — no sign-up needed.",
-    "description3": "Live clocks for {city1}, {city2} & {city3} — see all time differences and find the best meeting slots across 3 time zones. Free tool.",
+    "description2": "Exact time difference between {city1} & {city2} — live clocks, UTC offsets & best meeting times. Free, no sign-up needed.",
+    "description3": "Compare live times in {city1}, {city2} & {city3} at once. Instant time differences, overlapping business hours & meeting planner. Free.",
     "subtitle2": "Current local times and time zone offset between {city1} and {city2}.",
     "subtitle3": "Current local times and time zone comparison for {cities}.",
     "openInApp": "Open in App",

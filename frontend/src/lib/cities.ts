@@ -82,10 +82,11 @@ export function getAllPairSlugs(): string[] {
   return pairs;
 }
 
-/** Slugs for the top-10 popular cities used for pre-built 3-city triplets */
+/** Slugs for popular cities used for pre-built 3-city triplets */
 export const POPULAR_SLUGS = [
   'tokyo', 'newyork', 'london', 'paris', 'singapore',
   'sydney', 'dubai', 'seoul', 'shanghai', 'mumbai',
+  'hongkong', 'bangkok', 'kualalumpur', 'jakarta',
 ] as const;
 
 /** Returns the 120 popular 3-city triplet slugs (10C3, alphabetical order within each) */
