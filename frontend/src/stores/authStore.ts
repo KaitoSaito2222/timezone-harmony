@@ -138,10 +138,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
             role: 'user',
           },
           isAuthenticated: true,
-          isLoading: false,
         });
       } else {
-        set({ user: null, isAuthenticated: false, isLoading: false });
+        set({ user: null, isAuthenticated: false });
       }
     });
 
