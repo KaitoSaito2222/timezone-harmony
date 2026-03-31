@@ -12,5 +12,8 @@ export function getTimezoneCity(identifier: string): string {
  */
 export function getLocaleFromPathname(): string {
   if (typeof window === 'undefined') return 'en';
-  return window.location.pathname.startsWith('/ja') ? 'ja' : 'en';
+  const path = window.location.pathname;
+  if (path.startsWith('/ja')) return 'ja';
+  if (path.startsWith('/ko')) return 'ko';
+  return 'en';
 }

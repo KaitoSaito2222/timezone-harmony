@@ -8,7 +8,7 @@ import { TimezoneInfo } from './dto/timezone-info.dto';
 
 // Add locale codes here to support additional languages.
 // Each locale must have a corresponding file in cldr-dates-full/main/<locale>/timeZoneNames.json.
-const SUPPORTED_LOCALES = ['ja'];
+const SUPPORTED_LOCALES = ['ja', 'ko'];
 
 interface TimeZoneNamesJson {
   main: Record<

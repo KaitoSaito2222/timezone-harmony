@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { DateTime } from 'luxon';
+import { getLocaleMeta } from '@/i18n/localeConfig';
 
 interface CityTimeProps {
   name: string;
@@ -27,13 +29,14 @@ function getStates(cities: CityTimeProps[], locale: string): CityState[] {
     const dt = DateTime.now().setZone(c.identifier).setLocale(locale);
     return {
       time: dt.toFormat('HH:mm'),
-      date: locale === 'ja' ? dt.toFormat('M月d日(ccc)') : dt.toFormat('EEE, MMM d'),
+      date: dt.toFormat(getLocaleMeta(locale).dateFormat),
       ordinal: dt.ordinal,
     };
   });
 }
 
 export function LiveCityTimes({ cities, initialStates, diffLabel, locale }: Props) {
+  const t = useTranslations('cityPair');
   const [states, setStates] = useState(initialStates);
 
   useEffect(() => {
@@ -70,7 +73,7 @@ export function LiveCityTimes({ cities, initialStates, diffLabel, locale }: Prop
       {diffLabel && (
         <div className="rounded-xl border bg-primary/5 px-5 py-3 shadow-sm flex flex-col justify-center">
           <p className="text-4xl font-bold tabular-nums text-primary leading-none">{diffLabel}</p>
-          <p className="mt-1 text-sm text-muted-foreground">difference</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t('timeDifference')}</p>
         </div>
       )}
     </div>
