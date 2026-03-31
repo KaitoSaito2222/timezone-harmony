@@ -34,6 +34,7 @@ export function useCalendarExport({
   const [exportSlotData, setExportSlotData] = useState<ExportSlotData | null>(null);
   const [exportEventTitle, setExportEventTitle] = useState('Meeting');
   const [exportDuration, setExportDuration] = useState(60);
+  const [exportStartTime, setExportStartTime] = useState('');
 
   const handleTimeSlotClick = (rowIndex: number) => {
     const slotData = timezones.map((tz) => {
@@ -48,6 +49,7 @@ export function useCalendarExport({
       return { timezone: tz, time: slots[rowIndex].fullTime };
     });
     setExportSlotData({ rowIndex, slots: slotData });
+    setExportStartTime(slotData[0].time.toFormat('HH:mm'));
     setSelectedRow(rowIndex);
     setIsExportDialogOpen(true);
   };
@@ -59,7 +61,8 @@ export function useCalendarExport({
 
   const handleExportCalendar = async (method: CalendarExportMethod) => {
     if (!exportSlotData) return;
-    const startTime = exportSlotData.slots[0].time;
+    const [startHour, startMinute] = exportStartTime.split(':').map(Number);
+    const startTime = exportSlotData.slots[0].time.set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     const endTime = startTime.plus({ minutes: exportDuration });
     const description = buildDescription(exportSlotData.slots);
 
@@ -130,6 +133,8 @@ export function useCalendarExport({
     setExportEventTitle,
     exportDuration,
     setExportDuration,
+    exportStartTime,
+    setExportStartTime,
     handleTimeSlotClick,
     handleExportCalendar,
     handleExportDialogClose,

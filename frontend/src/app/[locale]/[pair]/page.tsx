@@ -7,7 +7,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
+import { getLocaleMeta, buildLanguageAlternates } from '@/i18n/localeConfig';
 import { CityPairApp } from './_components/CityPairApp';
+import { LiveCityTimes } from './_components/LiveCityTimes';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -59,34 +61,28 @@ export async function generateMetadata({
     ? t('title3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
     : t('title2', { city1: lc[0].name, city2: lc[1].name });
 
+  const diffH = !is3 ? getDiffHours(cities[0].identifier, cities[1].identifier) : 0;
+  const hStr = diffH % 1 === 0 ? diffH.toFixed(0) : diffH.toFixed(1);
   const description = is3
     ? t('description3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
-    : t('description2', { city1: lc[0].name, city2: lc[1].name });
+    : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr });
 
-  const enUrl = `${baseUrl}/${pair}`;
-  const jaUrl = `${baseUrl}/ja/${pair}`;
-
-  const keywords = locale === 'ja'
-    ? [...cities.map(c => c.name), '時差計算', '時差', 'タイムゾーン', '現地時刻', '世界時計']
-    : [...cities.map(c => c.name), 'time difference', 'timezone', 'local time', 'world clock'];
+  const meta = getLocaleMeta(locale);
+  const canonicalUrl = `${baseUrl}${meta.pathPrefix}/${pair}`;
 
   return {
     title,
     description,
-    keywords,
+    keywords: [...cities.map(c => c.name), ...meta.cityKeywords],
     alternates: {
-      canonical: locale === 'ja' ? jaUrl : enUrl,
-      languages: {
-        en: enUrl,
-        ja: jaUrl,
-        'x-default': enUrl,
-      },
+      canonical: canonicalUrl,
+      languages: buildLanguageAlternates(baseUrl, pair),
     },
     openGraph: {
       title,
       description,
-      url: locale === 'ja' ? jaUrl : enUrl,
-      locale: locale === 'ja' ? 'ja_JP' : 'en_US',
+      url: canonicalUrl,
+      locale: meta.ogLocale,
     },
     twitter: {
       card: 'summary_large_image',
@@ -149,7 +145,7 @@ export default async function CityPairPage({
   const cities = parseCities(pair);
   if (!cities) notFound();
 
-  const localePath = locale === 'ja' ? '/ja' : '';
+  const { pathPrefix: localePath, dateFormat } = getLocaleMeta(locale);
 
   // Redirect to canonical (alphabetical) URL
   const sorted = [...cities].sort((a, b) => a.slug.localeCompare(b.slug));
@@ -249,6 +245,25 @@ export default async function CityPairPage({
                 ? t('subtitle3', { cities: lc.map(c => c.name).join(', ') })
                 : t('subtitle2', { city1: lc[0].name, city2: lc[1].name })}
             </p>
+
+            {/* Live current times — SSR initial values, Client updates every second */}
+            <LiveCityTimes
+              cities={cities.map((city, i) => ({
+                name: lc[i].name,
+                identifier: city.identifier,
+                offset: `UTC${getOffsetLabel(city.identifier)}`,
+              }))}
+              initialStates={cities.map(city => {
+                const dt = DateTime.now().setZone(city.identifier).setLocale(locale);
+                return {
+                  time: dt.toFormat('HH:mm'),
+                  date: dt.toFormat(dateFormat),
+                  ordinal: dt.ordinal,
+                };
+              })}
+              diffLabel={!is3 ? formatDiff(cityPairs[0].diffHours) : undefined}
+              locale={locale}
+            />
           </div>
         </section>
 

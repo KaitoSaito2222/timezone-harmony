@@ -33,7 +33,7 @@ export function VerticalTimeline({
   scrollRefs,
   onScroll,
 }: VerticalTimelineProps) {
-  const { use24h } = useLocaleConfig();
+  const { use24h, locale, headerDateFormat } = useLocaleConfig();
 
   return (
     <div className="overflow-x-auto">
@@ -44,7 +44,7 @@ export function VerticalTimeline({
             : selectedDT.setZone(timezone);
           const cityName = getDisplayName(timezone);
           const offset = currentLocalTime.toFormat('ZZ');
-          const dateStr = currentLocalTime.toFormat('MMM dd, yyyy HH:mm');
+          const dateStr = currentLocalTime.setLocale(locale).toFormat(headerDateFormat);
           const tzBH = businessHours[timezone];
           const slots = generateTimeSlots(
             timezone,

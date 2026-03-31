@@ -160,8 +160,10 @@ export function TimezoneComparison({
         onOpenChange={calendarExport.setIsExportDialogOpen}
         exportSlotData={calendarExport.exportSlotData}
         exportEventTitle={calendarExport.exportEventTitle}
+        exportStartTime={calendarExport.exportStartTime}
         exportDuration={calendarExport.exportDuration}
         onEventTitleChange={calendarExport.setExportEventTitle}
+        onStartTimeChange={calendarExport.setExportStartTime}
         onDurationChange={calendarExport.setExportDuration}
         onExport={calendarExport.handleExportCalendar}
         onCancel={calendarExport.handleExportDialogClose}

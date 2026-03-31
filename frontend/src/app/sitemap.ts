@@ -36,6 +36,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
+  // Korean city pair pages
+  const koPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
+    url: `${baseUrl}/ko/${pair}`,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
+  // Korean triplet pages
+  const koTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
+    url: `${baseUrl}/ko/${pair}`,
+    changeFrequency: 'weekly',
+    priority: 0.5,
+  }));
+
   return [
     {
       url: `${baseUrl}`,
@@ -47,9 +61,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/ko`,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
     ...enPairUrls,
     ...jaPairUrls,
+    ...koPairUrls,
     ...enTripletUrls,
     ...jaTripletUrls,
+    ...koTripletUrls,
   ];
 }
