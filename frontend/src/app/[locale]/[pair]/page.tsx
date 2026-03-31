@@ -8,6 +8,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
 import { CityPairApp } from './_components/CityPairApp';
+import { LiveCityTimes } from './_components/LiveCityTimes';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -59,9 +60,11 @@ export async function generateMetadata({
     ? t('title3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
     : t('title2', { city1: lc[0].name, city2: lc[1].name });
 
+  const diffH = !is3 ? getDiffHours(cities[0].identifier, cities[1].identifier) : 0;
+  const hStr = diffH % 1 === 0 ? diffH.toFixed(0) : diffH.toFixed(1);
   const description = is3
     ? t('description3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
-    : t('description2', { city1: lc[0].name, city2: lc[1].name });
+    : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr });
 
   const enUrl = `${baseUrl}/${pair}`;
   const jaUrl = `${baseUrl}/ja/${pair}`;
@@ -249,6 +252,25 @@ export default async function CityPairPage({
                 ? t('subtitle3', { cities: lc.map(c => c.name).join(', ') })
                 : t('subtitle2', { city1: lc[0].name, city2: lc[1].name })}
             </p>
+
+            {/* Live current times — SSR initial values, Client updates every second */}
+            <LiveCityTimes
+              cities={cities.map((city, i) => ({
+                name: lc[i].name,
+                identifier: city.identifier,
+                offset: `UTC${getOffsetLabel(city.identifier)}`,
+              }))}
+              initialStates={cities.map(city => {
+                const dt = DateTime.now().setZone(city.identifier).setLocale(locale);
+                return {
+                  time: dt.toFormat('HH:mm'),
+                  date: locale === 'ja' ? dt.toFormat('M月d日(ccc)') : dt.toFormat('EEE, MMM d'),
+                  ordinal: dt.ordinal,
+                };
+              })}
+              diffLabel={!is3 ? formatDiff(cityPairs[0].diffHours) : undefined}
+              locale={locale}
+            />
           </div>
         </section>
 
