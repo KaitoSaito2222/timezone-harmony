@@ -7,6 +7,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
+import { getLocaleMeta, buildLanguageAlternates } from '@/i18n/localeConfig';
 import { CityPairApp } from './_components/CityPairApp';
 import { LiveCityTimes } from './_components/LiveCityTimes';
 
@@ -66,30 +67,22 @@ export async function generateMetadata({
     ? t('description3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
     : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr });
 
-  const enUrl = `${baseUrl}/${pair}`;
-  const jaUrl = `${baseUrl}/ja/${pair}`;
-
-  const keywords = locale === 'ja'
-    ? [...cities.map(c => c.name), '時差計算', '時差', 'タイムゾーン', '現地時刻', '世界時計']
-    : [...cities.map(c => c.name), 'time difference', 'timezone', 'local time', 'world clock'];
+  const meta = getLocaleMeta(locale);
+  const canonicalUrl = `${baseUrl}${meta.pathPrefix}/${pair}`;
 
   return {
     title,
     description,
-    keywords,
+    keywords: [...cities.map(c => c.name), ...meta.cityKeywords],
     alternates: {
-      canonical: locale === 'ja' ? jaUrl : enUrl,
-      languages: {
-        en: enUrl,
-        ja: jaUrl,
-        'x-default': enUrl,
-      },
+      canonical: canonicalUrl,
+      languages: buildLanguageAlternates(baseUrl, pair),
     },
     openGraph: {
       title,
       description,
-      url: locale === 'ja' ? jaUrl : enUrl,
-      locale: locale === 'ja' ? 'ja_JP' : 'en_US',
+      url: canonicalUrl,
+      locale: meta.ogLocale,
     },
     twitter: {
       card: 'summary_large_image',
@@ -152,7 +145,7 @@ export default async function CityPairPage({
   const cities = parseCities(pair);
   if (!cities) notFound();
 
-  const localePath = locale === 'ja' ? '/ja' : '';
+  const { pathPrefix: localePath, dateFormat } = getLocaleMeta(locale);
 
   // Redirect to canonical (alphabetical) URL
   const sorted = [...cities].sort((a, b) => a.slug.localeCompare(b.slug));
@@ -264,7 +257,7 @@ export default async function CityPairPage({
                 const dt = DateTime.now().setZone(city.identifier).setLocale(locale);
                 return {
                   time: dt.toFormat('HH:mm'),
-                  date: locale === 'ja' ? dt.toFormat('M月d日(ccc)') : dt.toFormat('EEE, MMM d'),
+                  date: dt.toFormat(dateFormat),
                   ordinal: dt.ordinal,
                 };
               })}

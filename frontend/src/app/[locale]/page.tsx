@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getLocaleMeta, buildLanguageAlternates } from '@/i18n/localeConfig';
 import { HomePageContent } from './_home/HomePageContent';
 
 const baseUrl =
@@ -12,20 +13,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'home' });
-
-  const keywords = locale === 'ja'
-    ? ['時差計算', 'タイムゾーン', '時差', '世界時計', 'ミーティング計画', 'タイムゾーン比較', 'グローバルチーム']
-    : ['timezone', 'time zone converter', 'world clock', 'meeting planner', 'timezone comparison', 'global team'];
+  const meta = getLocaleMeta(locale);
+  const canonicalUrl = `${baseUrl}${meta.pathPrefix}`;
 
   return {
     title: t('title'),
     description: t('description'),
-    keywords,
+    keywords: meta.homeKeywords,
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}`,
-      locale: locale === 'ja' ? 'ja_JP' : 'en_US',
+      url: canonicalUrl,
+      locale: meta.ogLocale,
     },
     twitter: {
       card: 'summary_large_image',
@@ -33,12 +32,8 @@ export async function generateMetadata({
       description: t('description'),
     },
     alternates: {
-      canonical: locale === 'ja' ? `${baseUrl}/ja` : `${baseUrl}`,
-      languages: {
-        en: `${baseUrl}`,
-        ja: `${baseUrl}/ja`,
-        'x-default': `${baseUrl}`,
-      },
+      canonical: canonicalUrl,
+      languages: buildLanguageAlternates(baseUrl),
     },
   };
 }

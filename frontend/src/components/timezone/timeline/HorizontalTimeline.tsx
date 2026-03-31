@@ -29,7 +29,7 @@ export function HorizontalTimeline({
   onTimeSlotClick,
   getDisplayName,
 }: HorizontalTimelineProps) {
-  const { use24h } = useLocaleConfig();
+  const { use24h, locale, headerShortDateFormat } = useLocaleConfig();
 
   return (
     <div className="overflow-x-auto">
@@ -40,7 +40,7 @@ export function HorizontalTimeline({
             : selectedDT.setZone(timezone);
           const cityName = getDisplayName(timezone);
           const offset = currentLocalTime.toFormat('ZZ');
-          const dateStr = currentLocalTime.toFormat('MMM dd, HH:mm');
+          const dateStr = currentLocalTime.setLocale(locale).toFormat(headerShortDateFormat);
           const tzBH = businessHours[timezone];
           const slots = generateTimeSlots(
             timezone,

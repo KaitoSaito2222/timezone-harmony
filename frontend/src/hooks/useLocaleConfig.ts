@@ -1,16 +1,14 @@
 import { useLocale } from 'next-intl';
+import { getLocaleMeta } from '@/i18n/localeConfig';
 
-/**
- * 現在のロケール設定を返すフック。
- * - `locale`: 現在の言語コード ("ja" | "en")
- * - `use24h`: 24時間表示かどうか（ja のみ true）
- * - `localePath`: URLプレフィックス（ja は "/ja"、en は ""）
- */
 export function useLocaleConfig() {
   const locale = useLocale();
+  const meta = getLocaleMeta(locale);
   return {
     locale,
-    use24h: locale === 'ja',
-    localePath: locale === 'ja' ? '/ja' : '',
+    use24h: meta.use24h,
+    localePath: meta.pathPrefix,
+    headerDateFormat: meta.headerDateFormat,
+    headerShortDateFormat: meta.headerShortDateFormat,
   };
 }
