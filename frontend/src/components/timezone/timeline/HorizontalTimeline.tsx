@@ -53,7 +53,7 @@ export function HorizontalTimeline({
           return (
             <div key={timezone} className="flex">
               <div className="sticky left-0 z-10 bg-primary text-primary-foreground rounded-l-lg p-3 w-36 sm:w-44 flex flex-col justify-center shrink-0 overflow-hidden">
-                <div className="font-bold text-sm truncate">{cityName}</div>
+                <div className="font-bold text-sm truncate min-w-0 w-full">{cityName}</div>
                 <div className="text-xs opacity-80">UTC{offset}</div>
                 <div className="text-xs opacity-70">{dateStr}</div>
               </div>
