@@ -20,8 +20,10 @@ interface CalendarExportDialogProps {
   onOpenChange: (open: boolean) => void;
   exportSlotData: ExportSlotData | null;
   exportEventTitle: string;
+  exportStartTime: string;
   exportDuration: number;
   onEventTitleChange: (value: string) => void;
+  onStartTimeChange: (value: string) => void;
   onDurationChange: (value: number) => void;
   onExport: (method: CalendarExportMethod) => void;
   onCancel: () => void;
@@ -32,8 +34,10 @@ export function CalendarExportDialog({
   onOpenChange,
   exportSlotData,
   exportEventTitle,
+  exportStartTime,
   exportDuration,
   onEventTitleChange,
+  onStartTimeChange,
   onDurationChange,
   onExport,
   onCancel,
@@ -92,6 +96,15 @@ export function CalendarExportDialog({
             value={exportEventTitle}
             onChange={(e) => onEventTitleChange(e.target.value)}
             placeholder={t('calendarEventTitlePlaceholder')}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="event-start-time">{t('calendarStartTime')}</Label>
+          <Input
+            id="event-start-time"
+            type="time"
+            value={exportStartTime}
+            onChange={(e) => onStartTimeChange(e.target.value)}
           />
         </div>
         <div className="space-y-2">
