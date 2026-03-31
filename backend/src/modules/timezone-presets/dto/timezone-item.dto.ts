@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsValidTimezone } from '../validators/is-valid-timezone.validator';
 
 export class TimezoneItemDto {
   @ApiProperty({ example: 'America/New_York' })
-  @IsString()
+  @IsValidTimezone()
   timezoneIdentifier: string;
 
   @ApiProperty({ example: 'New York', required: false })
