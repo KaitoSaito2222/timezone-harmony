@@ -21,7 +21,7 @@
   "cityPair": {
     "title2": "{city1}↔{city2} 時差計算 | 今すぐ確認",
     "title3": "{city1}・{city2}・{city3} 時差比較 | 今すぐ確認",
-    "description2": "{city1}と{city2}の時差を無料で計算。リアルタイム時計、UTC差、最適なミーティング時間を一覧表示。",
+    "description2": "{city1}と{city2}は現在{h}時間差。現地時刻と重なる営業時間を一目で確認。",
     "description3": "{city1}・{city2}・{city3}の時差を一画面で比較。リアルタイム時計とミーティング計画を無料で。",
     "subtitle2": "{city1}と{city2}の現在の現地時刻とタイムゾーンのオフセット。",
     "subtitle3": "{cities}の現在の現地時刻とタイムゾーンの比較。",
