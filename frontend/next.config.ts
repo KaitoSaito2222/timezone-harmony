@@ -6,6 +6,12 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      // /en/cities/[pair] → /[pair]  (explicit en prefix + cities)
+      { source: '/en/cities/:pair+', destination: '/:pair+', permanent: true },
+      // /en/[path] → /[path]  (explicit en prefix)
+      { source: '/en/:path+', destination: '/:path+', permanent: true },
+      // /en → /  (explicit en home)
+      { source: '/en', destination: '/', permanent: true },
       // /cities/[pair] → /[pair]  (English)
       { source: '/cities/:pair+', destination: '/:pair+', permanent: true },
       // /ja/cities/[pair] → /ja/[pair]  (Japanese)
