@@ -177,6 +177,7 @@
     "calendarSelectedTime": "選択した時間",
     "calendarEventTitle": "イベントタイトル",
     "calendarEventTitlePlaceholder": "例：チームミーティング",
+    "calendarStartTime": "開始時刻",
     "calendarDuration": "所要時間",
     "calendarDuration15": "15分",
     "calendarDuration30": "30分",

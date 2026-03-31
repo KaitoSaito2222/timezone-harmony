@@ -177,6 +177,7 @@
     "calendarSelectedTime": "Selected Time",
     "calendarEventTitle": "Event Title",
     "calendarEventTitlePlaceholder": "e.g., Team Meeting",
+    "calendarStartTime": "Start Time",
     "calendarDuration": "Duration",
     "calendarDuration15": "15 minutes",
     "calendarDuration30": "30 minutes",
