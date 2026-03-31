@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, Matches } from 'class-validator';
+import { IsValidTimezone } from '../validators/is-valid-timezone.validator';
+
+const TIME_FORMAT_REGEX = /^\d{2}:\d{2}$/;
 
 export class TimezoneItemDto {
   @ApiProperty({ example: 'America/New_York' })
-  @IsString()
+  @IsValidTimezone()
   timezoneIdentifier: string;
 
   @ApiProperty({ example: 'New York', required: false })
@@ -18,11 +21,15 @@ export class TimezoneItemDto {
 
   @ApiProperty({ example: '09:00', required: false })
   @IsOptional()
-  @IsString()
+  @Matches(TIME_FORMAT_REGEX, {
+    message: 'startTime must be in HH:mm format (e.g. "09:00")',
+  })
   startTime?: string;
 
   @ApiProperty({ example: '18:00', required: false })
   @IsOptional()
-  @IsString()
+  @Matches(TIME_FORMAT_REGEX, {
+    message: 'endTime must be in HH:mm format (e.g. "18:00")',
+  })
   endTime?: string;
 }
