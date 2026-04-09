@@ -74,7 +74,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    keywords: [...cities.map(c => c.name), ...meta.cityKeywords],
+    keywords: [...lc.map(c => c.name), ...meta.cityKeywords],
     alternates: {
       canonical: canonicalUrl,
       languages: buildLanguageAlternates(baseUrl, pair),
