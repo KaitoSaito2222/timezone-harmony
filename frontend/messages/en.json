@@ -16,7 +16,8 @@
     "title": "Free Timezone Comparison Tool",
     "description": "Free timezone converter & world clock. Add any city, compare live times side-by-side, find business hour overlaps & plan meetings instantly.",
     "quickAccess": "Quick Access - Popular Timezones",
-    "loginPrompt": "Login to save your timezone presets and business hours"
+    "loginPrompt": "Login to save your timezone presets and business hours",
+    "viewDetailedComparison": "See detailed comparison for {cities} →"
   },
   "cityPair": {
     "title2": "{city1} ↔ {city2} Time Difference – {h}h",
