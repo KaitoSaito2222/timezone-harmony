@@ -57,12 +57,13 @@ export async function generateMetadata({
   const lc = cities.map(c => getCityLocalized(c, locale));
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.com';
 
-  const title = is3
-    ? t('title3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
-    : t('title2', { city1: lc[0].name, city2: lc[1].name });
-
   const diffH = !is3 ? getDiffHours(cities[0].identifier, cities[1].identifier) : 0;
   const hStr = diffH % 1 === 0 ? diffH.toFixed(0) : diffH.toFixed(1);
+
+  const title = is3
+    ? t('title3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
+    : t('title2', { city1: lc[0].name, city2: lc[1].name, h: hStr });
+
   const description = is3
     ? t('description3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
     : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr });
@@ -73,7 +74,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    keywords: [...cities.map(c => c.name), ...meta.cityKeywords],
+    keywords: [...lc.map(c => c.name), ...meta.cityKeywords],
     alternates: {
       canonical: canonicalUrl,
       languages: buildLanguageAlternates(baseUrl, pair),
@@ -173,6 +174,10 @@ export default async function CityPairPage({
     for (let j = i + 1; j < cities.length; j++)
       cityPairs.push({ c1: lc[i], c2: lc[j], diffHours: getDiffHours(cities[i].identifier, cities[j].identifier) });
 
+  const h1HStr = !is3 && cityPairs[0]
+    ? (cityPairs[0].diffHours % 1 === 0 ? cityPairs[0].diffHours.toFixed(0) : cityPairs[0].diffHours.toFixed(1))
+    : '0';
+
   const formatDiff = (h: number) => {
     if (h === 0) return t('diff0');
     if (h % 1 === 0) return h === 1 ? t('diffHour', { h: h.toFixed(0) }) : t('diffHours', { h: h.toFixed(0) });
@@ -238,7 +243,7 @@ export default async function CityPairPage({
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
               {is3
                 ? t('title3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
-                : t('title2', { city1: lc[0].name, city2: lc[1].name })}
+                : t('title2', { city1: lc[0].name, city2: lc[1].name, h: h1HStr })}
             </h1>
             <p className="text-muted-foreground">
               {is3

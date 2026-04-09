@@ -11,6 +11,7 @@ import { TimezoneComparison } from '@/components/timezone/TimezoneComparison';
 import { LocalTimeCard } from '@/components/timezone/LocalTimeCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CITIES, POPULAR_PAIRS, parseCities, getCityLocalized } from '@/lib/cities';
 
 export function HomePageContent() {
   const t = useTranslations('home');
@@ -47,6 +48,14 @@ export function HomePageContent() {
     setShowSelector(false);
   };
 
+  // Derive city-pair slug from selected timezones (2-3 cities, all must be in CITIES)
+  const cityPairSlug = (() => {
+    if (selectedTimezones.length < 2 || selectedTimezones.length > 3) return null;
+    const matched = selectedTimezones.map(id => CITIES.find(c => c.identifier === id));
+    if (matched.some(c => !c)) return null;
+    return matched.map(c => c!.slug).sort().join('-');
+  })();
+
   return (
     <div className="space-y-6">
       <LocalTimeCard />
@@ -57,6 +66,22 @@ export function HomePageContent() {
         onRemoveTimezone={removeTimezone}
         onClearTimezones={clearTimezones}
       />
+
+      {cityPairSlug && (() => {
+        const cities = parseCities(cityPairSlug);
+        if (!cities) return null;
+        const cityNames = cities.map(c => getCityLocalized(c, locale).name).join(' ↔ ');
+        return (
+          <div className="text-center">
+            <Link
+              href={`/${cityPairSlug}`}
+              className="text-sm text-primary hover:underline"
+            >
+              {t('viewDetailedComparison', { cities: cityNames })}
+            </Link>
+          </div>
+        );
+      })()}
 
       <Card>
         <CardHeader>
@@ -97,6 +122,29 @@ export function HomePageContent() {
           </CardContent>
         </Card>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            ⭐ {tc('popularComparisons')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {POPULAR_PAIRS.map(({ slug }) => {
+              const cities = parseCities(slug);
+              const label = cities
+                ? cities.map(c => getCityLocalized(c, locale).name).join(' ↔ ')
+                : slug;
+              return (
+                <Button key={slug} variant="outline" size="sm" asChild>
+                  <Link href={`/${slug}`}>{label}</Link>
+                </Button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {showSelector && (
         <TimezoneSelector

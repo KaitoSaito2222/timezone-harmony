@@ -35,7 +35,7 @@ const config: Record<string, LocaleMeta> = {
       'timezone', 'time zone converter', 'world clock',
       'meeting planner', 'timezone comparison', 'global team',
     ],
-    cityKeywords: ['time difference', 'timezone', 'local time', 'world clock'],
+    cityKeywords: ['time difference', 'timezone', 'local time', 'world clock', 'timezone converter', 'meeting planner'],
   },
   ja: {
     pathPrefix: '/ja',
@@ -61,7 +61,7 @@ const config: Record<string, LocaleMeta> = {
       '시차 계산', '시간대', '시차', '세계 시계',
       '미팅 계획', '시간대 비교', '글로벌 팀',
     ],
-    cityKeywords: ['시차 계산', '시차', '시간대', '현지 시각', '세계 시계'],
+    cityKeywords: ['시차 계산', '시차', '시간대', '현지 시각', '세계 시계', '미팅 플래너', '업무 시간'],
   },
 };
 
