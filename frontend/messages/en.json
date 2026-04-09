@@ -13,16 +13,16 @@
     "copyright": "© {year} Timezone Harmony"
   },
   "home": {
-    "title": "World Timezone Comparison",
-    "description": "Free timezone comparison tool. Add any city, see live times side-by-side & find the best meeting slots instantly.",
+    "title": "Free Timezone Comparison Tool",
+    "description": "Free timezone converter & world clock. Add any city, compare live times side-by-side, find business hour overlaps & plan meetings instantly.",
     "quickAccess": "Quick Access - Popular Timezones",
     "loginPrompt": "Login to save your timezone presets and business hours"
   },
   "cityPair": {
-    "title2": "{city1} ↔ {city2} Time Difference",
-    "title3": "{city1}, {city2} & {city3} Time Comparison",
-    "description2": "{city1} and {city2} are {h} hrs apart. See current local times and overlapping business hours at a glance.",
-    "description3": "Compare live times in {city1}, {city2} & {city3} at once. Instant time differences, overlapping business hours & meeting planner. Free.",
+    "title2": "{city1} ↔ {city2} Time Difference – {h}h",
+    "title3": "{city1}, {city2} & {city3} Time Zones",
+    "description2": "{city1} ↔ {city2}: {h} hrs apart. Compare live local times, business hour overlap & schedule meetings free.",
+    "description3": "Live time comparison for {city1}, {city2} & {city3}. Instant time differences, business hour overlap & free meeting planner.",
     "subtitle2": "Current local times and time zone offset between {city1} and {city2}.",
     "subtitle3": "Current local times and time zone comparison for {cities}.",
     "openInApp": "Open in App",

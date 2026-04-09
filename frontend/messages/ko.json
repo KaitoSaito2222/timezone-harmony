@@ -13,16 +13,16 @@
     "copyright": "© {year} Timezone Harmony"
   },
   "home": {
-    "title": "세계 시간대 비교 · 시차 계산 | Timezone Harmony",
-    "description": "무료 시차 계산 도구. 원하는 도시를 추가하여 실시간 시각을 비교하고 최적의 미팅 시간을 즉시 확인하세요.",
+    "title": "세계 시간대 비교 · 시차 계산",
+    "description": "무료 시차 계산 · 세계 시계. 도시를 추가해 실시간 현지 시각을 비교하고 업무 시간 겹침과 최적 미팅 시각을 즉시 확인하세요.",
     "quickAccess": "빠른 접근 - 인기 시간대",
     "loginPrompt": "로그인하여 시간대 프리셋과 업무 시간을 저장하세요"
   },
   "cityPair": {
-    "title2": "{city1}↔{city2} 시차 계산 | 지금 바로 확인",
-    "title3": "{city1}·{city2}·{city3} 시간대 비교 | 지금 바로 확인",
-    "description2": "{city1}과 {city2}의 현재 시차는 {h}시간입니다. 겹치는 업무 시간을 한눈에 확인하세요.",
-    "description3": "{city1}·{city2}·{city3}의 시간을 한 화면에서 비교하세요. 실시간 시각, 겹치는 업무 시간, 미팅 플래너 무료 제공.",
+    "title2": "{city1}↔{city2} 시차 {h}시간",
+    "title3": "{city1}·{city2}·{city3} 시간대 비교",
+    "description2": "{city1}와 {city2}는 현재 {h}시간 차이. 실시간 시계와 미팅 플래너를 무료로.",
+    "description3": "{city1}·{city2}·{city3}, 세 도시의 시차를 한눈에. 실시간 시계와 미팅 플래너를 무료로.",
     "subtitle2": "{city1}과 {city2}의 현재 현지 시각 및 시간대 오프셋.",
     "subtitle3": "{cities}의 현재 현지 시각 및 시간대 비교.",
     "openInApp": "앱에서 열기",
