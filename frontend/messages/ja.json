@@ -16,7 +16,8 @@
     "title": "世界の時差計算・タイムゾーン比較 | Timezone Harmony",
     "description": "無料の時差計算ツール。好きな都市を追加してリアルタイムで時刻を比較、最適なミーティング時間をすぐに確認。",
     "quickAccess": "クイックアクセス - 人気のタイムゾーン",
-    "loginPrompt": "ログインしてタイムゾーンのプリセットと営業時間を保存しましょう"
+    "loginPrompt": "ログインしてタイムゾーンのプリセットと営業時間を保存しましょう",
+    "viewDetailedComparison": "{cities} の詳細な時差を見る →"
   },
   "cityPair": {
     "title2": "{city1}↔{city2} 時差計算 | 今すぐ確認",

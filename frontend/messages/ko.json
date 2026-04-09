@@ -16,7 +16,8 @@
     "title": "세계 시간대 비교 · 시차 계산",
     "description": "무료 시차 계산 · 세계 시계. 도시를 추가해 실시간 현지 시각을 비교하고 업무 시간 겹침과 최적 미팅 시각을 즉시 확인하세요.",
     "quickAccess": "빠른 접근 - 인기 시간대",
-    "loginPrompt": "로그인하여 시간대 프리셋과 업무 시간을 저장하세요"
+    "loginPrompt": "로그인하여 시간대 프리셋과 업무 시간을 저장하세요",
+    "viewDetailedComparison": "{cities} 상세 비교 →"
   },
   "cityPair": {
     "title2": "{city1}↔{city2} 시차 {h}시간",

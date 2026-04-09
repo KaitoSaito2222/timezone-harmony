@@ -98,16 +98,39 @@ export function getPopularTripletSlugs(): string[] {
 
 /** Popular 2-city pairs for internal linking (hand-picked high-traffic combos) */
 export const POPULAR_PAIRS: { slug: string }[] = [
+  // North America ↔ Europe
   { slug: 'london-newyork' },
-  { slug: 'london-tokyo' },
-  { slug: 'newyork-tokyo' },
-  { slug: 'london-singapore' },
-  { slug: 'dubai-london' },
-  { slug: 'singapore-tokyo' },
+  { slug: 'london-toronto' },
+  { slug: 'london-chicago' },
   { slug: 'newyork-paris' },
-  { slug: 'london-paris' },
-  { slug: 'dubai-mumbai' },
-  { slug: 'seoul-tokyo' },
+  { slug: 'berlin-newyork' },
+  { slug: 'amsterdam-newyork' },
+  // North America ↔ Asia/Pacific
   { slug: 'losangeles-newyork' },
+  { slug: 'losangeles-tokyo' },
+  { slug: 'newyork-tokyo' },
+  { slug: 'chicago-tokyo' },
+  { slug: 'newyork-sydney' },
+  { slug: 'losangeles-sydney' },
+  // Europe ↔ Asia
+  { slug: 'london-tokyo' },
+  { slug: 'london-singapore' },
   { slug: 'london-sydney' },
+  { slug: 'london-paris' },
+  { slug: 'berlin-tokyo' },
+  { slug: 'paris-tokyo' },
+  // Middle East
+  { slug: 'dubai-london' },
+  { slug: 'dubai-mumbai' },
+  { slug: 'dubai-newyork' },
+  { slug: 'dubai-singapore' },
+  // Asia ↔ Asia
+  { slug: 'singapore-tokyo' },
+  { slug: 'seoul-tokyo' },
+  { slug: 'hongkong-tokyo' },
+  { slug: 'hongkong-london' },
+  { slug: 'mumbai-london' },
+  { slug: 'mumbai-newyork' },
+  { slug: 'bangkok-london' },
+  { slug: 'shanghai-tokyo' },
 ];
