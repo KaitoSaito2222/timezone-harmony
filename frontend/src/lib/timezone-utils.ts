@@ -15,5 +15,10 @@ export function getLocaleFromPathname(): string {
   const path = window.location.pathname;
   if (path.startsWith('/ja')) return 'ja';
   if (path.startsWith('/ko')) return 'ko';
+  if (path.startsWith('/zh')) return 'zh';
+  if (path.startsWith('/es')) return 'es';
+  if (path.startsWith('/fr')) return 'fr';
+  if (path.startsWith('/hi')) return 'hi';
+  if (path.startsWith('/th')) return 'th';
   return 'en';
 }
