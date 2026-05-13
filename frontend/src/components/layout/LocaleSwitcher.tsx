@@ -16,6 +16,11 @@ const LOCALES = [
   { code: 'en', label: 'English', short: 'EN' },
   { code: 'ja', label: '日本語', short: 'JA' },
   { code: 'ko', label: '한국어', short: 'KO' },
+  { code: 'zh', label: '中文', short: 'ZH' },
+  { code: 'es', label: 'Español', short: 'ES' },
+  { code: 'fr', label: 'Français', short: 'FR' },
+  { code: 'hi', label: 'हिन्दी', short: 'HI' },
+  { code: 'th', label: 'ภาษาไทย', short: 'TH' },
 ] as const;
 
 export function LocaleSwitcher() {
