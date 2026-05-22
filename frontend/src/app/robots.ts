@@ -10,6 +10,8 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: [
         '/*?tz=',
+        '/en',
+        '/en/',
         '/presets', '/auth/', '/login', '/register', '/forgot-password',
         '/ja/presets', '/ja/auth/', '/ja/login', '/ja/register', '/ja/forgot-password',
         '/ko/presets', '/ko/auth/', '/ko/login', '/ko/register', '/ko/forgot-password',
