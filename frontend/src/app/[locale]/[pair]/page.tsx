@@ -66,7 +66,7 @@ export async function generateMetadata({
 
   const description = is3
     ? t('description3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
-    : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr });
+    : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr, wa: pWa(locale, lc[0].name), neun: pNeun(locale, lc[1].name) });
 
   const meta = getLocaleMeta(locale);
   const canonicalUrl = `${baseUrl}${meta.pathPrefix}/${pair}`;
@@ -92,6 +92,17 @@ export async function generateMetadata({
     },
   };
 }
+
+// ───────────────────────────────────────────────
+// Korean particle helpers (받침 check)
+// ───────────────────────────────────────────────
+function hasBatchim(str: string): boolean {
+  if (!str) return false;
+  const code = str.charCodeAt(str.length - 1);
+  return code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 !== 0;
+}
+function pWa(locale: string, word: string) { return locale === 'ko' ? (hasBatchim(word) ? '과' : '와') : ''; }
+function pNeun(locale: string, word: string) { return locale === 'ko' ? (hasBatchim(word) ? '은' : '는') : ''; }
 
 // ───────────────────────────────────────────────
 // Helpers
@@ -189,8 +200,8 @@ export default async function CityPairPage({
     : `${lc[0].name} ↔ ${lc[1].name}`;
 
   const allCitiesLabel = is3
-    ? t('citiesLabel3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name })
-    : t('citiesLabel2', { city1: lc[0].name, city2: lc[1].name });
+    ? t('citiesLabel3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name, wa: pWa(locale, lc[1].name) })
+    : t('citiesLabel2', { city1: lc[0].name, city2: lc[1].name, wa: pWa(locale, lc[0].name) });
 
   const faqJsonLd = {
     '@context': 'https://schema.org',
@@ -202,7 +213,7 @@ export default async function CityPairPage({
         acceptedAnswer: {
           '@type': 'Answer',
           text: t('faqA1', {
-            offsets: cities.map((c, i) => t('faqA1Offset', { city: lc[i].name, offset: getOffsetLabel(c.identifier) })).join('. '),
+            offsets: cities.map((c, i) => t('faqA1Offset', { city: lc[i].name, offset: getOffsetLabel(c.identifier), neun: pNeun(locale, lc[i].name) })).join('. '),
           }),
         },
       },
@@ -248,7 +259,7 @@ export default async function CityPairPage({
             <p className="text-muted-foreground">
               {is3
                 ? t('subtitle3', { cities: lc.map(c => c.name).join(', ') })
-                : t('subtitle2', { city1: lc[0].name, city2: lc[1].name })}
+                : t('subtitle2', { city1: lc[0].name, city2: lc[1].name, wa: pWa(locale, lc[0].name) })}
             </p>
 
             {/* Live current times — SSR initial values, Client updates every second */}
