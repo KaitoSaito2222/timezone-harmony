@@ -3,19 +3,6 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
-const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      // /cities/[pair] → /[pair]  (English)
-      { source: '/cities/:pair+', destination: '/:pair+', permanent: true },
-      // /ja/cities/[pair] → /ja/[pair]  (Japanese)
-      { source: '/ja/cities/:pair+', destination: '/ja/:pair+', permanent: true },
-      // /cities → /  (English list page)
-      { source: '/cities', destination: '/', permanent: true },
-      // /ja/cities → /ja  (Japanese list page)
-      { source: '/ja/cities', destination: '/ja', permanent: true },
-    ];
-  },
-};
+const nextConfig: NextConfig = {};
 
 export default withNextIntl(nextConfig);
