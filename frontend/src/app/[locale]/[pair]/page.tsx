@@ -69,7 +69,7 @@ export async function generateMetadata({
     : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr, wa: pWa(locale, lc[0].name), neun: pNeun(locale, lc[1].name) });
 
   const meta = getLocaleMeta(locale);
-  const canonicalUrl = `${baseUrl}${meta.pathPrefix}/${pair}`;
+  const canonicalUrl = `${baseUrl}${meta.pathPrefix}/${canonicalPairSlug(cities)}`;
 
   return {
     title,
@@ -107,6 +107,19 @@ function pNeun(locale: string, word: string) { return locale === 'ko' ? (hasBatc
 // ───────────────────────────────────────────────
 // Helpers
 // ───────────────────────────────────────────────
+/**
+ * Canonical pair slug: cities sorted alphabetically by slug.
+ * e.g. "newyork-london" → "london-newyork". Mirrors the alphabetical
+ * normalization used by the 308 redirect so canonical always points to
+ * the one true URL even when a reverse-order URL is requested.
+ */
+function canonicalPairSlug(cities: CityDef[]): string {
+  return [...cities]
+    .sort((a, b) => a.slug.localeCompare(b.slug))
+    .map(c => c.slug)
+    .join('-');
+}
+
 function getOffsetLabel(timezone: string): string {
   return DateTime.now().setZone(timezone).toFormat('ZZ');
 }
