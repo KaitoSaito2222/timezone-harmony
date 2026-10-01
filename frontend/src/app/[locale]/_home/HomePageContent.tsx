@@ -11,7 +11,9 @@ import { TimezoneComparison } from '@/components/timezone/TimezoneComparison';
 import { LocalTimeCard } from '@/components/timezone/LocalTimeCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CITIES, POPULAR_PAIRS, parseCities, getCityLocalized } from '@/lib/cities';
+import { CITIES, CITY_MAP, POPULAR_PAIRS, POPULAR_SLUGS, parseCities, getCityLocalized } from '@/lib/cities';
+import { loadSavedCities } from '@/lib/saved-cities';
+import { trackEvent } from '@/lib/analytics';
 
 export function HomePageContent() {
   const t = useTranslations('home');
@@ -40,10 +42,15 @@ export function HomePageContent() {
       if (identifiers.length > 0) {
         setSelectedTimezones(identifiers);
       }
+    } else {
+      // Returning visitors get the cities they saved on this device.
+      const saved = loadSavedCities();
+      if (saved.length > 0) setSelectedTimezones(saved);
     }
   }, [loadTimezones, setSelectedTimezones]);
 
   const handleAddTimezone = (identifier: string) => {
+    trackEvent('city_added', { source: 'home' });
     addTimezone(identifier);
     setShowSelector(false);
   };
@@ -139,6 +146,28 @@ export function HomePageContent() {
               return (
                 <Button key={slug} variant="outline" size="sm" asChild>
                   <Link href={`/${slug}`}>{label}</Link>
+                </Button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-primary" />
+            {t('worldClocks')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {POPULAR_SLUGS.map((slug) => {
+              const city = CITY_MAP.get(slug);
+              if (!city) return null;
+              return (
+                <Button key={slug} variant="outline" size="sm" asChild>
+                  <Link href={`/time/${slug}`}>{getCityLocalized(city, locale).name}</Link>
                 </Button>
               );
             })}

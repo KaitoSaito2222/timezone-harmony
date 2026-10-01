@@ -5,9 +5,10 @@ import { DateTime } from 'luxon';
 import { Clock } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { CITIES, CITY_MAP, parseCities, getAllPairSlugs, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
+import { CITIES, CITY_MAP, parseCities, getStaticPairSlugs, resolvePairAliases, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
 import { getLocaleMeta, buildLanguageAlternates } from '@/i18n/localeConfig';
+import { findNextDiffChange } from '@/lib/dst';
 import { CityPairApp } from './_components/CityPairApp';
 import { LiveCityTimes } from './_components/LiveCityTimes';
 
@@ -20,7 +21,7 @@ export const dynamicParams = true;
 export async function generateStaticParams() {
   const params: { locale: string; pair: string }[] = [];
 
-  const pairSlugs = getAllPairSlugs();
+  const pairSlugs = getStaticPairSlugs();
 
   const sortedPopular = [...POPULAR_SLUGS].sort();
   const tripletSlugs: string[] = [];
@@ -167,10 +168,14 @@ export default async function CityPairPage({
   const { locale, pair } = await params;
   setRequestLocale(locale);
 
-  const cities = parseCities(pair);
-  if (!cities) notFound();
-
   const { pathPrefix: localePath, dateFormat } = getLocaleMeta(locale);
+
+  const cities = parseCities(pair);
+  if (!cities) {
+    const resolved = resolvePairAliases(pair);
+    if (resolved) permanentRedirect(`${localePath}/${resolved}`);
+    notFound();
+  }
 
   // Redirect to canonical (alphabetical) URL
   const sorted = [...cities].sort((a, b) => a.slug.localeCompare(b.slug));
@@ -207,6 +212,42 @@ export default async function CityPairPage({
     if (h % 1 === 0) return h === 1 ? t('diffHour', { h: h.toFixed(0) }) : t('diffHours', { h: h.toFixed(0) });
     return t('diffHours', { h: h.toFixed(1) });
   };
+
+  // Answer-first summary: who is ahead, by how much (2-city pages only).
+  let summary: string | null = null;
+  if (!is3) {
+    const offsetDiff = DateTime.now().setZone(cities[0].identifier).offset - DateTime.now().setZone(cities[1].identifier).offset;
+    const params = {
+      c1: lc[0].name,
+      c2: lc[1].name,
+      diff: formatDiff(Math.abs(offsetDiff) / 60),
+      neun: pNeun(locale, lc[0].name),
+    };
+    summary = offsetDiff === 0 ? t('summarySame', params) : offsetDiff > 0 ? t('summaryAhead', params) : t('summaryBehind', params);
+  }
+
+  // Warn when a daylight-saving change will alter the time difference soon.
+  let dstNotice: string | null = null;
+  {
+    const candidates = [];
+    for (let i = 0; i < cities.length; i++)
+      for (let j = i + 1; j < cities.length; j++) {
+        const change = findNextDiffChange(cities[i].identifier, cities[j].identifier);
+        if (change) candidates.push({ change, c1: lc[i].name, c2: lc[j].name });
+      }
+    candidates.sort((a, b) => a.change.at.toMillis() - b.change.at.toMillis());
+    const first = candidates[0];
+    if (first) {
+      dstNotice = t('dstChange', {
+        c1: first.c1,
+        c2: first.c2,
+        wa: pWa(locale, first.c1),
+        date: first.change.at.setLocale(locale).toFormat(dateFormat),
+        from: formatDiff(first.change.fromHours),
+        to: formatDiff(first.change.toHours),
+      });
+    }
+  }
 
   const pageTitle = is3
     ? `${lc[0].name}, ${lc[1].name} & ${lc[2].name}`
@@ -293,6 +334,12 @@ export default async function CityPairPage({
               diffLabel={!is3 ? formatDiff(cityPairs[0].diffHours) : undefined}
               locale={locale}
             />
+            {summary && <p className="mt-4 text-lg font-medium">{summary}</p>}
+            {dstNotice && (
+              <p className="mt-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
+                {dstNotice}
+              </p>
+            )}
           </div>
         </section>
 
