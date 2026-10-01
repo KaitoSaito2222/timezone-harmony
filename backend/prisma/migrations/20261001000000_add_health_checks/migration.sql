@@ -6,11 +6,11 @@ CREATE TABLE "health_checks" (
     CONSTRAINT "health_checks_pkey" PRIMARY KEY ("id")
 );
 
--- keep-alive 用の初期行
+-- Seed row for the keep-alive query
 INSERT INTO "health_checks" DEFAULT VALUES;
 
--- Supabase の PostgREST (anon キー) から読み取れるのはこのテーブルの SELECT のみ。
--- ローカル Docker の PostgreSQL には anon ロールがないため存在チェックを挟む。
+-- Expose only SELECT on this table to Supabase PostgREST (anon key).
+-- The local Docker PostgreSQL has no anon role, so check that it exists first.
 ALTER TABLE "health_checks" ENABLE ROW LEVEL SECURITY;
 
 DO $$

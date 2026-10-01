@@ -1,10 +1,10 @@
 name: Supabase keep-alive
 
-# Supabase Free プランは 7 日間アクティビティがないと自動 pause されるため、
-# 週2回 PostgREST 経由で DB にクエリを投げて pause を防ぐ。
+# The Supabase Free plan auto-pauses projects after 7 days of inactivity,
+# so query the DB through PostgREST twice a week to prevent it.
 on:
   schedule:
-    - cron: '0 3 * * 1,4' # 月・木 03:00 UTC
+    - cron: '0 3 * * 1,4' # Mon and Thu, 03:00 UTC
   workflow_dispatch:
 
 jobs:
