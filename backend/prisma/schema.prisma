@@ -59,3 +59,12 @@ model TimezonePresetItem {
   @@map("timezone_preset_items")
 }
 
+
+// Supabase の自動 pause 防止用 keep-alive テーブル。
+// .github/workflows/supabase-keepalive.yml が anon キーで SELECT する。
+model HealthCheck {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("health_checks")
+}
