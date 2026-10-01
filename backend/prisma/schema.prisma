@@ -25,6 +25,7 @@ model User {
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
   timezonePresets TimezonePreset[]
+  meetingPolls    MeetingPoll[]
 
   @@map("users")
 }
@@ -67,4 +68,46 @@ model HealthCheck {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("health_checks")
+}
+
+// Shareable meeting polls. The poll id (uuid) acts as the link secret, so
+// polls are readable/votable without an account.
+model MeetingPoll {
+  id              String       @id @default(uuid())
+  title           String       @db.VarChar(120)
+  timezones       String[]
+  durationMinutes Int          @default(60) @map("duration_minutes")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  expiresAt       DateTime     @map("expires_at")
+  // Null for polls created anonymously (and not yet claimed by a signed-in user).
+  userId          String?      @map("user_id")
+  user            User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  options         PollOption[]
+
+  @@index([userId])
+  @@map("meeting_polls")
+}
+
+model PollOption {
+  id       String      @id @default(uuid())
+  pollId   String      @map("poll_id")
+  startsAt DateTime    @map("starts_at")
+  position Int         @default(0)
+  poll     MeetingPoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes    PollVote[]
+
+  @@index([pollId])
+  @@map("poll_options")
+}
+
+model PollVote {
+  id        String     @id @default(uuid())
+  optionId  String     @map("option_id")
+  voterName String     @map("voter_name") @db.VarChar(50)
+  createdAt DateTime   @default(now()) @map("created_at")
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([optionId, voterName])
+  @@index([optionId])
+  @@map("poll_votes")
 }

@@ -37,6 +37,40 @@ export const CITIES: CityDef[] = [
   { slug: 'denver',       identifier: 'America/Denver',      name: 'Denver',      country: 'USA',          localizations: { ja: { name: 'デンバー',         country: 'アメリカ'           }, ko: { name: '덴버',        country: '미국'              }, zh: { name: '丹佛',          country: '美国'         }, es: { name: 'Denver',          country: 'EE. UU.'         }, fr: { name: 'Denver',          country: 'États-Unis'      }, hi: { name: 'डेनवर',           country: 'अमेरिका'     }, th: { name: 'เดนเวอร์',         country: 'สหรัฐอเมริกา' } } },
   { slug: 'lagos',        identifier: 'Africa/Lagos',        name: 'Lagos',       country: 'Nigeria',      localizations: { ja: { name: 'ラゴス',           country: 'ナイジェリア'       }, ko: { name: '라고스',      country: '나이지리아'        }, zh: { name: '拉各斯',        country: '尼日利亚'     }, es: { name: 'Lagos',           country: 'Nigeria'         }, fr: { name: 'Lagos',           country: 'Nigéria'         }, hi: { name: 'लागोस',           country: 'नाइजीरिया'   }, th: { name: 'ลากอส',            country: 'ไนจีเรีย'    } } },
   { slug: 'nairobi',      identifier: 'Africa/Nairobi',      name: 'Nairobi',     country: 'Kenya',        localizations: { ja: { name: 'ナイロビ',         country: 'ケニア'             }, ko: { name: '나이로비',    country: '케냐'              }, zh: { name: '内罗毕',        country: '肯尼亚'       }, es: { name: 'Nairobi',         country: 'Kenia'           }, fr: { name: 'Nairobi',         country: 'Kenya'           }, hi: { name: 'नैरोबी',          country: 'केन्या'      }, th: { name: 'ไนโรบี',           country: 'เคนยา'       } } },
+  // Added Oct 2026: expanded coverage for Asia, Middle East, Europe and the Americas
+  { slug: 'manila', identifier: 'Asia/Manila', name: 'Manila', country: 'Philippines', localizations: { ja: { name: 'マニラ', country: 'フィリピン' }, ko: { name: '마닐라', country: '필리핀' }, zh: { name: '马尼拉', country: '菲律宾' }, es: { name: 'Manila', country: 'Filipinas' }, fr: { name: 'Manille', country: 'Philippines' }, hi: { name: 'मनीला', country: 'फ़िलीपींस' }, th: { name: 'มะนิลา', country: 'ฟิลิปปินส์' } } },
+  { slug: 'hochiminh', identifier: 'Asia/Ho_Chi_Minh', name: 'Ho Chi Minh City', country: 'Vietnam', localizations: { ja: { name: 'ホーチミン', country: 'ベトナム' }, ko: { name: '호치민', country: '베트남' }, zh: { name: '胡志明市', country: '越南' }, es: { name: 'Ciudad Ho Chi Minh', country: 'Vietnam' }, fr: { name: 'Hô Chi Minh-Ville', country: 'Viêt Nam' }, hi: { name: 'हो ची मिन्ह सिटी', country: 'वियतनाम' }, th: { name: 'โฮจิมินห์', country: 'เวียดนาม' } } },
+  { slug: 'taipei', identifier: 'Asia/Taipei', name: 'Taipei', country: 'Taiwan', localizations: { ja: { name: '台北', country: '台湾' }, ko: { name: '타이베이', country: '대만' }, zh: { name: '台北', country: '台湾' }, es: { name: 'Taipéi', country: 'Taiwán' }, fr: { name: 'Taipei', country: 'Taïwan' }, hi: { name: 'ताइपे', country: 'ताइवान' }, th: { name: 'ไทเป', country: 'ไต้หวัน' } } },
+  { slug: 'delhi', identifier: 'Asia/Kolkata', name: 'Delhi', country: 'India', localizations: { ja: { name: 'デリー', country: 'インド' }, ko: { name: '델리', country: '인도' }, zh: { name: '德里', country: '印度' }, es: { name: 'Delhi', country: 'India' }, fr: { name: 'Delhi', country: 'Inde' }, hi: { name: 'दिल्ली', country: 'भारत' }, th: { name: 'เดลี', country: 'อินเดีย' } } },
+  { slug: 'karachi', identifier: 'Asia/Karachi', name: 'Karachi', country: 'Pakistan', localizations: { ja: { name: 'カラチ', country: 'パキスタン' }, ko: { name: '카라치', country: '파키스탄' }, zh: { name: '卡拉奇', country: '巴基斯坦' }, es: { name: 'Karachi', country: 'Pakistán' }, fr: { name: 'Karachi', country: 'Pakistan' }, hi: { name: 'कराची', country: 'पाकिस्तान' }, th: { name: 'การาจี', country: 'ปากีสถาน' } } },
+  { slug: 'dhaka', identifier: 'Asia/Dhaka', name: 'Dhaka', country: 'Bangladesh', localizations: { ja: { name: 'ダッカ', country: 'バングラデシュ' }, ko: { name: '다카', country: '방글라데시' }, zh: { name: '达卡', country: '孟加拉国' }, es: { name: 'Daca', country: 'Bangladés' }, fr: { name: 'Dacca', country: 'Bangladesh' }, hi: { name: 'ढाका', country: 'बांग्लादेश' }, th: { name: 'ธากา', country: 'บังกลาเทศ' } } },
+  { slug: 'kathmandu', identifier: 'Asia/Kathmandu', name: 'Kathmandu', country: 'Nepal', localizations: { ja: { name: 'カトマンズ', country: 'ネパール' }, ko: { name: '카트만두', country: '네팔' }, zh: { name: '加德满都', country: '尼泊尔' }, es: { name: 'Katmandú', country: 'Nepal' }, fr: { name: 'Katmandou', country: 'Népal' }, hi: { name: 'काठमांडू', country: 'नेपाल' }, th: { name: 'กาฐมาณฑุ', country: 'เนปาล' } } },
+  { slug: 'colombo', identifier: 'Asia/Colombo', name: 'Colombo', country: 'Sri Lanka', localizations: { ja: { name: 'コロンボ', country: 'スリランカ' }, ko: { name: '콜롬보', country: '스리랑카' }, zh: { name: '科伦坡', country: '斯里兰卡' }, es: { name: 'Colombo', country: 'Sri Lanka' }, fr: { name: 'Colombo', country: 'Sri Lanka' }, hi: { name: 'कोलंबो', country: 'श्रीलंका' }, th: { name: 'โคลัมโบ', country: 'ศรีลังกา' } } },
+  { slug: 'beijing', identifier: 'Asia/Shanghai', name: 'Beijing', country: 'China', localizations: { ja: { name: '北京', country: '中国' }, ko: { name: '베이징', country: '중국' }, zh: { name: '北京', country: '中国' }, es: { name: 'Pekín', country: 'China' }, fr: { name: 'Pékin', country: 'Chine' }, hi: { name: 'बीजिंग', country: 'चीन' }, th: { name: 'ปักกิ่ง', country: 'จีน' } } },
+  { slug: 'osaka', identifier: 'Asia/Tokyo', name: 'Osaka', country: 'Japan', localizations: { ja: { name: '大阪', country: '日本' }, ko: { name: '오사카', country: '일본' }, zh: { name: '大阪', country: '日本' }, es: { name: 'Osaka', country: 'Japón' }, fr: { name: 'Osaka', country: 'Japon' }, hi: { name: 'ओसाका', country: 'जापान' }, th: { name: 'โอซากา', country: 'ญี่ปุ่น' } } },
+  { slug: 'doha', identifier: 'Asia/Qatar', name: 'Doha', country: 'Qatar', localizations: { ja: { name: 'ドーハ', country: 'カタール' }, ko: { name: '도하', country: '카타르' }, zh: { name: '多哈', country: '卡塔尔' }, es: { name: 'Doha', country: 'Catar' }, fr: { name: 'Doha', country: 'Qatar' }, hi: { name: 'दोहा', country: 'क़तर' }, th: { name: 'โดฮา', country: 'กาตาร์' } } },
+  { slug: 'riyadh', identifier: 'Asia/Riyadh', name: 'Riyadh', country: 'Saudi Arabia', localizations: { ja: { name: 'リヤド', country: 'サウジアラビア' }, ko: { name: '리야드', country: '사우디아라비아' }, zh: { name: '利雅得', country: '沙特阿拉伯' }, es: { name: 'Riad', country: 'Arabia Saudita' }, fr: { name: 'Riyad', country: 'Arabie saoudite' }, hi: { name: 'रियाद', country: 'सऊदी अरब' }, th: { name: 'ริยาด', country: 'ซาอุดีอาระเบีย' } } },
+  { slug: 'tehran', identifier: 'Asia/Tehran', name: 'Tehran', country: 'Iran', localizations: { ja: { name: 'テヘラン', country: 'イラン' }, ko: { name: '테헤란', country: '이란' }, zh: { name: '德黑兰', country: '伊朗' }, es: { name: 'Teherán', country: 'Irán' }, fr: { name: 'Téhéran', country: 'Iran' }, hi: { name: 'तेहरान', country: 'ईरान' }, th: { name: 'เตหะราน', country: 'อิหร่าน' } } },
+  { slug: 'telaviv', identifier: 'Asia/Jerusalem', name: 'Tel Aviv', country: 'Israel', localizations: { ja: { name: 'テルアビブ', country: 'イスラエル' }, ko: { name: '텔아비브', country: '이스라엘' }, zh: { name: '特拉维夫', country: '以色列' }, es: { name: 'Tel Aviv', country: 'Israel' }, fr: { name: 'Tel Aviv', country: 'Israël' }, hi: { name: 'तेल अवीव', country: 'इज़राइल' }, th: { name: 'เทลอาวีฟ', country: 'อิสราเอล' } } },
+  { slug: 'rome', identifier: 'Europe/Rome', name: 'Rome', country: 'Italy', localizations: { ja: { name: 'ローマ', country: 'イタリア' }, ko: { name: '로마', country: '이탈리아' }, zh: { name: '罗马', country: '意大利' }, es: { name: 'Roma', country: 'Italia' }, fr: { name: 'Rome', country: 'Italie' }, hi: { name: 'रोम', country: 'इटली' }, th: { name: 'โรม', country: 'อิตาลี' } } },
+  { slug: 'lisbon', identifier: 'Europe/Lisbon', name: 'Lisbon', country: 'Portugal', localizations: { ja: { name: 'リスボン', country: 'ポルトガル' }, ko: { name: '리스본', country: '포르투갈' }, zh: { name: '里斯本', country: '葡萄牙' }, es: { name: 'Lisboa', country: 'Portugal' }, fr: { name: 'Lisbonne', country: 'Portugal' }, hi: { name: 'लिस्बन', country: 'पुर्तगाल' }, th: { name: 'ลิสบอน', country: 'โปรตุเกส' } } },
+  { slug: 'dublin', identifier: 'Europe/Dublin', name: 'Dublin', country: 'Ireland', localizations: { ja: { name: 'ダブリン', country: 'アイルランド' }, ko: { name: '더블린', country: '아일랜드' }, zh: { name: '都柏林', country: '爱尔兰' }, es: { name: 'Dublín', country: 'Irlanda' }, fr: { name: 'Dublin', country: 'Irlande' }, hi: { name: 'डबलिन', country: 'आयरलैंड' }, th: { name: 'ดับลิน', country: 'ไอร์แลนด์' } } },
+  { slug: 'zurich', identifier: 'Europe/Zurich', name: 'Zurich', country: 'Switzerland', localizations: { ja: { name: 'チューリッヒ', country: 'スイス' }, ko: { name: '취리히', country: '스위스' }, zh: { name: '苏黎世', country: '瑞士' }, es: { name: 'Zúrich', country: 'Suiza' }, fr: { name: 'Zurich', country: 'Suisse' }, hi: { name: 'ज्यूरिख', country: 'स्विट्ज़रलैंड' }, th: { name: 'ซูริก', country: 'สวิตเซอร์แลนด์' } } },
+  { slug: 'stockholm', identifier: 'Europe/Stockholm', name: 'Stockholm', country: 'Sweden', localizations: { ja: { name: 'ストックホルム', country: 'スウェーデン' }, ko: { name: '스톡홀름', country: '스웨덴' }, zh: { name: '斯德哥尔摩', country: '瑞典' }, es: { name: 'Estocolmo', country: 'Suecia' }, fr: { name: 'Stockholm', country: 'Suède' }, hi: { name: 'स्टॉकहोम', country: 'स्वीडन' }, th: { name: 'สตอกโฮล์ม', country: 'สวีเดน' } } },
+  { slug: 'warsaw', identifier: 'Europe/Warsaw', name: 'Warsaw', country: 'Poland', localizations: { ja: { name: 'ワルシャワ', country: 'ポーランド' }, ko: { name: '바르샤바', country: '폴란드' }, zh: { name: '华沙', country: '波兰' }, es: { name: 'Varsovia', country: 'Polonia' }, fr: { name: 'Varsovie', country: 'Pologne' }, hi: { name: 'वारसॉ', country: 'पोलैंड' }, th: { name: 'วอร์ซอ', country: 'โปแลนด์' } } },
+  { slug: 'athens', identifier: 'Europe/Athens', name: 'Athens', country: 'Greece', localizations: { ja: { name: 'アテネ', country: 'ギリシャ' }, ko: { name: '아테네', country: '그리스' }, zh: { name: '雅典', country: '希腊' }, es: { name: 'Atenas', country: 'Grecia' }, fr: { name: 'Athènes', country: 'Grèce' }, hi: { name: 'एथेंस', country: 'यूनान' }, th: { name: 'เอเธนส์', country: 'กรีซ' } } },
+  { slug: 'kyiv', identifier: 'Europe/Kiev', name: 'Kyiv', country: 'Ukraine', localizations: { ja: { name: 'キーウ', country: 'ウクライナ' }, ko: { name: '키이우', country: '우크라이나' }, zh: { name: '基辅', country: '乌克兰' }, es: { name: 'Kiev', country: 'Ucrania' }, fr: { name: 'Kyiv', country: 'Ukraine' }, hi: { name: 'कीव', country: 'यूक्रेन' }, th: { name: 'เคียฟ', country: 'ยูเครน' } } },
+  { slug: 'vienna', identifier: 'Europe/Vienna', name: 'Vienna', country: 'Austria', localizations: { ja: { name: 'ウィーン', country: 'オーストリア' }, ko: { name: '빈', country: '오스트리아' }, zh: { name: '维也纳', country: '奥地利' }, es: { name: 'Viena', country: 'Austria' }, fr: { name: 'Vienne', country: 'Autriche' }, hi: { name: 'वियना', country: 'ऑस्ट्रिया' }, th: { name: 'เวียนนา', country: 'ออสเตรีย' } } },
+  { slug: 'sanfrancisco', identifier: 'America/Los_Angeles', name: 'San Francisco', country: 'USA', localizations: { ja: { name: 'サンフランシスコ', country: 'アメリカ' }, ko: { name: '샌프란시스코', country: '미국' }, zh: { name: '旧金山', country: '美国' }, es: { name: 'San Francisco', country: 'EE. UU.' }, fr: { name: 'San Francisco', country: 'États-Unis' }, hi: { name: 'सैन फ़्रांसिस्को', country: 'अमेरिका' }, th: { name: 'ซานฟรานซิสโก', country: 'สหรัฐอเมริกา' } } },
+  { slug: 'vancouver', identifier: 'America/Vancouver', name: 'Vancouver', country: 'Canada', localizations: { ja: { name: 'バンクーバー', country: 'カナダ' }, ko: { name: '밴쿠버', country: '캐나다' }, zh: { name: '温哥华', country: '加拿大' }, es: { name: 'Vancouver', country: 'Canadá' }, fr: { name: 'Vancouver', country: 'Canada' }, hi: { name: 'वैंकूवर', country: 'कनाडा' }, th: { name: 'แวนคูเวอร์', country: 'แคนาดา' } } },
+  { slug: 'bogota', identifier: 'America/Bogota', name: 'Bogota', country: 'Colombia', localizations: { ja: { name: 'ボゴタ', country: 'コロンビア' }, ko: { name: '보고타', country: '콜롬비아' }, zh: { name: '波哥大', country: '哥伦比亚' }, es: { name: 'Bogotá', country: 'Colombia' }, fr: { name: 'Bogota', country: 'Colombie' }, hi: { name: 'बोगोटा', country: 'कोलंबिया' }, th: { name: 'โบโกตา', country: 'โคลอมเบีย' } } },
+  { slug: 'lima', identifier: 'America/Lima', name: 'Lima', country: 'Peru', localizations: { ja: { name: 'リマ', country: 'ペルー' }, ko: { name: '리마', country: '페루' }, zh: { name: '利马', country: '秘鲁' }, es: { name: 'Lima', country: 'Perú' }, fr: { name: 'Lima', country: 'Pérou' }, hi: { name: 'लीमा', country: 'पेरू' }, th: { name: 'ลิมา', country: 'เปรู' } } },
+  { slug: 'buenosaires', identifier: 'America/Argentina/Buenos_Aires', name: 'Buenos Aires', country: 'Argentina', localizations: { ja: { name: 'ブエノスアイレス', country: 'アルゼンチン' }, ko: { name: '부에노스아이레스', country: '아르헨티나' }, zh: { name: '布宜诺斯艾利斯', country: '阿根廷' }, es: { name: 'Buenos Aires', country: 'Argentina' }, fr: { name: 'Buenos Aires', country: 'Argentine' }, hi: { name: 'ब्यूनस आयर्स', country: 'अर्जेंटीना' }, th: { name: 'บัวโนสไอเรส', country: 'อาร์เจนตินา' } } },
+  { slug: 'santiago', identifier: 'America/Santiago', name: 'Santiago', country: 'Chile', localizations: { ja: { name: 'サンティアゴ', country: 'チリ' }, ko: { name: '산티아고', country: '칠레' }, zh: { name: '圣地亚哥', country: '智利' }, es: { name: 'Santiago', country: 'Chile' }, fr: { name: 'Santiago', country: 'Chili' }, hi: { name: 'सैंटियागो', country: 'चिली' }, th: { name: 'ซานติอาโก', country: 'ชิลี' } } },
+  { slug: 'honolulu', identifier: 'Pacific/Honolulu', name: 'Honolulu', country: 'USA', localizations: { ja: { name: 'ホノルル', country: 'アメリカ' }, ko: { name: '호놀룰루', country: '미국' }, zh: { name: '檀香山', country: '美国' }, es: { name: 'Honolulu', country: 'EE. UU.' }, fr: { name: 'Honolulu', country: 'États-Unis' }, hi: { name: 'होनोलूलू', country: 'अमेरिका' }, th: { name: 'โฮโนลูลู', country: 'สหรัฐอเมริกา' } } },
+  { slug: 'casablanca', identifier: 'Africa/Casablanca', name: 'Casablanca', country: 'Morocco', localizations: { ja: { name: 'カサブランカ', country: 'モロッコ' }, ko: { name: '카사블랑카', country: '모로코' }, zh: { name: '卡萨布兰卡', country: '摩洛哥' }, es: { name: 'Casablanca', country: 'Marruecos' }, fr: { name: 'Casablanca', country: 'Maroc' }, hi: { name: 'कैसाब्लांका', country: 'मोरक्को' }, th: { name: 'คาซาบลังกา', country: 'โมร็อกโก' } } },
+  { slug: 'melbourne', identifier: 'Australia/Melbourne', name: 'Melbourne', country: 'Australia', localizations: { ja: { name: 'メルボルン', country: 'オーストラリア' }, ko: { name: '멜버른', country: '호주' }, zh: { name: '墨尔本', country: '澳大利亚' }, es: { name: 'Melbourne', country: 'Australia' }, fr: { name: 'Melbourne', country: 'Australie' }, hi: { name: 'मेलबर्न', country: 'ऑस्ट्रेलिया' }, th: { name: 'เมลเบิร์น', country: 'ออสเตรเลีย' } } },
+  { slug: 'perth', identifier: 'Australia/Perth', name: 'Perth', country: 'Australia', localizations: { ja: { name: 'パース', country: 'オーストラリア' }, ko: { name: '퍼스', country: '호주' }, zh: { name: '珀斯', country: '澳大利亚' }, es: { name: 'Perth', country: 'Australia' }, fr: { name: 'Perth', country: 'Australie' }, hi: { name: 'पर्थ', country: 'ऑस्ट्रेलिया' }, th: { name: 'เพิร์ท', country: 'ออสเตรเลีย' } } },
 ];
 
 // Lookup map: slug → CityDef
@@ -47,6 +81,15 @@ export function getCityLocalized(city: CityDef, locale: string): CityDef {
   const loc = city.localizations?.[locale];
   if (!loc) return city;
   return { ...city, name: loc.name, country: loc.country };
+}
+
+/**
+ * Localized city name for an IANA identifier, or null when the identifier is
+ * shared by several cities (e.g. Asia/Kolkata → Mumbai/Delhi) or unknown.
+ */
+export function getUniqueCityNameByIdentifier(identifier: string, locale: string): string | null {
+  const matches = CITIES.filter(c => c.identifier === identifier);
+  return matches.length === 1 ? getCityLocalized(matches[0], locale).name : null;
 }
 
 /**
@@ -76,6 +119,63 @@ export function getAllPairSlugs(): string[] {
     for (let j = i + 1; j < slugs.length; j++)
       pairs.push(`${slugs[i]}-${slugs[j]}`);
   return pairs;
+}
+
+/**
+ * Country → representative city. Lets URLs like `/jakarta-thailand` or
+ * `/time/japan` resolve to the canonical city URL (people search by country).
+ */
+export const COUNTRY_ALIASES: Record<string, string> = {
+  japan: 'tokyo', thailand: 'bangkok', korea: 'seoul', southkorea: 'seoul',
+  china: 'beijing', taiwan: 'taipei', india: 'delhi', indonesia: 'jakarta',
+  malaysia: 'kualalumpur', vietnam: 'hochiminh', philippines: 'manila',
+  pakistan: 'karachi', bangladesh: 'dhaka', nepal: 'kathmandu', srilanka: 'colombo',
+  uae: 'dubai', emirates: 'dubai', qatar: 'doha', saudiarabia: 'riyadh', saudi: 'riyadh',
+  iran: 'tehran', israel: 'telaviv', turkey: 'istanbul', russia: 'moscow',
+  uk: 'london', england: 'london', britain: 'london', france: 'paris', germany: 'berlin',
+  italy: 'rome', spain: 'madrid', portugal: 'lisbon', ireland: 'dublin',
+  netherlands: 'amsterdam', switzerland: 'zurich', sweden: 'stockholm', poland: 'warsaw',
+  greece: 'athens', ukraine: 'kyiv', austria: 'vienna',
+  usa: 'newyork', us: 'newyork', canada: 'toronto', mexico: 'mexicocity',
+  brazil: 'saopaulo', argentina: 'buenosaires', chile: 'santiago', colombia: 'bogota', peru: 'lima',
+  australia: 'sydney', newzealand: 'auckland', egypt: 'cairo', nigeria: 'lagos',
+  kenya: 'nairobi', southafrica: 'johannesburg', morocco: 'casablanca',
+  singaporecity: 'singapore',
+};
+
+/** Resolves a city slug or country alias to a CityDef, or null. */
+export function resolveCity(slugOrAlias: string): CityDef | null {
+  const key = slugOrAlias.toLowerCase();
+  return CITY_MAP.get(key) ?? CITY_MAP.get(COUNTRY_ALIASES[key] ?? '') ?? null;
+}
+
+/**
+ * Rewrites country aliases inside a pair string to city slugs
+ * ("jakarta-thailand" → "bangkok-jakarta"). Returns null when nothing can be
+ * resolved, the result has duplicate cities, or the input is already canonical.
+ */
+export function resolvePairAliases(pair: string): string | null {
+  const parts = pair.split('-');
+  if (parts.length < 2 || parts.length > 3) return null;
+  const cities = parts.map(resolveCity);
+  if (cities.some(c => !c)) return null;
+  const slugs = cities.map(c => c!.slug);
+  if (new Set(slugs).size !== slugs.length) return null;
+  const resolved = [...slugs].sort().join('-');
+  return resolved === pair ? null : resolved;
+}
+
+/**
+ * Pairs rendered at build time. Everything else is rendered on first request
+ * (ISR via dynamicParams) so the build does not grow quadratically with cities.
+ */
+export function getStaticPairSlugs(): string[] {
+  const popular = [...POPULAR_SLUGS].sort();
+  const slugs = new Set<string>(POPULAR_PAIRS.map(p => p.slug));
+  for (let i = 0; i < popular.length; i++)
+    for (let j = i + 1; j < popular.length; j++)
+      slugs.add(`${popular[i]}-${popular[j]}`);
+  return [...slugs];
 }
 
 /** Slugs for popular cities used for pre-built 3-city triplets */

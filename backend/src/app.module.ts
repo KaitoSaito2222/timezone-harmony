@@ -5,6 +5,7 @@ import { UsersModule } from './modules/users/users.module';
 import { TimezonePresetsModule } from './modules/timezone-presets/timezone-presets.module';
 import { TimezonesModule } from './modules/timezones/timezones.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { PollsModule } from './modules/polls/polls.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { PrismaModule } from './prisma/prisma.module';
     TimezonePresetsModule,
     TimezonesModule,
     CalendarModule,
+    PollsModule,
   ],
 })
 export class AppModule {}

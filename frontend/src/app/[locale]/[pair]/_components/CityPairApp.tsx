@@ -10,6 +10,7 @@ import { TimezoneSelector } from '@/components/timezone/TimezoneSelector';
 import { TimezoneComparison } from '@/components/timezone/TimezoneComparison';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { trackEvent } from '@/lib/analytics';
 
 interface CityPairAppProps {
   defaultIdentifiers: string[];
@@ -34,6 +35,7 @@ export function CityPairApp({ defaultIdentifiers }: CityPairAppProps) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAddTimezone = (identifier: string) => {
+    trackEvent('city_added', { source: 'city_pair' });
     addTimezone(identifier);
     setShowSelector(false);
   };

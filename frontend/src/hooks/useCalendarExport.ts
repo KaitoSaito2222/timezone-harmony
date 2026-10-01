@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { trackEvent } from '@/lib/analytics';
 import { DateTime } from 'luxon';
 import { useTranslations } from 'next-intl';
 import { calendarService } from '@/services/calendar.service';
@@ -61,6 +62,7 @@ export function useCalendarExport({
 
   const handleExportCalendar = async (method: CalendarExportMethod) => {
     if (!exportSlotData) return;
+    trackEvent('calendar_export', { method, timezones: exportSlotData.slots.length });
     const [startHour, startMinute] = exportStartTime.split(':').map(Number);
     const startTime = exportSlotData.slots[0].time.set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     const endTime = startTime.plus({ minutes: exportDuration });

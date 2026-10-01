@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { DateTime } from 'luxon';
 import { DATETIME_LOCAL_FORMAT } from '@/lib/constants';
+import { trackEvent } from '@/lib/analytics';
 
 export function useDateTimePicker(timezones: string[]) {
   const [selectedDateTime, setSelectedDateTime] = useState<string>(
@@ -49,6 +50,7 @@ export function useDateTimePicker(timezones: string[]) {
       );
       return;
     }
+    if (isLiveMode.current) trackEvent('date_time_changed');
     isLiveMode.current = false;
     setSelectedDateTime(value);
   };
