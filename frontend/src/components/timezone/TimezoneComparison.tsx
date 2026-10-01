@@ -18,6 +18,7 @@ import { TimelineControls } from './timeline/TimelineControls';
 import { VerticalTimeline } from './timeline/VerticalTimeline';
 import { HorizontalTimeline } from './timeline/HorizontalTimeline';
 import { OptimalMeetingTimes } from './timeline/OptimalMeetingTimes';
+import { ShareBar } from './ShareBar';
 import { SavePresetDialog } from './dialogs/SavePresetDialog';
 import { CalendarExportDialog } from './dialogs/CalendarExportDialog';
 
@@ -80,6 +81,10 @@ export function TimezoneComparison({
 
   return (
     <div className="space-y-6">
+      {timezones.length > 0 && (
+        <OptimalMeetingTimes optimalTimes={optimalTimes} getDisplayName={getDisplayName} />
+      )}
+
       <Card>
         <CardHeader className="space-y-4">
           <TimelineHeader
@@ -98,6 +103,12 @@ export function TimezoneComparison({
             onBaseTimezoneChange={datePicker.setBaseTimezone}
             isNow={datePicker.isNow}
             onReset={datePicker.handleReset}
+          />
+          <ShareBar
+            timezones={timezones}
+            selectedDateTime={datePicker.selectedDateTime}
+            baseTimezone={datePicker.baseTimezone}
+            getDisplayName={getDisplayName}
           />
         </CardHeader>
         <CardContent>
@@ -142,8 +153,6 @@ export function TimezoneComparison({
           )}
         </CardContent>
       </Card>
-
-      {timezones.length > 0 && <OptimalMeetingTimes optimalTimes={optimalTimes} getDisplayName={getDisplayName} />}
 
       <SavePresetDialog
         open={presetActions.isSaveDialogOpen}

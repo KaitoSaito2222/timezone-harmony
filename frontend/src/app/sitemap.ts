@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
-import { getAllPairSlugs, getPopularTripletSlugs } from '@/lib/cities';
+import { CITIES, getAllPairSlugs, getPopularTripletSlugs } from '@/lib/cities';
+import { routing } from '@/i18n/routing';
+import { getLocaleMeta } from '@/i18n/localeConfig';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl =
@@ -120,6 +122,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
+  // Single-city "current time" pages, one per city per locale
+  const cityTimeUrls: MetadataRoute.Sitemap = routing.locales.flatMap(locale =>
+    CITIES.map(city => ({
+      url: `${baseUrl}${getLocaleMeta(locale).pathPrefix}/time/${city.slug}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
+  );
+
   return [
     {
       url: `${baseUrl}`,
@@ -161,6 +172,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    ...cityTimeUrls,
     ...enPairUrls,
     ...jaPairUrls,
     ...koPairUrls,

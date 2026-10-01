@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Header } from './Header';
 import { useAuthStore } from '@/stores/authStore';
@@ -12,6 +13,10 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const t = useTranslations('common');
   const { isLoading: isAuthLoading } = useAuthStore();
+  const pathname = usePathname();
+
+  // Embeddable widgets render without the site chrome.
+  if (/^(\/[a-z]{2})?\/embed\//.test(pathname)) return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col">

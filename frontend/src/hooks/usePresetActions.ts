@@ -3,6 +3,7 @@ import { useTimezoneStore } from '@/stores/timezoneStore';
 import { presetService } from '@/services/preset.service';
 import type { TimezonePreset } from '@/types/preset.types';
 import { toast } from 'sonner';
+import { trackEvent } from '@/lib/analytics';
 import { useSubmitGuard } from './useSubmitGuard';
 
 export function usePresetActions(timezones: string[], isAuthenticated: boolean) {
@@ -48,6 +49,7 @@ export function usePresetActions(timezones: string[], isAuthenticated: boolean) 
         position: index,
       })),
     });
+    trackEvent('preset_saved', { timezones: timezones.length });
     toast.success('Preset saved!');
     setIsSaveDialogOpen(false);
     setPresetName('');
