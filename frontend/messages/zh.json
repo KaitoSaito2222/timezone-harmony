@@ -31,7 +31,7 @@
     "description2": "{city1} ↔ {city2}：相差 {h} 小时。免费比较实时本地时间、工作时间重叠并安排会议。",
     "description3": "{city1}、{city2} 和 {city3} 的实时时间比较。即时时差、工作时间重叠和免费会议计划工具。",
     "subtitle2": "{city1} 和 {city2} 之间的当前本地时间和时区偏移。",
-    "subtitle3": "{city1}、{city2} 和 {city3} 的当前本地时间和时区比较。",
+    "subtitle3": "{cities}的当前本地时间和时区比较。",
     "openInApp": "在应用中打开",
     "openCitiesInApp": "在应用中打开 {cities}",
     "compareOtherCities": "比较其他城市",
