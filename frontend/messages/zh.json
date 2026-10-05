@@ -18,7 +18,12 @@
     "quickAccess": "快速访问 - 热门时区",
     "loginPrompt": "登录以保存您的时区预设和工作时间",
     "viewDetailedComparison": "查看 {cities} 的详细比较 →",
-    "worldClocks": "世界各地时间"
+    "worldClocks": "世界各地时间",
+    "h1": "时区转换与会议时间规划",
+    "lead": "对比任意城市的当前时间，查看时差，并找出所有人都在工作时间内的时段。",
+    "aboutHeading": "Timezone Harmony 如何工作",
+    "aboutBody": "Timezone Harmony 基于 IANA 时区数据库显示各城市的当前时间，因此夏令时的调整会自动生效。添加多个城市后，可在24小时时间轴上查看工作时间的重叠部分，并把确定的会议时间导出到日历。热门城市组合的页面会显示当前时差、下一次时差变化的日期以及适合开会的时段。",
+    "citiesHeading": "各城市当前时间"
   },
   "cityPair": {
     "title2": "{city1} ↔ {city2} 时差 – {h}小时",
@@ -26,7 +31,7 @@
     "description2": "{city1} ↔ {city2}：相差 {h} 小时。免费比较实时本地时间、工作时间重叠并安排会议。",
     "description3": "{city1}、{city2} 和 {city3} 的实时时间比较。即时时差、工作时间重叠和免费会议计划工具。",
     "subtitle2": "{city1} 和 {city2} 之间的当前本地时间和时区偏移。",
-    "subtitle3": "{city1}、{city2} 和 {city3} 的当前本地时间和时区比较。",
+    "subtitle3": "{cities}的当前本地时间和时区比较。",
     "openInApp": "在应用中打开",
     "openCitiesInApp": "在应用中打开 {cities}",
     "compareOtherCities": "比较其他城市",
@@ -49,7 +54,6 @@
     "faqA1": "{offsets}。在夏令时过渡期间，这些偏移可能会变化±1小时。",
     "faqA1Offset": "{city} 当前为 UTC{offset}",
     "faqQ2": "夏令时会影响时差吗？",
-    "faqA2": "是的。实行夏令时的国家会将时钟拨快1小时，这会改变城市之间的时差。本页面会自动反映当前偏移，每小时更新一次。",
     "citiesLabel2": "{city1} 和 {city2}",
     "citiesLabel3": "{city1}、{city2} 和 {city3}",
     "vsLabel": "{c1} vs {c2}",
@@ -59,7 +63,13 @@
     "summaryAhead": "{c1}比{c2}快{diff}。",
     "summaryBehind": "{c1}比{c2}慢{diff}。",
     "summarySame": "{c1}和{c2}目前时间相同。",
-    "dstChange": "提示：由于夏令时调整，{c1}与{c2}的时差将在{date}由{from}变为{to}。"
+    "dstChange": "提示：由于夏令时调整，{c1}与{c2}的时差将在{date}由{from}变为{to}。",
+    "faqA2None": "未来12个月内这些城市都不会因夏令时调整时钟，因此时差全年保持不变。",
+    "faqA2Dst": "{changes}。当只有其中一个城市调整时钟时，城市之间的时差会发生变化。",
+    "dstCityChange": "{city}将在{date}调整时钟（UTC{from} → UTC{to}）",
+    "faqQ3": "{cities}之间开会的最佳时间是什么时候？",
+    "faqA3Overlap": "所有城市的工作时间（9:00–17:00）重叠的时段是 {windows}。",
+    "faqA3None": "没有所有城市同时处于工作时间（9:00–17:00）的时段。最折中的选择是 {times}。"
   },
   "auth": {
     "loginTitle": "登录",

@@ -1,193 +1,40 @@
 import type { MetadataRoute } from 'next';
-import { CITIES, getAllPairSlugs, getPopularTripletSlugs } from '@/lib/cities';
+import { CITIES, getIndexablePairSlugs } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
 import { getLocaleMeta } from '@/i18n/localeConfig';
 
+/**
+ * Only pages that are meant to be indexed are listed here:
+ * the home page, every single-city page, and the popular city pairs.
+ * Other pair / triplet pages still work for visitors but are noindex
+ * (see `[pair]/page.tsx`), so they stay out of the sitemap.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.com';
 
-  const pairSlugs = getAllPairSlugs();
-  const tripletSlugs = getPopularTripletSlugs();
+  const pairSlugs = getIndexablePairSlugs();
 
-  // English city pair pages
-  const enPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
+  return routing.locales.flatMap((locale): MetadataRoute.Sitemap => {
+    const prefix = getLocaleMeta(locale).pathPrefix;
+    const isDefault = prefix === '';
 
-  // Japanese city pair pages
-  const jaPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/ja/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  // English triplet pages
-  const enTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
-
-  // Japanese triplet pages
-  const jaTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/ja/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  // Korean city pair pages
-  const koPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/ko/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  // Korean triplet pages
-  const koTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/ko/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  // Chinese city pair pages
-  const zhPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/zh/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  // Chinese triplet pages
-  const zhTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/zh/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  // Spanish city pair pages
-  const esPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/es/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  // Spanish triplet pages
-  const esTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/es/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  // French city pair pages
-  const frPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/fr/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  // French triplet pages
-  const frTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/fr/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  // Hindi city pair pages
-  const hiPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/hi/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  // Hindi triplet pages
-  const hiTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/hi/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  // Thai city pair pages
-  const thPairUrls: MetadataRoute.Sitemap = pairSlugs.map(pair => ({
-    url: `${baseUrl}/th/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  // Thai triplet pages
-  const thTripletUrls: MetadataRoute.Sitemap = tripletSlugs.map(pair => ({
-    url: `${baseUrl}/th/${pair}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  // Single-city "current time" pages, one per city per locale
-  const cityTimeUrls: MetadataRoute.Sitemap = routing.locales.flatMap(locale =>
-    CITIES.map(city => ({
-      url: `${baseUrl}${getLocaleMeta(locale).pathPrefix}/time/${city.slug}`,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    })),
-  );
-
-  return [
-    {
-      url: `${baseUrl}`,
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/ja`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/ko`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/zh`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/es`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/fr`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/hi`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/th`,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    ...cityTimeUrls,
-    ...enPairUrls,
-    ...jaPairUrls,
-    ...koPairUrls,
-    ...zhPairUrls,
-    ...esPairUrls,
-    ...frPairUrls,
-    ...hiPairUrls,
-    ...thPairUrls,
-    ...enTripletUrls,
-    ...jaTripletUrls,
-    ...koTripletUrls,
-    ...zhTripletUrls,
-    ...esTripletUrls,
-    ...frTripletUrls,
-    ...hiTripletUrls,
-    ...thTripletUrls,
-  ];
+    return [
+      {
+        url: `${baseUrl}${prefix}`,
+        changeFrequency: 'weekly',
+        priority: isDefault ? 1 : 0.9,
+      },
+      ...CITIES.map(city => ({
+        url: `${baseUrl}${prefix}/time/${city.slug}`,
+        changeFrequency: 'weekly' as const,
+        priority: isDefault ? 0.8 : 0.7,
+      })),
+      ...pairSlugs.map(pair => ({
+        url: `${baseUrl}${prefix}/${pair}`,
+        changeFrequency: 'weekly' as const,
+        priority: isDefault ? 0.8 : 0.7,
+      })),
+    ];
+  });
 }

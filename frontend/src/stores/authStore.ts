@@ -120,6 +120,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
       } else {
         set({ user: null, isAuthenticated: false, isLoading: false });
       }
+    }).catch(() => {
+      // Never leave the UI waiting on a failed session lookup.
+      set({ user: null, isAuthenticated: false, isLoading: false });
     });
 
     const {

@@ -165,17 +165,41 @@ export function resolvePairAliases(pair: string): string | null {
   return resolved === pair ? null : resolved;
 }
 
+/** Canonical (alphabetical) form of a pair slug: "mumbai-london" → "london-mumbai". */
+function canonicalSlug(slug: string): string {
+  return slug.split('-').sort().join('-');
+}
+
+/**
+ * Two-city pairs worth indexing: the hand-picked popular pairs plus every
+ * combination of the popular cities. All other combinations stay reachable
+ * for users but are marked noindex, so search engines only see the pages
+ * that have real search demand.
+ */
+export function getIndexablePairSlugs(): string[] {
+  const popular = [...POPULAR_SLUGS].sort();
+  const slugs = new Set<string>(POPULAR_PAIRS.map(p => canonicalSlug(p.slug)));
+  for (let i = 0; i < popular.length; i++)
+    for (let j = i + 1; j < popular.length; j++)
+      slugs.add(`${popular[i]}-${popular[j]}`);
+  return [...slugs].sort();
+}
+
+let indexablePairSet: Set<string> | null = null;
+
+/** True when the page for this canonical pair/triplet slug should be indexed. */
+export function isIndexablePair(slug: string): boolean {
+  // Built lazily: POPULAR_SLUGS / POPULAR_PAIRS are declared further down.
+  indexablePairSet ??= new Set(getIndexablePairSlugs());
+  return indexablePairSet.has(slug);
+}
+
 /**
  * Pairs rendered at build time. Everything else is rendered on first request
  * (ISR via dynamicParams) so the build does not grow quadratically with cities.
  */
 export function getStaticPairSlugs(): string[] {
-  const popular = [...POPULAR_SLUGS].sort();
-  const slugs = new Set<string>(POPULAR_PAIRS.map(p => p.slug));
-  for (let i = 0; i < popular.length; i++)
-    for (let j = i + 1; j < popular.length; j++)
-      slugs.add(`${popular[i]}-${popular[j]}`);
-  return [...slugs];
+  return getIndexablePairSlugs();
 }
 
 /** Slugs for popular cities used for pre-built 3-city triplets */

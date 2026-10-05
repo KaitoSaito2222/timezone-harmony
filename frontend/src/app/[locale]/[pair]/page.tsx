@@ -5,39 +5,29 @@ import { DateTime } from 'luxon';
 import { Clock } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { CITIES, CITY_MAP, parseCities, getStaticPairSlugs, resolvePairAliases, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
+import { CITY_MAP, parseCities, getStaticPairSlugs, isIndexablePair, resolvePairAliases, getCityLocalized, POPULAR_SLUGS, type CityDef } from '@/lib/cities';
 import { routing } from '@/i18n/routing';
 import { getLocaleMeta, buildLanguageAlternates } from '@/i18n/localeConfig';
-import { findNextDiffChange } from '@/lib/dst';
+import { findNextDiffChange, findNextOffsetTransition, formatOffsetHours } from '@/lib/dst';
+import { findBusinessOverlap } from '@/lib/overlap';
 import { CityPairApp } from './_components/CityPairApp';
 import { LiveCityTimes } from './_components/LiveCityTimes';
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 // ───────────────────────────────────────────────
 // generateStaticParams
 // ───────────────────────────────────────────────
 export async function generateStaticParams() {
+  // Only indexable pairs are pre-rendered. Triplets and the remaining pairs
+  // render on first request (ISR via dynamicParams) and are noindex.
   const params: { locale: string; pair: string }[] = [];
-
-  const pairSlugs = getStaticPairSlugs();
-
-  const sortedPopular = [...POPULAR_SLUGS].sort();
-  const tripletSlugs: string[] = [];
-  for (let i = 0; i < sortedPopular.length; i++)
-    for (let j = i + 1; j < sortedPopular.length; j++)
-      for (let k = j + 1; k < sortedPopular.length; k++)
-        tripletSlugs.push(`${sortedPopular[i]}-${sortedPopular[j]}-${sortedPopular[k]}`);
-
-  const allSlugs = [...pairSlugs, ...tripletSlugs];
-
   for (const locale of routing.locales) {
-    for (const pair of allSlugs) {
+    for (const pair of getStaticPairSlugs()) {
       params.push({ locale, pair });
     }
   }
-
   return params;
 }
 
@@ -70,15 +60,19 @@ export async function generateMetadata({
     : t('description2', { city1: lc[0].name, city2: lc[1].name, h: hStr, wa: pWa(locale, lc[0].name), neun: pNeun(locale, lc[1].name) });
 
   const meta = getLocaleMeta(locale);
-  const canonicalUrl = `${baseUrl}${meta.pathPrefix}/${canonicalPairSlug(cities)}`;
+  const canonicalSlug = canonicalPairSlug(cities);
+  const canonicalUrl = `${baseUrl}${meta.pathPrefix}/${canonicalSlug}`;
+  const indexable = isIndexablePair(canonicalSlug);
 
   return {
     title,
     description,
     keywords: [...lc.map(c => c.name), ...meta.cityKeywords],
+    // Low-demand combinations stay usable but are kept out of the index.
+    robots: indexable ? undefined : { index: false, follow: true },
     alternates: {
       canonical: canonicalUrl,
-      languages: buildLanguageAlternates(baseUrl, pair),
+      languages: indexable ? buildLanguageAlternates(baseUrl, canonicalSlug) : undefined,
     },
     openGraph: {
       title,
@@ -130,16 +124,26 @@ function getDiffHours(tz1: string, tz2: string): number {
   return Math.abs(now.setZone(tz1).offset - now.setZone(tz2).offset) / 60;
 }
 
-function getRelatedPairs(cities: CityDef[]): { slug: string; label: string }[] {
+/**
+ * Related comparisons: popular partners for each city on the page, so every
+ * page links to indexable pairs and the links differ from page to page.
+ */
+function getRelatedPairs(cities: CityDef[]): { slug: string }[] {
   const currentSlugs = new Set(cities.map(c => c.slug));
-  const related: { slug: string; label: string }[] = [];
-  const anchor = cities[0];
-  for (const slug of CITIES.map(c => c.slug)) {
-    if (currentSlugs.has(slug)) continue;
-    const other = CITY_MAP.get(slug)!;
-    const sorted = [anchor.slug, slug].sort();
-    related.push({ slug: sorted.join('-'), label: `${anchor.name} ↔ ${other.name}` });
-    if (related.length >= 5) break;
+  const seen = new Set<string>();
+  const related: { slug: string }[] = [];
+  const perCity = cities.length === 3 ? 2 : 3;
+  for (const anchor of cities) {
+    let added = 0;
+    for (const other of POPULAR_SLUGS) {
+      if (added >= perCity) break;
+      if (currentSlugs.has(other)) continue;
+      const slug = [anchor.slug, other].sort().join('-');
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      related.push({ slug });
+      added++;
+    }
   }
   return related;
 }
@@ -222,6 +226,7 @@ export default async function CityPairPage({
       c2: lc[1].name,
       diff: formatDiff(Math.abs(offsetDiff) / 60),
       neun: pNeun(locale, lc[0].name),
+      wa: pWa(locale, lc[0].name),
     };
     summary = offsetDiff === 0 ? t('summarySame', params) : offsetDiff > 0 ? t('summaryAhead', params) : t('summaryBehind', params);
   }
@@ -257,6 +262,34 @@ export default async function CityPairPage({
     ? t('citiesLabel3', { city1: lc[0].name, city2: lc[1].name, city3: lc[2].name, wa: pWa(locale, lc[1].name) })
     : t('citiesLabel2', { city1: lc[0].name, city2: lc[1].name, wa: pWa(locale, lc[0].name) });
 
+  // Page-specific FAQ answers: DST changes in the next 12 months, and the
+  // hours when everyone is within business hours.
+  const yearlyChanges = cities
+    .map((c, i) => ({ city: lc[i].name, change: findNextOffsetTransition(c.identifier) }))
+    .filter((x): x is { city: string; change: NonNullable<typeof x.change> } => x.change !== null);
+
+  const faqDstAnswer = yearlyChanges.length === 0
+    ? t('faqA2None')
+    : t('faqA2Dst', {
+        changes: yearlyChanges
+          .map(({ city, change }) => t('dstCityChange', {
+            city,
+            date: change.at.setLocale(locale).toFormat(dateFormat),
+            from: formatOffsetHours(change.fromOffset),
+            to: formatOffsetHours(change.toOffset),
+          }))
+          .join(' / '),
+      });
+
+  const overlap = findBusinessOverlap(cities.map(c => c.identifier));
+  const faqMeetingAnswer = overlap.kind === 'overlap'
+    ? t('faqA3Overlap', {
+        windows: overlap.windows.map((w, i) => `${lc[i].name} ${w.from}–${w.to}`).join(' / '),
+      })
+    : t('faqA3None', {
+        times: overlap.times.map((time, i) => `${lc[i].name} ${time}`).join(' / '),
+      });
+
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -274,7 +307,12 @@ export default async function CityPairPage({
       {
         '@type': 'Question',
         name: t('faqQ2'),
-        acceptedAnswer: { '@type': 'Answer', text: t('faqA2') },
+        acceptedAnswer: { '@type': 'Answer', text: faqDstAnswer },
+      },
+      {
+        '@type': 'Question',
+        name: t('faqQ3', { cities: allCitiesLabel }),
+        acceptedAnswer: { '@type': 'Answer', text: faqMeetingAnswer },
       },
     ],
   };
