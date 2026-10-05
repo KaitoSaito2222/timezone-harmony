@@ -18,7 +18,12 @@
     "quickAccess": "빠른 접근 - 인기 시간대",
     "loginPrompt": "로그인하여 시간대 프리셋과 업무 시간을 저장하세요",
     "viewDetailedComparison": "{cities} 상세 비교 →",
-    "worldClocks": "세계 도시 현재 시간"
+    "worldClocks": "세계 도시 현재 시간",
+    "h1": "시간대 변환 · 회의 시간 플래너",
+    "lead": "원하는 도시의 현재 시각을 비교하고, 시차와 모두가 업무 시간에 들어오는 시간대를 확인하세요.",
+    "aboutHeading": "Timezone Harmony는 이렇게 작동합니다",
+    "aboutBody": "Timezone Harmony는 IANA 시간대 데이터베이스를 바탕으로 각 도시의 현재 시각을 보여 주므로 서머타임 변경도 자동으로 반영됩니다. 여러 도시를 추가하면 24시간 타임라인에서 업무 시간이 겹치는 구간을 확인하고, 정한 회의 시간을 캘린더로 내보낼 수 있습니다. 인기 도시 조합 페이지에서는 현재 시차, 다음 시차 변경일, 회의하기 좋은 시간대를 볼 수 있습니다.",
+    "citiesHeading": "도시별 현재 시각"
   },
   "cityPair": {
     "title2": "{city1}↔{city2} 시차 {h}시간",
@@ -49,7 +54,6 @@
     "faqA1": "{offsets}. 이 UTC 차이는 일광 절약 시간제 전환 시 ±1시간 변경될 수 있습니다.",
     "faqA1Offset": "{city}{neun} 현재 UTC{offset}입니다",
     "faqQ2": "일광 절약 시간제가 시차에 영향을 미치나요?",
-    "faqA2": "예. 일광 절약 시간제를 시행하는 국가는 시계를 1시간 이동시키기 때문에 도시 간 시차가 변경됩니다. 이 페이지는 현재 오프셋을 자동으로 반영하며 매시간 업데이트됩니다.",
     "citiesLabel2": "{city1}{wa} {city2}",
     "citiesLabel3": "{city1}·{city2}{wa} {city3}",
     "vsLabel": "{c1} vs {c2}",
@@ -59,7 +63,13 @@
     "summaryAhead": "{c1}{neun} {c2}보다 {diff} 빠릅니다.",
     "summaryBehind": "{c1}{neun} {c2}보다 {diff} 느립니다.",
     "summarySame": "{c1}{wa} {c2}은(는) 현재 같은 시간입니다.",
-    "dstChange": "알림: 서머타임 변경으로 {date}부터 {c1}{wa} {c2}의 시차가 {from}에서 {to}(으)로 바뀝니다."
+    "dstChange": "알림: 서머타임 변경으로 {date}부터 {c1}{wa} {c2}의 시차가 {from}에서 {to}(으)로 바뀝니다.",
+    "faqA2None": "이 도시들은 앞으로 12개월 동안 서머타임으로 시계를 바꾸지 않으므로 시차는 1년 내내 그대로입니다.",
+    "faqA2Dst": "{changes}. 한쪽 도시만 시계를 바꾸면 도시 간 시차가 달라집니다.",
+    "dstCityChange": "{city}은(는) {date}에 시계를 변경합니다(UTC{from} → UTC{to})",
+    "faqQ3": "{cities} 간 회의에 가장 좋은 시간은 언제인가요?",
+    "faqA3Overlap": "모든 도시의 업무 시간(9:00~17:00)이 겹치는 시간은 {windows}입니다.",
+    "faqA3None": "모든 도시가 업무 시간(9:00~17:00)에 들어오는 시간대는 없습니다. 가장 무리가 적은 후보는 {times}입니다."
   },
   "auth": {
     "loginTitle": "로그인",

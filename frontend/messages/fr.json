@@ -18,7 +18,12 @@
     "quickAccess": "Accès rapide - Fuseaux horaires populaires",
     "loginPrompt": "Connectez-vous pour sauvegarder vos préréglages de fuseau horaire et vos heures de bureau",
     "viewDetailedComparison": "Voir la comparaison détaillée pour {cities} →",
-    "worldClocks": "Horloges du monde"
+    "worldClocks": "Horloges du monde",
+    "h1": "Convertisseur de fuseaux horaires et planificateur de réunions",
+    "lead": "Comparez l'heure actuelle de n'importe quelles villes, consultez le décalage horaire et trouvez les créneaux où tout le monde est au travail.",
+    "aboutHeading": "Comment fonctionne Timezone Harmony",
+    "aboutBody": "Timezone Harmony affiche l'heure locale en direct à partir de la base de données de fuseaux horaires IANA : les changements d'heure d'été sont donc appliqués automatiquement. Ajoutez plusieurs villes pour voir une frise de 24 heures, repérer les heures de bureau communes et exporter la réunion vers votre agenda. Les pages des paires de villes populaires indiquent le décalage actuel, la date de son prochain changement et le meilleur créneau pour se réunir.",
+    "citiesHeading": "Heure actuelle par ville"
   },
   "cityPair": {
     "title2": "{city1} ↔ {city2} Décalage horaire – {h}h",
@@ -49,7 +54,6 @@
     "faqA1": "{offsets}. Ces décalages peuvent varier de ±1 heure lors des transitions d'heure d'été.",
     "faqA1Offset": "{city} est actuellement à UTC{offset}",
     "faqQ2": "L'heure d'été affecte-t-elle le décalage horaire ?",
-    "faqA2": "Oui. Les pays qui appliquent l'heure d'été avancent leurs horloges d'1 heure, ce qui modifie le décalage horaire entre les villes. Cette page reflète automatiquement le décalage actuel et est mise à jour toutes les heures.",
     "citiesLabel2": "{city1} et {city2}",
     "citiesLabel3": "{city1}, {city2} et {city3}",
     "vsLabel": "{c1} vs {c2}",
@@ -59,7 +63,13 @@
     "summaryAhead": "{c1} a {diff} d'avance sur {c2}.",
     "summaryBehind": "{c1} a {diff} de retard sur {c2}.",
     "summarySame": "{c1} et {c2} sont actuellement à la même heure.",
-    "dstChange": "À noter : à cause du changement d'heure, le décalage entre {c1} et {c2} change le {date} ({from} → {to})."
+    "dstChange": "À noter : à cause du changement d'heure, le décalage entre {c1} et {c2} change le {date} ({from} → {to}).",
+    "faqA2None": "Aucune de ces villes ne change d'heure pour l'heure d'été au cours des 12 prochains mois : le décalage horaire reste donc le même toute l'année.",
+    "faqA2Dst": "{changes}. Lorsqu'une seule des villes change d'heure, le décalage entre elles change.",
+    "dstCityChange": "{city} change d'heure le {date} (UTC{from} → UTC{to})",
+    "faqQ3": "Quel est le meilleur moment pour une réunion entre {cities} ?",
+    "faqA3Overlap": "Les heures de bureau (9h–17h) de toutes les villes se chevauchent à : {windows}.",
+    "faqA3None": "Il n'existe aucun créneau où toutes les villes sont dans les heures de bureau (9h–17h). Le meilleur compromis est : {times}."
   },
   "auth": {
     "loginTitle": "Connexion",

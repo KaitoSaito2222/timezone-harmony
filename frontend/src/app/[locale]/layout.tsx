@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Providers } from '@/components/providers/Providers';
 import { Layout } from '@/components/layout/Layout';
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import '../globals.css';
 
 export async function generateStaticParams() {
@@ -13,6 +14,9 @@ export async function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.com'
+  ),
   title: {
     default: 'Timezone Harmony',
     template: '%s | Timezone Harmony',
@@ -75,11 +79,18 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  // <html> lives here (not in app/layout.tsx) so the locale comes from the route
+  // params. Reading it from request headers would make every page dynamic.
   return (
-    <NextIntlClientProvider messages={messages}>
-      <Providers>
-        <Layout>{children}</Layout>
-      </Providers>
-    </NextIntlClientProvider>
+    <html lang={locale} suppressHydrationWarning>
+      <body className="antialiased">
+        <GoogleAnalytics />
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            <Layout>{children}</Layout>
+          </Providers>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }
