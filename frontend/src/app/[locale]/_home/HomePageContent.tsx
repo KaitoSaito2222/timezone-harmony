@@ -28,7 +28,7 @@ export function HomePageContent() {
     clearTimezones,
     setSelectedTimezones,
   } = useTimezoneStore();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const [showSelector, setShowSelector] = useState(false);
 
   useEffect(() => {
@@ -114,7 +114,8 @@ export function HomePageContent() {
         </CardContent>
       </Card>
 
-      {!isAuthenticated && (
+      {/* Wait for the session check so signed-in users never see the login prompt flash. */}
+      {!isAuthLoading && !isAuthenticated && (
         <Card className="bg-muted/50 border-primary/20">
           <CardContent className="py-6 text-center">
             <div className="flex flex-col items-center gap-4">

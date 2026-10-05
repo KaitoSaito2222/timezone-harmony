@@ -26,7 +26,7 @@ export function CityPairApp({ defaultIdentifiers }: CityPairAppProps) {
     removeTimezone,
     setSelectedTimezones,
   } = useTimezoneStore();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const [showSelector, setShowSelector] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,8 @@ export function CityPairApp({ defaultIdentifiers }: CityPairAppProps) {
         onRemoveTimezone={removeTimezone}
       />
 
-      {!isAuthenticated && (
+      {/* Wait for the session check so signed-in users never see the login prompt flash. */}
+      {!isAuthLoading && !isAuthenticated && (
         <Card className="bg-muted/50 border-primary/20">
           <CardContent className="py-4 text-center">
             <div className="flex flex-col items-center gap-3">
