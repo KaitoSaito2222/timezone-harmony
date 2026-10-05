@@ -11,7 +11,7 @@ import { findNextOffsetTransition, formatOffsetHours } from '@/lib/dst';
 import { CityClock } from './_components/CityClock';
 import { EmbedCode } from './_components/EmbedCode';
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://timezone-harmony.com';

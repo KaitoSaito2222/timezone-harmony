@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getLocaleMeta, buildLanguageAlternates } from '@/i18n/localeConfig';
+import { CITY_MAP, POPULAR_SLUGS, getCityLocalized } from '@/lib/cities';
 import { HomePageContent } from './_home/HomePageContent';
 
 const baseUrl =
@@ -47,6 +49,7 @@ export default async function Page({
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: 'home' });
+  const localePath = getLocaleMeta(locale).pathPrefix;
 
   const websiteJsonLd = {
     '@context': 'https://schema.org',
@@ -85,7 +88,32 @@ export default async function Page({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppJsonLd) }}
       />
 
+      {/* Server-rendered heading and intro so the page has indexable text. */}
+      <header className="mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold">{t('h1')}</h1>
+        <p className="mt-2 text-muted-foreground">{t('lead')}</p>
+      </header>
+
       <HomePageContent />
+
+      <section className="mt-10 border-t pt-8">
+        <h2 className="text-xl font-semibold mb-3">{t('aboutHeading')}</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+          {t('aboutBody')}
+        </p>
+        <h2 className="text-xl font-semibold mt-8 mb-3">{t('citiesHeading')}</h2>
+        <div className="flex flex-wrap gap-2">
+          {POPULAR_SLUGS.map(slug => (
+            <Link
+              key={slug}
+              href={`${localePath}/time/${slug}`}
+              className="rounded-full border px-4 py-1.5 text-sm hover:bg-muted transition-colors"
+            >
+              {getCityLocalized(CITY_MAP.get(slug)!, locale).name}
+            </Link>
+          ))}
+        </div>
+      </section>
     </>
   );
 }

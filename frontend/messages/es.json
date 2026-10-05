@@ -18,7 +18,12 @@
     "quickAccess": "Acceso rápido - Zonas horarias populares",
     "loginPrompt": "Inicia sesión para guardar tus preajustes de zona horaria y horario comercial",
     "viewDetailedComparison": "Ver comparación detallada de {cities} →",
-    "worldClocks": "Relojes del mundo"
+    "worldClocks": "Relojes del mundo",
+    "h1": "Conversor de zonas horarias y planificador de reuniones",
+    "lead": "Compara la hora actual de cualquier ciudad, consulta la diferencia horaria y encuentra las horas en que todos están en horario laboral.",
+    "aboutHeading": "Cómo funciona Timezone Harmony",
+    "aboutBody": "Timezone Harmony muestra la hora local en vivo con la base de datos de zonas horarias IANA, por lo que los cambios de horario de verano se aplican automáticamente. Añade varias ciudades para ver una línea de tiempo de 24 horas, resaltar el horario laboral compartido y exportar la reunión a tu calendario. Las páginas de pares de ciudades populares muestran la diferencia horaria actual, cuándo cambia y la mejor franja para reunirse.",
+    "citiesHeading": "Hora actual por ciudad"
   },
   "cityPair": {
     "title2": "{city1} ↔ {city2} Diferencia horaria – {h}h",
@@ -49,7 +54,6 @@
     "faqA1": "{offsets}. Estos valores pueden variar ±1 hora durante los cambios de horario de verano.",
     "faqA1Offset": "{city} está actualmente en UTC{offset}",
     "faqQ2": "¿Afecta el horario de verano a la diferencia horaria?",
-    "faqA2": "Sí. Los países que aplican el horario de verano adelantan sus relojes 1 hora, lo que cambia la diferencia horaria entre ciudades. Esta página refleja automáticamente la diferencia actual y se actualiza cada hora.",
     "citiesLabel2": "{city1} y {city2}",
     "citiesLabel3": "{city1}, {city2} y {city3}",
     "vsLabel": "{c1} vs {c2}",
@@ -59,7 +63,13 @@
     "summaryAhead": "{c1} está {diff} por delante de {c2}.",
     "summaryBehind": "{c1} está {diff} por detrás de {c2}.",
     "summarySame": "{c1} y {c2} tienen ahora la misma hora.",
-    "dstChange": "Aviso: por el cambio de horario de verano, la diferencia horaria entre {c1} y {c2} cambia el {date} ({from} → {to})."
+    "dstChange": "Aviso: por el cambio de horario de verano, la diferencia horaria entre {c1} y {c2} cambia el {date} ({from} → {to}).",
+    "faqA2None": "Ninguna de estas ciudades cambia la hora por el horario de verano en los próximos 12 meses, así que la diferencia horaria se mantiene todo el año.",
+    "faqA2Dst": "{changes}. Cuando solo una de las ciudades cambia la hora, la diferencia horaria entre ellas se modifica.",
+    "dstCityChange": "{city} cambia la hora el {date} (UTC{from} → UTC{to})",
+    "faqQ3": "¿Cuál es la mejor hora para una reunión entre {cities}?",
+    "faqA3Overlap": "El horario laboral (9:00–17:00) de todas las ciudades coincide en {windows}.",
+    "faqA3None": "No hay ninguna hora en la que todas las ciudades estén dentro del horario laboral (9:00–17:00). La opción más cercana es {times}."
   },
   "auth": {
     "loginTitle": "Iniciar sesión",
