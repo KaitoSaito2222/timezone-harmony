@@ -47,7 +47,8 @@ cp .env.example .env.local
 
 Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from
 Supabase Dashboard > Project Settings > API. The default `DATABASE_URL` / `DIRECT_DATABASE_URL`
-point at the local Docker database. The Prisma CLI reads the same `.env.local` (see `prisma.config.ts`).
+point at the local Docker database. The Prisma CLI reads the same `.env.local` (see `prisma.config.ts`);
+migrations use `DIRECT_DATABASE_URL`.
 
 ### 2. Start the database and apply migrations
 
@@ -77,7 +78,12 @@ npm run db:migrate:deploy    # apply migrations to the database in DIRECT_DATABA
 npm run db:studio            # Prisma Studio
 ```
 
+Pull requests that touch `frontend/` run `.github/workflows/ci.yml` (typecheck and production build).
+
 ## Production (Netlify)
+
+The Netlify site's **base directory** must be `frontend` (that is where `netlify.toml` lives).
+Builds are skipped when a commit changes nothing under `frontend/`.
 
 Set these environment variables on the Netlify site:
 
@@ -93,10 +99,28 @@ Use the transaction pooler for `DATABASE_URL`: every function instance opens its
 connection, and a direct connection would exhaust the database's connection limit.
 Get it from Supabase Dashboard > Connect > Connection string.
 
+- `NEXT_PUBLIC_*` values are inlined at build time. After changing one, trigger a new deploy.
+- Scope `DATABASE_URL` to the **Production** deploy context only. Deploy previews run the same API,
+  so a site-wide value would let every preview read and write the production database. (Previews then
+  serve pages normally, but their API calls fail.)
+
+### Release checklist
+
+1. Environment variables above are set (and `DATABASE_URL` is production-only).
+2. Pending migrations are applied to production (see below).
+3. Merge, then check the deploy: sign in, open the presets page, create and vote on a poll.
+
+### Rollback
+
+Use Netlify's "Publish deploy" on the previous production deploy. If a migration was applied,
+check that the previous code still works with the new schema before rolling back.
+
 ## Database Migrations
 
 Migrations are **not** run during the Netlify build (deploy previews would otherwise migrate the
-production database). Apply them yourself before deploying code that depends on them.
+production database). Apply them yourself before deploying code that depends on them: run the
+**Apply database migrations** workflow (Actions tab > Run workflow, needs the `DIRECT_DATABASE_URL`
+repository secret), or run the command below from your machine.
 
 ### Creating a migration
 
@@ -108,7 +132,7 @@ npx prisma migrate dev --name describe_your_changes
 # 3. Commit prisma/migrations
 ```
 
-### Applying migrations to production
+### Applying migrations to production from your machine
 
 `DIRECT_DATABASE_URL` must be the session pooler or direct connection (port 5432); the transaction
 pooler cannot run migrations.
