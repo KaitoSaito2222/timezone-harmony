@@ -11,24 +11,28 @@ const timezoneItemSchema = z.object({
   timezoneIdentifier: z
     .string()
     .refine((tz) => VALID_TIMEZONES.has(tz), 'timezoneIdentifier must be a valid IANA timezone (e.g. "America/New_York")'),
-  displayLabel: z.string().nullish(),
+  displayLabel: z.string().max(200).nullish(),
   position: z.number().nullish(),
   startTime: z.string().regex(TIME_FORMAT_REGEX, 'startTime must be in HH:mm format (e.g. "09:00")').nullish(),
   endTime: z.string().regex(TIME_FORMAT_REGEX, 'endTime must be in HH:mm format (e.g. "18:00")').nullish(),
 });
 
+// Limits match the column sizes; the UI caps a selection at 5 timezones.
+const MAX_ITEMS = 20;
+const MAX_DESCRIPTION = 1000;
+
 export const createPresetSchema = z.object({
-  name: z.string(),
-  description: z.string().nullish(),
+  name: z.string().max(100),
+  description: z.string().max(MAX_DESCRIPTION).nullish(),
   isFavorite: z.boolean().nullish(),
-  timezones: z.array(timezoneItemSchema),
+  timezones: z.array(timezoneItemSchema).max(MAX_ITEMS),
 });
 
 export const updatePresetSchema = z.object({
-  name: z.string().optional(),
-  description: z.string().nullish(),
+  name: z.string().max(100).optional(),
+  description: z.string().max(MAX_DESCRIPTION).nullish(),
   isFavorite: z.boolean().optional(),
-  timezones: z.array(timezoneItemSchema).optional(),
+  timezones: z.array(timezoneItemSchema).max(MAX_ITEMS).optional(),
 });
 
 type TimezoneItemInput = z.output<typeof timezoneItemSchema>;
@@ -116,17 +120,15 @@ export async function create(userId: string, dto: CreatePresetInput) {
 export async function update(id: string, userId: string, dto: UpdatePresetInput) {
   await findById(id, userId);
 
-  if (dto.timezones) {
-    await prisma.timezonePresetItem.deleteMany({ where: { presetId: id } });
-  }
-
+  // Replacing the items is part of the same update, so a failed update never leaves
+  // the preset with its items deleted.
   const preset = await prisma.timezonePreset.update({
     where: { id },
     data: {
       ...(dto.name !== undefined && { name: dto.name }),
       ...(dto.description !== undefined && { description: dto.description }),
       ...(dto.isFavorite !== undefined && { isFavorite: dto.isFavorite }),
-      ...(dto.timezones && { items: { create: toItemCreate(dto.timezones) } }),
+      ...(dto.timezones && { items: { deleteMany: {}, create: toItemCreate(dto.timezones) } }),
     },
     include: { items: true },
   });

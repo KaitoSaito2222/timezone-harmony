@@ -45,11 +45,23 @@ export function route<C>(handler: (req: NextRequest, ctx: C) => Promise<unknown>
   };
 }
 
+// The old Express API rejected bodies over 100 KB; every valid request here is far smaller.
+const MAX_BODY_BYTES = 64 * 1024;
+
 // Parses a JSON body against a schema. Unknown fields are stripped.
+// Requiring application/json also keeps other sites from posting here with a plain form
+// or a no-preflight fetch.
 export async function parseBody<T extends z.ZodType>(req: NextRequest, schema: T): Promise<z.output<T>> {
+  if (!req.headers.get('content-type')?.toLowerCase().startsWith('application/json')) {
+    throw new HttpError(415, 'Content-Type must be application/json');
+  }
+  const text = await req.text();
+  if (new TextEncoder().encode(text).length > MAX_BODY_BYTES) {
+    throw new HttpError(413, 'Request body too large');
+  }
   let body: unknown;
   try {
-    body = await req.json();
+    body = JSON.parse(text);
   } catch {
     throw badRequest('Invalid JSON body');
   }
