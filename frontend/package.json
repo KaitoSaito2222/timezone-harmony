@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "next build",
-    "start": "next start --port 3001"
+    "start": "next start --port 3001",
+    "generate:timezones": "node scripts/generate-timezones.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -47,6 +48,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cldr-dates-full": "^48.2.0",
+    "kuromoji": "^0.1.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
