@@ -4,332 +4,161 @@ A web application to help teams manage schedules and collaboration across differ
 
 ## Architecture
 
-### Local Development Environment
-- **Database**: Docker PostgreSQL (local development)
-- **Authentication**: Supabase Auth (production)
-- **Backend**: NestJS + Prisma
-- **Frontend**: Next.js + TypeScript + Tailwind CSS
+Everything runs as a single Next.js app on Netlify; there is no separate backend server.
 
-### Production Environment
-- **Database**: Supabase PostgreSQL
-- **Authentication**: Supabase Auth
-- **Backend**: NestJS
-- **Frontend**: Next.js (Netlify)
+- **Frontend**: Next.js + TypeScript + Tailwind CSS (Netlify)
+- **API**: Next.js route handlers in `frontend/src/app/api`, deployed as Netlify Functions
+- **Database**: Supabase PostgreSQL in production, Docker PostgreSQL locally (Prisma)
+- **Authentication**: Supabase Auth. The API verifies Supabase access tokens against the project's JWKS.
+
+Data that never changes between requests is not served by the API:
+
+- **Timezone list**: localized city/country names and kana readings are generated into
+  `frontend/src/data/timezones.json` by `npm run generate:timezones`. UTC offsets are computed in the
+  browser so DST changes are reflected.
+- **Calendar export (.ics)**: generated in the browser.
+
+### API routes
+
+| Route | Auth |
+|---|---|
+| `GET /api/users/me` | required |
+| `GET, POST /api/presets`, `GET, PUT, DELETE /api/presets/:id`, `POST /api/presets/:id/favorite` | required |
+| `POST /api/polls` | optional (records the owner when signed in) |
+| `GET /api/polls/:id`, `POST /api/polls/:id/votes` | none (the poll id is the link secret) |
+| `GET /api/polls/mine`, `POST /api/polls/claim` | required |
 
 ## Prerequisites
 
-Make sure you have the following installed:
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- [Docker](https://www.docker.com/) & Docker Compose
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-
-You'll also need a [Supabase](https://supabase.com/) account and project.
+- [Node.js](https://nodejs.org/) 22
+- [Docker](https://www.docker.com/) & Docker Compose (for the local database)
+- A [Supabase](https://supabase.com/) project (for Auth)
 
 ## Local Development Setup
 
-### 1. Clone the Repository
+All commands run from `frontend/`.
 
-```bash
-git clone <repository-url>
-cd timezone_harmony
-```
-
-### 2. Supabase Project Setup
-
-1. Log in to [Supabase](https://app.supabase.com/)
-2. Create a new project (or use an existing one)
-3. Get the following credentials from your project settings:
-   - Project Settings > API > Project URL
-   - Project Settings > API > Project API keys
-     - `service_role` key (for backend)
-     - `anon` key (for frontend)
-
-### 3. Environment Variables Setup
-
-#### Backend
-
-```bash
-# Copy the example file
-cp backend/.env.example backend/.env
-```
-
-Edit `backend/.env` with your Supabase credentials:
-
-```env
-# Database (Local Docker PostgreSQL)
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/timezone_harmony"
-
-# Supabase (Production - for Auth only in local dev)
-SUPABASE_URL=https://your-project-ref.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# App
-APP_PORT=3000
-FRONTEND_URL=http://localhost:3001
-```
-
-#### Frontend
-
-```bash
-# Copy the example file
-cp frontend/.env.example frontend/.env.local
-```
-
-Edit `frontend/.env.local` with your Supabase credentials:
-
-```env
-# Backend API URL (local NestJS server)
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-
-# Supabase Configuration (Production)
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-
-# Site URL
-NEXT_PUBLIC_SITE_URL=http://localhost:3001
-```
-
-### 4. Start Docker Database
-
-```bash
-cd backend
-docker-compose up -d
-```
-
-Verify the database is running:
-```bash
-docker-compose ps
-```
-
-### 5. Database Migration
-
-```bash
-# Run from backend directory
-npm install
-npx prisma migrate dev
-```
-
-### 6. Install Dependencies and Start Development Servers
-
-#### Backend
-
-```bash
-cd backend
-npm install
-npm run start:dev
-```
-
-Backend will run at `http://localhost:3000`
-
-#### Frontend
+### 1. Environment variables
 
 ```bash
 cd frontend
-npm install
+cp .env.example .env.local
+```
+
+Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from
+Supabase Dashboard > Project Settings > API. The default `DATABASE_URL` / `DIRECT_DATABASE_URL`
+point at the local Docker database. The Prisma CLI reads the same `.env.local` (see `prisma.config.ts`).
+
+### 2. Start the database and apply migrations
+
+```bash
+docker compose up -d
+npm install            # also runs `prisma generate`
+npm run db:migrate
+```
+
+### 3. Start the app
+
+```bash
 npm run dev
 ```
 
-Frontend will run at `http://localhost:3001`
+The app runs at `http://localhost:3001`, and the API at `http://localhost:3001/api`.
 
-## Development Commands
-
-### Backend
+## Commands
 
 ```bash
-# Start development server
-npm run start:dev
-
-# Build
-npm run build
-
-# Run tests
-npm run test
-
-# Run E2E tests
-npm run test:e2e
-
-# Open Prisma Studio (Database GUI)
-npx prisma studio
+npm run dev                  # development server
+npm run build                # production build
+npm run start                # serve the production build
+npm run generate:timezones   # regenerate src/data/timezones.json (commit the result)
+npm run db:migrate           # create/apply migrations locally (prisma migrate dev)
+npm run db:migrate:deploy    # apply migrations to the database in DIRECT_DATABASE_URL
+npm run db:studio            # Prisma Studio
 ```
 
-### Frontend
+## Production (Netlify)
+
+Set these environment variables on the Netlify site:
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `NEXT_PUBLIC_SITE_URL` | Public site URL |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics ID (optional) |
+| `DATABASE_URL` | Supabase **transaction pooler** connection string (port 6543) |
+
+Use the transaction pooler for `DATABASE_URL`: every function instance opens its own
+connection, and a direct connection would exhaust the database's connection limit.
+Get it from Supabase Dashboard > Connect > Connection string.
+
+## Database Migrations
+
+Migrations are **not** run during the Netlify build (deploy previews would otherwise migrate the
+production database). Apply them yourself before deploying code that depends on them.
+
+### Creating a migration
 
 ```bash
-# Start development server
-npm run dev
-
-# Build
-npm run build
-
-# Start production server
-npm run start
-
-# Lint
-npm run lint
+cd frontend
+# 1. Edit prisma/schema.prisma
+# 2. Create and apply the migration locally
+npx prisma migrate dev --name describe_your_changes
+# 3. Commit prisma/migrations
 ```
 
-## Docker Commands
+### Applying migrations to production
+
+`DIRECT_DATABASE_URL` must be the session pooler or direct connection (port 5432); the transaction
+pooler cannot run migrations.
 
 ```bash
-# Start containers
-docker-compose up -d
+cd frontend
+DIRECT_DATABASE_URL="your-production-db-url" npm run db:migrate:deploy
 
-# Stop containers
-docker-compose down
-
-# View logs
-docker-compose logs -f
-
-# Connect to PostgreSQL
-docker-compose exec postgres psql -U postgres -d timezone_harmony
+# Verify
+DIRECT_DATABASE_URL="your-production-db-url" npx prisma migrate status
 ```
+
+### Best practices
+
+- Test migrations locally first and review the generated SQL in `prisma/migrations/`.
+- Commit migration files; never edit or delete an applied migration (create a new one instead).
+- Never run `prisma db push` against production.
+
+### Recovering from a failed migration
+
+```sql
+-- In the Supabase SQL Editor
+UPDATE "_prisma_migrations"
+SET rolled_back_at = NOW()
+WHERE migration_name = 'failed_migration_name';
+```
+
+Then fix the issue and run `npm run db:migrate:deploy` again.
+
+### Resetting the local database
+
+```bash
+cd frontend
+# WARNING: deletes all local data
+docker compose down -v
+docker compose up -d
+npm run db:migrate
+```
+
+## Supabase keep-alive
+
+The Supabase Free plan pauses projects after a week of inactivity.
+`.github/workflows/supabase-keepalive.yml` queries the `health_checks` table twice a week to prevent
+that. It needs the `SUPABASE_URL` and `SUPABASE_ANON_KEY` repository secrets.
 
 ## Troubleshooting
 
-### Database Connection Error
-
-1. Check if Docker containers are running:
-   ```bash
-   docker-compose ps
-   ```
-
-2. Verify DATABASE_URL is correct in `backend/.env`
-
-3. Restart Docker:
-   ```bash
-   docker-compose down
-   docker-compose up -d
-   ```
-
-### Supabase Authentication Error
-
-1. Verify environment variables are set correctly
-2. Double-check API keys in Supabase dashboard
-3. Ensure no extra spaces or newlines in URLs
-
-## Database Migration Guide
-
-### When to Create a Migration
-
-Create a new migration whenever you change the database schema:
-- Add/remove/modify models in `backend/prisma/schema.prisma`
-- Add/remove fields
-- Change field types or constraints
-- Add/remove indexes or unique constraints
-
-### Local Development
-
-```bash
-cd backend
-
-# 1. Modify schema.prisma
-# 2. Create and apply migration
-npx prisma migrate dev --name describe_your_changes
-
-# 3. Verify changes
-npx prisma studio
-```
-
-### Production Deployment (Railway/Render)
-
-**✅ Recommended: Automatic Migration (Already Configured)**
-
-The project is configured to run migrations automatically on deployment:
-
-1. **Make your schema changes** in `backend/prisma/schema.prisma`
-2. **Create migration locally**:
-   ```bash
-   cd backend
-   npx prisma migrate dev --name your_change_description
-   ```
-3. **Commit and push**:
-   ```bash
-   git add backend/prisma/
-   git commit -m "feat: Add migration for [your changes]"
-   git push origin main
-   ```
-4. **Railway/Render automatically**:
-   - Builds Docker image
-   - Runs `npx prisma migrate deploy` (configured in Dockerfile)
-   - Starts application
-
-**Migration happens automatically during deployment** 🎉
-
-### Manual Production Migration (If Needed)
-
-Only use this if automatic migration fails:
-
-```bash
-cd backend
-
-# Connect to production database
-DATABASE_URL="your-production-db-url" npx prisma migrate deploy
-
-# Verify migration status
-DATABASE_URL="your-production-db-url" npx prisma migrate status
-```
-
-### Migration Best Practices
-
-#### ✅ DO:
-- **Always test migrations locally first** before deploying
-- **Commit migration files to Git** - they are the source of truth
-- **Use descriptive migration names** (e.g., `add_user_roles`, `add_indexes_to_presets`)
-- **Review generated SQL** in `prisma/migrations/` before applying
-- **Backup production data** before major schema changes (if in production)
-
-#### ❌ DON'T:
-- **Never delete migration files** - this breaks migration history
-- **Never edit applied migrations** - create a new migration instead
-- **Never run `prisma db push`** in production - use `migrate deploy`
-- **Never skip migrations** - apply them in order
-
-### Troubleshooting Migrations
-
-#### Failed Migration in Production
-
-If a migration fails during deployment:
-
-1. **Check deployment logs** for error details
-2. **Fix the issue** (usually schema conflicts)
-3. **Mark failed migration as rolled back** (if needed):
-   ```sql
-   -- In Supabase SQL Editor or psql
-   UPDATE "_prisma_migrations"
-   SET rolled_back_at = NOW()
-   WHERE migration_name = 'failed_migration_name';
-   ```
-4. **Redeploy** or run `prisma migrate deploy` again
-
-#### Reset Development Database
-
-If your local database gets out of sync:
-
-```bash
-cd backend
-
-# WARNING: This deletes all local data
-docker-compose down -v
-docker-compose up -d
-npx prisma migrate dev
-```
-
-#### Check Migration Status
-
-```bash
-# Local
-npx prisma migrate status
-
-# Production
-DATABASE_URL="production-url" npx prisma migrate status
-```
-
-## Production Deployment
-
-For production deployment, use the commented production configuration in `backend/.env.example` and `frontend/.env.example`.
-
-Get Supabase PostgreSQL connection info from Supabase Dashboard > Project Settings > Database > Connection string.
-
-**Note:** Migrations run automatically during deployment via Dockerfile. See [Database Migration Guide](#database-migration-guide) above.
+- **API returns 500**: check that `DATABASE_URL` is set and reachable, and that migrations are applied.
+- **Every API call returns 401**: check that `NEXT_PUBLIC_SUPABASE_URL` points at the same project that
+  issued the session.
+- **Database connection errors locally**: `docker compose ps`, then `docker compose down && docker compose up -d`.
 
 ## License
