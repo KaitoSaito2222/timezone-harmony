@@ -6,10 +6,16 @@
     "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start --port 3001",
-    "generate:timezones": "node scripts/generate-timezones.mjs"
+    "generate:timezones": "node scripts/generate-timezones.mjs",
+    "postinstall": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -25,11 +31,13 @@
     "clsx": "^2.1.1",
     "countries-and-timezones": "^3.8.0",
     "ics": "^3.8.1",
+    "jose": "^6.2.12",
     "lucide-react": "^0.574.0",
     "luxon": "^3.7.2",
     "next": "16.3.8",
     "next-intl": "4.14.9",
     "next-themes": "^0.4.6",
+    "pg": "^8.23.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -43,6 +51,7 @@
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.15.9",
+    "@next/env": "16.3.8",
     "@tailwindcss/postcss": "^4",
     "@types/luxon": "^3.7.1",
     "@types/node": "^20",
@@ -50,6 +59,7 @@
     "@types/react-dom": "^19",
     "cldr-dates-full": "^48.2.0",
     "kuromoji": "^0.1.2",
+    "prisma": "^7.10.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

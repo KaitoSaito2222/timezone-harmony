@@ -2,12 +2,10 @@ import axios from 'axios';
 import api from '@/services/api';
 import { createClient } from '@/lib/supabase/client';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
 // Polls are public (the link is the secret), so this client deliberately skips the
 // authenticated `api` instance: its 401 handler would sign users out.
 const publicApi = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
