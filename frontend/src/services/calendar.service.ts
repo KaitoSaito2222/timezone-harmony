@@ -14,9 +14,13 @@ interface ExportCalendarInput {
 }
 
 // Escapes special characters per the iCalendar spec (RFC 5545).
-// Backslash first to avoid double-escaping; ; and , are delimiters; newlines become literal \n.
+// Backslash first to avoid double-escaping; ; and , are delimiters; line breaks become literal \n.
 function escapeICSText(text: string): string {
-  return text.replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r\n|\r|\n/g, '\\n');
 }
 
 function formatICSDate(dt: DateTime): string {
@@ -31,8 +35,9 @@ export const calendarService = {
     // Build description with timezone info
     let description = event.description || 'Created with Timezone Harmony';
     if (event.timezones && event.timezones.length > 0) {
-      description += '\\n\\nLocal times:\\n';
-      description += event.timezones.map((tz) => `${tz.timezone}: ${tz.localTime}`).join('\\n');
+      // Real line breaks here; escapeICSText turns them into the \n escape.
+      description += '\n\nLocal times:\n';
+      description += event.timezones.map((tz) => `${tz.timezone}: ${tz.localTime}`).join('\n');
     }
 
     const uid = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}@timezone-harmony`;

@@ -1,4 +1,5 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import 'server-only';
+import { createRemoteJWKSet, errors, jwtVerify } from 'jose';
 import type { NextRequest } from 'next/server';
 import { unauthorized } from './http';
 import { findOrCreateFromSupabase } from './users';
@@ -27,9 +28,26 @@ async function verifyToken(req: NextRequest): Promise<{ sub: string; email: stri
     });
     if (!payload.sub || !payload.email) return undefined;
     return { sub: payload.sub, email: payload.email };
-  } catch {
-    return undefined;
+  } catch (error) {
+    if (isInvalidToken(error)) return undefined;
+    // Anything else (e.g. the JWKS could not be fetched) is our failure, not the user's:
+    // let it become a 500 so the client does not sign the user out.
+    throw error;
   }
+}
+
+function isInvalidToken(error: unknown): boolean {
+  return (
+    error instanceof errors.JWTExpired ||
+    error instanceof errors.JWTClaimValidationFailed ||
+    error instanceof errors.JWTInvalid ||
+    error instanceof errors.JWSInvalid ||
+    error instanceof errors.JWSSignatureVerificationFailed ||
+    error instanceof errors.JWKSNoMatchingKey ||
+    error instanceof errors.JWKSMultipleMatchingKeys ||
+    error instanceof errors.JOSEAlgNotAllowed ||
+    error instanceof errors.JOSENotSupported
+  );
 }
 
 // Database errors are not caught here: they must surface as 500s, not as a 401

@@ -139,7 +139,7 @@ async function main() {
 
   mkdirSync(dirname(OUTPUT), { recursive: true });
   // One timezone per line keeps diffs of this file readable.
-  writeFileSync(OUTPUT, `[\n${timezones.map((tz) => JSON.stringify(tz)).join(",\n")}\n]\n`);
+  writeFileSync(OUTPUT, `[\n${timezones.map((tz) => JSON.stringify(tz)).join(',\n')}\n]\n`);
   console.log(`Wrote ${timezones.length} timezones to ${OUTPUT}`);
 }
 

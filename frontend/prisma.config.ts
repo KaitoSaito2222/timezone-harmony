@@ -1,11 +1,12 @@
 import { loadEnvConfig } from '@next/env';
 import { defineConfig } from 'prisma/config';
 
-// Load .env.local etc. the same way Next.js does, so the Prisma CLI sees the same DATABASE_URL.
-loadEnvConfig(process.cwd());
+// Load .env.local etc. as `next dev` does (development mode, so .env.production* files,
+// which may hold production credentials, are never picked up by local migrations).
+loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
 
-// Migrations need a direct (session) connection; the app itself uses DATABASE_URL,
-// which points at the transaction pooler in production.
+// Migrations always use DIRECT_DATABASE_URL (a direct or session connection). There is no
+// fallback to DATABASE_URL, which points at the transaction pooler in production.
 // Read with process.env (not prisma/config's env()) so `prisma generate` runs without a database.
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -13,6 +14,6 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL,
+    url: process.env.DIRECT_DATABASE_URL,
   },
 });
