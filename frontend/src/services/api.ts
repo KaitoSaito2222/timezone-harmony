@@ -1,11 +1,9 @@
 import axios from 'axios';
 import { createClient } from '@/lib/supabase/client';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
+// Served by this app's own route handlers (src/app/api).
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
   },

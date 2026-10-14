@@ -102,7 +102,7 @@ export function useCalendarExport({
 
     // ICS download (default)
     try {
-      const blob = await calendarService.exportToICS({
+      const blob = calendarService.exportToICS({
         title: exportEventTitle,
         startTime: startTime.toISO() || '',
         duration: exportDuration,

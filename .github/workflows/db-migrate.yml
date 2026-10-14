@@ -1,0 +1,31 @@
+name: Apply database migrations
+
+# Migrations are not run by the Netlify build. Run this manually (Actions tab >
+# "Apply database migrations" > Run workflow) after merging a PR that adds files
+# under frontend/prisma/migrations, before or right after the deploy goes live.
+# Requires the DIRECT_DATABASE_URL repository secret: the Supabase session pooler
+# or direct connection (port 5432), not the transaction pooler.
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Apply pending migrations
+        env:
+          DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+        run: |
+          npx prisma migrate deploy
+          npx prisma migrate status

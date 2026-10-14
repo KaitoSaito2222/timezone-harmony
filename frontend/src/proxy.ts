@@ -18,8 +18,9 @@ export default function proxy(request: NextRequest) {
   return intlMiddleware(request);
 }
 
+// API routes (src/app/api) are not localized, so they skip the i18n middleware.
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|icon|opengraph-image|manifest.webmanifest|pwa-icon|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)|.*/auth/callback).*)',
+    '/((?!api/|_next/static|_next/image|favicon.ico|icon|opengraph-image|manifest.webmanifest|pwa-icon|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)|.*/auth/callback).*)',
   ],
 };
